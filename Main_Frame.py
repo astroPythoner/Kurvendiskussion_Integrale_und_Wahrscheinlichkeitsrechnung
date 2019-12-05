@@ -85,7 +85,7 @@ class MainWindow(tk.Frame):
         self.Ableitung_Frame = Ableitung_Frame.Ableitung_Frame()
         self.frames.append(self.Ableitung_Frame)
         self.pane.add(self.Ableitung_Frame, text="Ableitung", padding=0)
-        self.Steigung_Frame = Steigung_Frame.Steigung_Frame()
+        self.Steigung_Frame = Steigung_Frame.Steigung_Frame(self.Ableitung_Frame)
         self.frames.append(self.Steigung_Frame)
         self.pane.add(self.Steigung_Frame, text="Steigung", padding=0)
         self.Krümmung_Frame = Kruemmung_Frame.Krümmung_Frame()
@@ -95,7 +95,7 @@ class MainWindow(tk.Frame):
         self.frames.append(self.Symmetrie_Frame)
         self.pane.add(self.Symmetrie_Frame, text="Symmetrie", padding=0)
 
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Steigung_Frame,self.Krümmung_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.Steigung_Frame,self.Krümmung_Frame)
         self.frames.append(self.Graph_Frame)
 
 

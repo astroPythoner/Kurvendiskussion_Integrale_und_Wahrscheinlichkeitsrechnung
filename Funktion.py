@@ -108,7 +108,7 @@ class Funktion():
 
     def check_funktion_exponential_funktion_and_convert(self,funktion):
         funktion = funktion.replace(" ","")
-        if funktion[0] != "+" or funktion[0] != "-":
+        if funktion[0] != "+" and funktion[0] != "-":
             funktion = "+"+funktion
         exponenten = []
         if "x" in funktion:
@@ -124,7 +124,7 @@ class Funktion():
                     klammern_offen -= 1
                 if (char == "+" or char == "-" or count == len(funktion)-1) and klammern_offen == 0:
                     num_plus_or_minus_since_last_expo += 1
-                    if num_plus_or_minus_since_last_expo%2==0 and num_plus_or_minus_since_last_expo != 0:
+                    if num_plus_or_minus_since_last_expo%2==0:
                         try:
                             end = count
                             if count == len(funktion)-1:
@@ -136,7 +136,7 @@ class Funktion():
                                 else:
                                     exponenten.append([str(wert), "0"])
                             else:
-                                exponenten.append([funktion[count_last_plus_or_minus:end], "0"])
+                                exponenten.append(["+("+funktion[count_last_plus_or_minus:end]+")", "0"])
                         except:
                             pass
                     else:
@@ -262,23 +262,29 @@ class Funktion():
                 return False,"kein Exponent gefunden"
             expos_zu_funktion = ""
             for exponent in exponenten:
-                expos_zu_funktion += exponent[0]+"*x'"+exponent[1]
+                expos_zu_funktion += exponent[0] + "*x'" + exponent[1]
             # Checken
             x = -30
             while x < 30:
-                wert_orig = eval(self.funktion_to_computer_readable(funktion))
-                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion))
-                if wert_eigen != wert_orig:
-                    return False,"Funktion am Ende passt nicht "+str(exponenten)
+                if x < 0:
+                    x_str = "("+str(x)+")"
+                else:
+                    x_str = str(x)
+                wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",x_str))
+                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",x_str))
+                if not ((isinstance(wert_eigen, complex) or "e" in str(wert_eigen))):
+                    if round(wert_eigen,6) != round(wert_orig,6):
+                        return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
                 x += 0.1
-            for x in [math.pi,math.pi/2,math.pi/3,math.e,math.e/2]:
-                wert_orig = eval(self.funktion_to_computer_readable(funktion))
-                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion))
-                if wert_eigen != wert_orig:
-                    return False,"Funktion am Ende passt nicht "+str(exponenten)
+            for x in [math.pi,math.pi/2,math.pi/3]:
+                wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",str(x)))
+                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",str(x)))
+                if not ((isinstance(wert_eigen, complex) or "e" in str(wert_eigen))):
+                    if round(wert_eigen,6) != round(wert_orig,6):
+                        return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
             return exponenten,expos_zu_funktion
         else:
-            return False,False
+            return False,"kein x in Funktion"
 
     def string_an_zeichen_teilen(self,string,zeichen1,zeichen2):
         output = []
@@ -288,7 +294,6 @@ class Funktion():
                     if splitet2 != '':
                         output.append(splitet2)
         return output
-
 
     def set_funktion(self,funktion):
         funktion = self.funktion_verschönern(self.funktion_verschönern(self.funktion_verschönern(funktion)))
@@ -305,7 +310,7 @@ class Funktion():
                 if working:
                     break
             if working:
-                print("Funktion",funktion,"passt")
+                #Funktion fehlerfrei
                 self.funktion_user_x_ersetztbar = funktion
                 self.funktion_user_kurz = self.funktion_to_user_kurz(funktion)
                 self.funktion_computer_readable = computer_funktion
@@ -314,6 +319,7 @@ class Funktion():
                 self.nur_basen = []
                 exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
                 if exponenten == False or exponenten == None:
+                    print("keine expo, da",expo_funktion)
                     self.is_exponential = False
                     self.funktion_exponential_x_ersetzbar = ""
                     self.funktion_exponential_computer_readable = ""
@@ -327,7 +333,7 @@ class Funktion():
                     self.funktion_exponential_computer_readable = self.funktion_to_computer_readable(self.funktion_exponential_x_ersetzbar)
                 return True
             else:
-                print("not working",funktion,computer_funktion)
+                # Fehler in Funktion
                 return False
         else:
             return "unverändert"
