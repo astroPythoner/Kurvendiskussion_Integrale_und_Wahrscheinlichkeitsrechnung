@@ -1,6 +1,7 @@
+import math
 import tkinter as tk
 
-class Symmetrie_Frame(tk.Frame):
+class Stammfunktion_Frame(tk.Frame):
 
     __funktion = None
 
@@ -14,11 +15,18 @@ class Symmetrie_Frame(tk.Frame):
             self.__funktion = neu_funktion
         self.createWidgets()
 
+
+    def stammfunktion_bestimmen(self):
+        if self.__funktion.is_polinomfunktion:
+            pass
+
+
     def createWidgets(self):
         for widget in self.winfo_children():
             widget.destroy()
 
         if self.__funktion != None:
-            tk.Label(self, text="Symmetrie comming soon..."+self.__funktion.funktion_user_kurz).grid(row=0,column=0)
+            self.stammfunktion_bestimmen()
         else:
-            tk.Label(self, text="Für Symmetrieerkennung Funktion oben eingeben").grid(row=0, column=0)
+            self.funktion_text = tk.Label(self, text="Für Stammfunktion")
+            self.funktion_text.grid(row=0, column=0)

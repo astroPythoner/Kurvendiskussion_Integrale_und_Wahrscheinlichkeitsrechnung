@@ -2,6 +2,7 @@ from Grundklassen import Graph
 from Funktion import Funktion
 
 import tkinter as tk
+import math
 
 class Ableitung_Frame(tk.Frame):
 
@@ -26,13 +27,13 @@ class Ableitung_Frame(tk.Frame):
             self.funktionen = []
             erste_ableitung,row_1 = self.ableiten(self.__funktion, 1, 0)
             if erste_ableitung != None:
-                self.funktionen.append(Graph(erste_ableitung.funktion_computer_readable, "#990000","dunkelrot", "f'(x)"))
+                self.funktionen.append(Graph(erste_ableitung, "#990000","dunkelrot", "f'(x)"))
                 zweite_ableitung, row_2 = self.ableiten(erste_ableitung, 2, row_1)
                 if zweite_ableitung != None:
-                    self.funktionen.append(Graph(zweite_ableitung.funktion_computer_readable, "#CC0000", "rot", "f'(x)"))
+                    self.funktionen.append(Graph(zweite_ableitung, "#CC0000", "rot", "f''(x)"))
                     dritte_ableitung, row_3 = self.ableiten(zweite_ableitung, 3, row_2)
                     if dritte_ableitung != None:
-                        self.funktionen.append(Graph(dritte_ableitung.funktion_computer_readable, "#FF0000","hellrot", "f'(x)"))
+                        self.funktionen.append(Graph(dritte_ableitung, "#FF0000","hellrot", "f'''(x)"))
         else:
             self.funktion_text = tk.Label(self, text="Für Ableitungen Funktion oben eingeben")
             self.funktion_text.grid(row=0, column=0)
@@ -48,12 +49,12 @@ class Ableitung_Frame(tk.Frame):
         tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_user_x_ersetztbar).grid(row=row+2, column=1)
         row = row+2
         if not "x" in davor_abgeleitete_funktion.funktion_user_x_ersetztbar:
-            ableitungsfunktion = davor_abgeleitete_funktion.funktion_user_x_ersetztbar
+            ableitungsfunktion = "0"
             tk.Label(self, text="Kein x enthalten:").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
             tk.Label(self, text=funktionsname+" = " + ableitungsfunktion).grid(row=row + 2, column=1)
             tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion).grid(row=row + 3, column=0, sticky=tk.W)
             row = row+3
-        elif davor_abgeleitete_funktion.is_exponential:
+        elif davor_abgeleitete_funktion.is_polinomfunktion:
             exponenten = davor_abgeleitete_funktion.exponenten_array
             tk.Label(self, text="In Exponentialform bringen:").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
             tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_exponential_x_ersetzbar).grid(row=row + 2,column=1)
@@ -81,19 +82,19 @@ class Ableitung_Frame(tk.Frame):
                 expos_zu_funktion += exponent_neu[0] + "*x'" + exponent_neu[1]
             for exponent_kurz_neu in neue_exponenten_kurz:
                 expos_kurz_funktion += str(exponent_kurz_neu[0]) + "*x'" + str(exponent_kurz_neu[1])
-                if exponent_kurz_neu[0] == "+1":
-                    if exponent_kurz_neu[1] == "1":
+                if exponent_kurz_neu[0] == "+1" or exponent_kurz_neu[0] == "+1.0":
+                    if exponent_kurz_neu[1] == "1" or exponent_kurz_neu[1] == "1.0":
                         expos_ganz_kurz_funktion += "+x"
-                    elif exponent_kurz_neu[1] == "0":
+                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0":
                         expos_ganz_kurz_funktion += "+1"
                     else:
                         expos_ganz_kurz_funktion += "+x'" + str(exponent_kurz_neu[1])
-                elif exponent_kurz_neu[0] == "+0":
+                elif exponent_kurz_neu[0] == "+0" or exponent_kurz_neu[0] == "+0.0":
                     pass
                 else:
-                    if exponent_kurz_neu[1] == "1":
+                    if exponent_kurz_neu[1] == "1" or exponent_kurz_neu[1] == "1.0":
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0]) + "*x"
-                    elif exponent_kurz_neu[1] == "0":
+                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0":
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0])
                     else:
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0]) + "*x'" + str(exponent_kurz_neu[1])
@@ -107,7 +108,7 @@ class Ableitung_Frame(tk.Frame):
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion).grid(row=row + 4, column=0,sticky=tk.W)
             row = row+4
         else:
-            tk.Label(self, text="Ableitung von nicht Exponentialfunktionen comming soon").grid(row=row+1, column=0,columnspan=2,sticky=tk.W)
+            tk.Label(self, text="Ableitung von nicht Polinomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2,sticky=tk.W)
             row = row+1
 
         if ableitungsfunktion != None:

@@ -13,6 +13,7 @@ import Steigung_Frame
 import Kruemmung_Frame
 import Symmetrie_Frame
 import Graph_Frame
+import TangenteNormale_Frame
 
 import Funktion
 
@@ -38,7 +39,7 @@ class MainWindow(tk.Frame):
             self.eingabe_passt.config(text="Funktion passt")
             if DEBUG:
                 text = self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
-                if self.funktion.is_exponential:
+                if self.funktion.is_polinomfunktion:
                     text += "\n Exponenten: "+str(self.funktion.exponenten_array)
                     text += "\n = " + str(self.funktion.funktion_exponential_x_ersetzbar)
                     text += "\n = " + str(self.funktion.funktion_exponential_computer_readable)
@@ -82,20 +83,23 @@ class MainWindow(tk.Frame):
         self.GlobalesVerhalten_Frame = GlobalesVerhalten_Frame.GlobalesVerhalten_Frame()
         self.frames.append(self.GlobalesVerhalten_Frame)
         self.pane.add(self.GlobalesVerhalten_Frame, text="Globales Verhalten", padding=0)
+        self.Symmetrie_Frame = Symmetrie_Frame.Symmetrie_Frame()
+        self.frames.append(self.Symmetrie_Frame)
+        self.pane.add(self.Symmetrie_Frame, text="Symmetrie", padding=0)
         self.Ableitung_Frame = Ableitung_Frame.Ableitung_Frame()
         self.frames.append(self.Ableitung_Frame)
+        self.TangenteNormale_Frame = TangenteNormale_Frame.TangenteNormale_Frame(self.Ableitung_Frame)
+        self.frames.append(self.TangenteNormale_Frame)
+        self.pane.add(self.TangenteNormale_Frame, text="Normale/Tangente", padding=0)
         self.pane.add(self.Ableitung_Frame, text="Ableitung", padding=0)
         self.Steigung_Frame = Steigung_Frame.Steigung_Frame(self.Ableitung_Frame)
         self.frames.append(self.Steigung_Frame)
         self.pane.add(self.Steigung_Frame, text="Steigung", padding=0)
-        self.Krümmung_Frame = Kruemmung_Frame.Krümmung_Frame()
+        self.Krümmung_Frame = Kruemmung_Frame.Krümmung_Frame(self.Ableitung_Frame)
         self.frames.append(self.Krümmung_Frame)
         self.pane.add(self.Krümmung_Frame, text="Krümmung", padding=0)
-        self.Symmetrie_Frame = Symmetrie_Frame.Symmetrie_Frame()
-        self.frames.append(self.Symmetrie_Frame)
-        self.pane.add(self.Symmetrie_Frame, text="Symmetrie", padding=0)
 
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.Steigung_Frame,self.Krümmung_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame)
         self.frames.append(self.Graph_Frame)
 
 

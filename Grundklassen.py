@@ -17,7 +17,7 @@ class Punkt():
         return self.x, self.y
 
     def __str__(self):
-        return "("+str(self.x)+" | "+str(self.y)+")"
+        return "("+str(round(self.x,5))+" | "+str(round(self.y,5))+")"
 
 
 class Graph():
@@ -32,26 +32,26 @@ class Graph():
     max_x = 100
     genauigkeit = 10
 
-    def __init__(self,funktion_name_computer_readable,color,color_name,name):
-        self.funktion = funktion_name_computer_readable
+    def __init__(self,funktion,color,color_name,name):
+        self.funktion = funktion
         self.color = color
         self.color_name = color_name
         self.name = name
-        self.neu_funktion(funktion_name_computer_readable)
+        self.neu_funktion(funktion)
 
-    def neu_funktion(self,funktion_name_computer_readable):
+    def neu_funktion(self,funktion):
         self.x_werte = []
         for i in range(-(self.max_x * self.genauigkeit), (self.max_x * self.genauigkeit)):
             self.x_werte.append(i / self.genauigkeit)
         self.y_werte = []
         for x in self.x_werte:
-            if self.funktion is not None:
+            if funktion is not None:
                 try:
                     if x < 0:
                         x_str = "(" + str(x) + ")"
                     else:
                         x_str = str(x)
-                    funktionswert_an_i = eval(funktion_name_computer_readable.replace("x", x_str))
+                    funktionswert_an_i = eval(funktion.funktion_computer_readable.replace("x", x_str))
                     if isinstance(funktionswert_an_i, complex):
                         funktionswert_an_i = 0
                 except Exception:

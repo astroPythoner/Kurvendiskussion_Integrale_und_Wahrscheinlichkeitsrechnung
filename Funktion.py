@@ -10,7 +10,7 @@ class Funktion():
     exponenten_array = []
     nur_exponenten = []
     nur_basen = []
-    is_exponential = False
+    is_polinomfunktion = False
 
     def funktion_verschönern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
@@ -99,12 +99,53 @@ class Funktion():
             if count < len(funktion_array)-1:
                 letter_danach = funktion_array[count+1]
             if letter == "*":
-                if letter_davor != None and (letter_davor.isnumeric() or letter_davor==")"):
+                if letter_davor != None and (letter_davor.isnumeric()):
                     del funktion_array[count]
-                if letter_danach != None and (letter_danach.isnumeric() or letter_danach=="("):
+                if letter_danach != None and (letter_danach.isnumeric()):
                     del funktion_array[count]
             count+= 1
         return "".join(i for i in funktion_array)
+
+    def exponenten_zusammenführen_und_sortieren(self,exponenten_mit_basis):
+        gekürzte_exponenten = []
+        gekürzte_basen = []
+        # ausrechnen
+        for count,exponent_mis_basis in enumerate(exponenten_mit_basis):
+            gekürzte_exponenten.append(str(eval(self.funktion_to_computer_readable(self.funktion_verschönern(exponent_mis_basis[1])))))
+            wert = eval(self.funktion_to_computer_readable(self.funktion_verschönern(exponent_mis_basis[0])))
+            if wert > 0:
+                gekürzte_basen.append("+"+str(wert))
+            else:
+                gekürzte_basen.append(str(wert))
+        # zusammenführen
+        count1=0
+        count2=0
+        while count1 < len(gekürzte_exponenten):
+            expo1 = gekürzte_exponenten[count1]
+            while count2 < len(gekürzte_exponenten):
+                expo2 = gekürzte_exponenten[count2]
+                if count1 != count2 and expo1 == expo2:
+                    wert = int(gekürzte_basen[count1])+int(gekürzte_basen[count2])
+                    if wert > 0:
+                        gekürzte_basen[count1] = "+" + str(wert)
+                    else:
+                        gekürzte_basen[count1] = str(wert)
+                    del gekürzte_exponenten[count2]
+                    del gekürzte_basen[count2]
+                count2 += 1
+            count1 += 1
+        exponenten_mit_basis = []
+        for x in range(len(gekürzte_exponenten)):
+            exponenten_mit_basis.append([gekürzte_basen[x],gekürzte_exponenten[x]])
+        # sortieren
+        switched_something = True
+        while switched_something:
+            switched_something = False
+            for j in range(len(exponenten_mit_basis)-1):
+                if exponenten_mit_basis[j+1][1] > exponenten_mit_basis[j][1]:
+                    switched_something = True
+                    exponenten_mit_basis[j], exponenten_mit_basis[j + 1] = exponenten_mit_basis[j + 1], exponenten_mit_basis[j]
+        return exponenten_mit_basis
 
     def check_funktion_exponential_funktion_and_convert(self,funktion):
         funktion = funktion.replace(" ","")
@@ -260,6 +301,7 @@ class Funktion():
                 count += 1
             if exponenten == []:
                 return False,"kein Exponent gefunden"
+            exponenten = self.exponenten_zusammenführen_und_sortieren(exponenten)
             expos_zu_funktion = ""
             for exponent in exponenten:
                 expos_zu_funktion += exponent[0] + "*x'" + exponent[1]
@@ -319,12 +361,11 @@ class Funktion():
                 self.nur_basen = []
                 exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
                 if exponenten == False or exponenten == None:
-                    print("keine expo, da",expo_funktion)
-                    self.is_exponential = False
+                    self.is_polinomfunktion = False
                     self.funktion_exponential_x_ersetzbar = ""
                     self.funktion_exponential_computer_readable = ""
                 else:
-                    self.is_exponential = True
+                    self.is_polinomfunktion = True
                     self.exponenten_array = exponenten
                     for exponent in self.exponenten_array:
                         self.nur_exponenten.append(exponent[1])

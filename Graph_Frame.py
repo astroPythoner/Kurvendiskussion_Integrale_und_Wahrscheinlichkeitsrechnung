@@ -17,8 +17,9 @@ class Graph_Frame(tk.Frame):
     abl = None
     steig = None
     kruem = None
+    tanNor = None
     punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo"}
-    funktion_frames = [abl]
+    funktion_frames = [abl,tanNor]
     funktion_frames_aktiv = []
 
     graph = Graph("0","blue","blau","f(x)")
@@ -36,14 +37,15 @@ class Graph_Frame(tk.Frame):
         self.graph_aktiv.set(True)
         self.update()
 
-    def add_frames(self,sy,nst,abl,steig,kruem):
+    def add_frames(self,sy,nst,abl,tanNor,steig,kruem):
         self.sy = sy
         self.nst = nst
         self.abl = abl
         self.steig = steig
         self.kruem = kruem
+        self.tanNor = tanNor
         self.punkt_frames = {self.sy:"#008800o",self.nst:"#00CC00o",self.steig:"#CC2222o",self.kruem:"#FF22FFo"}
-        self.funktion_frames = [self.abl]
+        self.funktion_frames = [self.abl,self.tanNor]
         funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             for funktion in frame.funktionen:
@@ -52,7 +54,7 @@ class Graph_Frame(tk.Frame):
     def update(self, neu_funktion = None):
         if neu_funktion is not None:
             self.__funktion = neu_funktion
-            self.graph = Graph(self.__funktion.funktion_computer_readable,"blue","blau","f(x)")
+            self.graph = Graph(self.__funktion,"blue","blau","f(x)")
         self.funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             try:
@@ -141,8 +143,9 @@ class Graph_Frame(tk.Frame):
             for frame in list(self.punkt_frames.keys()):
                 try:
                     for punkt in frame.punkte:
-                        plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
-                        plt.scatter(punkt.x,punkt.y, c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
+                        if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
+                            plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
+                            plt.scatter(punkt.x,punkt.y, c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
                 except:
                     pass
 
