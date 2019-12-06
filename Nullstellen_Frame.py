@@ -86,10 +86,13 @@ def nullstellen_berechnen(funktion, row, frame):
             tk.Label(frame, text="x'"+c+" ausklammern").grid(row=row + 1, column=1)
             tk.Label(frame, text="0 = (x'"+str(c)+") * ("+str(m)+"x'"+str(b_minus_c)+" + "+str(n)+")").grid(row=row + 2, column=1)
             tk.Label(frame, text="Satz vom Nullprodukt").grid(row=row + 3, column=1)
-            tk.Label(frame, text="x1 = 0").grid(row=row + 4, column=1)
-            punkte.append(Punkt(0, 0, "Nst1"))
-            tk.Label(frame, text="Nst1 = " + str(punkte[0])).grid(row=row + 5, column=0, sticky=tk.W)
-            tk.Label(frame, text="x2 = "+str(m)+"x'"+str(b_minus_c)+" + "+str(n)).grid(row=row+6, column=1)
+            if eval(c) <= 0:
+                tk.Label(frame, text="x1 = 0 ist keine Nullstelle").grid(row=row + 4, column=1)
+            else:
+                tk.Label(frame, text="x1 = 0").grid(row=row + 4, column=1)
+                punkte.append(Punkt(0, 0, "Nst1"))
+                tk.Label(frame, text="Nst1 = " + str(punkte[0])).grid(row=row + 5, column=0, sticky=tk.W)
+                tk.Label(frame, text="x2 = "+str(m)+"x'"+str(b_minus_c)+" + "+str(n)).grid(row=row+6, column=1)
             row = row+6
             minus_n = eval(funktion.funktion_to_computer_readable("-(" + n + ")"))
             tk.Label(frame, text="| " + str(minus_n)).grid(row=row, column=2, sticky=tk.W)
@@ -100,14 +103,14 @@ def nullstellen_berechnen(funktion, row, frame):
             doppel_erg_durch_wurzel = False
             if b_minus_c != 1:
                 tk.Label(frame, text="| √").grid(row=row + 2, column=2)
-                tk.Label(frame, text=str(b) + "√(" + str(n_durch_m) + ") = x").grid(row=row + 3, column=1)
+                tk.Label(frame, text=str(b_minus_c) + "√(" + str(n_durch_m) + ") = x").grid(row=row + 3, column=1)
                 if n_durch_m < 0 and b_minus_c % 2 == 0:
                     erg = None
                 else:
-                    if b % 2 == 0:
+                    if b_minus_c % 2 == 0:
                         doppel_erg_durch_wurzel = True
-                    b = b_minus_c / 1.0
-                    erg = n_durch_m ** (1 / b)
+                    b_minus_c = b_minus_c / 1.0
+                    erg = n_durch_m ** (1 / b_minus_c)
             else:
                 erg = n_durch_m
             if erg != None and not isinstance(erg, complex):
