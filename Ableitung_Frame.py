@@ -57,21 +57,21 @@ class Ableitung_Frame(tk.Frame):
         elif davor_abgeleitete_funktion.is_polinomfunktion:
             exponenten = davor_abgeleitete_funktion.exponenten_array
             tk.Label(self, text="In Exponentialform bringen:").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
-            tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_exponential_x_ersetzbar).grid(row=row + 2,column=1)
+            tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_polinom_x_ersetzbar).grid(row=row + 2,column=1)
             tk.Label(self, text="Ableiten nach Regel ax'b -> (a*b)*x'(b-1):").grid(row=row + 3, column=0, columnspan=2,sticky=tk.W)
             row = row + 3
             neue_exponenten = []
             neue_exponenten_kurz = []
             for exponent in exponenten:
-                neue_exponenten.append(["(" + exponent[0] + "*" + exponent[1] + ")", "(" + exponent[1] + "-1)"])
+                neue_exponenten.append(["+(" + exponent[0] + "*" + exponent[1] + ")", "(" + exponent[1] + "-1)"])
                 basis_wert = eval(davor_abgeleitete_funktion.funktion_to_computer_readable(self.__funktion.funktion_verschönern("((" + exponent[0] + ")*" + exponent[1] + ")")))
-                if basis_wert >= 0:
-                    basis_wert = "+" + str(basis_wert)
-                else:
+                if str(basis_wert)[0] == "-":
                     basis_wert = str(basis_wert)
+                else:
+                    basis_wert = "+" + str(basis_wert)
                 expo_wert = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_verschönern("((" + exponent[1] + ")-1)")))
-                if expo_wert < 0:
-                    expo_wert = "(" + str(expo_wert) + ")"
+                if str(expo_wert)[0] == "-":
+                    expo_wert = "("+str(expo_wert)+")"
                 else:
                     expo_wert = str(expo_wert)
                 neue_exponenten_kurz.append([basis_wert, expo_wert])
@@ -85,16 +85,16 @@ class Ableitung_Frame(tk.Frame):
                 if exponent_kurz_neu[0] == "+1" or exponent_kurz_neu[0] == "+1.0":
                     if exponent_kurz_neu[1] == "1" or exponent_kurz_neu[1] == "1.0":
                         expos_ganz_kurz_funktion += "+x"
-                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0":
+                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0" or exponent_kurz_neu[1] == "- 0" or exponent_kurz_neu[1] == "- 0.0" or exponent_kurz_neu[1] == "-0" or exponent_kurz_neu[1] == "-0.0":
                         expos_ganz_kurz_funktion += "+1"
                     else:
                         expos_ganz_kurz_funktion += "+x'" + str(exponent_kurz_neu[1])
-                elif exponent_kurz_neu[0] == "+0" or exponent_kurz_neu[0] == "+0.0":
+                elif exponent_kurz_neu[0] == "+0" or exponent_kurz_neu[0] == "+0.0" or exponent_kurz_neu[0] == "- 0" or exponent_kurz_neu[0] == "- 0.0" or exponent_kurz_neu[0] == "-0" or exponent_kurz_neu[0] == "-0.0":
                     pass
                 else:
                     if exponent_kurz_neu[1] == "1" or exponent_kurz_neu[1] == "1.0":
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0]) + "*x"
-                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0":
+                    elif exponent_kurz_neu[1] == "0" or exponent_kurz_neu[1] == "0.0" or exponent_kurz_neu[1] == "- 0" or exponent_kurz_neu[1] == "- 0.0" or exponent_kurz_neu[1] == "-0" or exponent_kurz_neu[1] == "-0.0":
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0])
                     else:
                         expos_ganz_kurz_funktion += str(exponent_kurz_neu[0]) + "*x'" + str(exponent_kurz_neu[1])
@@ -103,7 +103,8 @@ class Ableitung_Frame(tk.Frame):
             expos_ganz_kurz_funktion = self.__funktion.funktion_verschönern(expos_ganz_kurz_funktion)
             tk.Label(self, text=funktionsname+" = " + expos_zu_funktion).grid(row=row + 1, column=1)
             tk.Label(self, text=funktionsname+" = " + expos_kurz_funktion).grid(row=row + 2, column=1)
-            tk.Label(self, text=funktionsname+" = " + expos_ganz_kurz_funktion).grid(row=row + 3, column=1)
+            if expos_kurz_funktion != expos_ganz_kurz_funktion:
+                tk.Label(self, text=funktionsname+" = " + expos_ganz_kurz_funktion).grid(row=row + 3, column=1)
             ableitungsfunktion = expos_ganz_kurz_funktion
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion).grid(row=row + 4, column=0,sticky=tk.W)
             row = row+4

@@ -1,8 +1,14 @@
 from Grundklassen import Punkt
+from Funktion import Funktion
 
 import tkinter as tk
 import math
 
+
+def str_plus(wert):
+    if str(wert)[0] == "-":
+        return str(wert)
+    return "+"+str(wert)
 
 def nullstellen_berechnen(funktion, row, frame):
     tk.Label(frame, text="0 = " + funktion.funktion_user_kurz).grid(row=row, column=1)
@@ -17,6 +23,7 @@ def nullstellen_berechnen(funktion, row, frame):
         exponenten = funktion.exponenten_array
         nur_expos = funktion.nur_exponenten
         nur_basen = funktion.nur_basen
+        needs_polinomdivision = False
         # x=0 (0=mx'b -> x=0)
         if len(exponenten) == 1:
             if funktion.funktion_user_kurz[0] != "x":
@@ -92,7 +99,7 @@ def nullstellen_berechnen(funktion, row, frame):
                 tk.Label(frame, text="x1 = 0").grid(row=row + 4, column=1)
                 punkte.append(Punkt(0, 0, "Nst1"))
                 tk.Label(frame, text="Nst1 = " + str(punkte[0])).grid(row=row + 5, column=0, sticky=tk.W)
-                tk.Label(frame, text="x2 = "+str(m)+"x'"+str(b_minus_c)+" + "+str(n)).grid(row=row+6, column=1)
+            tk.Label(frame, text="x2 = "+str(m)+"x'"+str(b_minus_c)+" + "+str(n)).grid(row=row+6, column=1)
             row = row+6
             minus_n = eval(funktion.funktion_to_computer_readable("-(" + n + ")"))
             tk.Label(frame, text="| " + str(minus_n)).grid(row=row, column=2, sticky=tk.W)
@@ -117,16 +124,17 @@ def nullstellen_berechnen(funktion, row, frame):
                 if doppel_erg_durch_wurzel:
                     punkte.append(Punkt(erg, 0, "Nst1"))
                     punkte.append(Punkt(-erg, 0, "Nst2"))
-                    tk.Label(frame, text="Nst2 = " + str(punkte[0])).grid(row=row + 4, column=0, sticky=tk.W)
-                    tk.Label(frame, text="Nst3 = " + str(punkte[1])).grid(row=row + 5, column=0, sticky=tk.W)
+                    tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 4, column=0, sticky=tk.W)
+                    tk.Label(frame, text="Nst3 = " + str(punkte[2])).grid(row=row + 5, column=0, sticky=tk.W)
                 else:
                     punkte.append(Punkt(erg, 0, "Nst"))
-                    tk.Label(frame, text="Nst2 = " + str(punkte[0])).grid(row=row + 4, column=0, sticky=tk.W)
+                    tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 4, column=0, sticky=tk.W)
             else:
                 tk.Label(frame, text="nicht definiert = x").grid(row=row + 4, column=1)
                 tk.Label(frame, text="Keine weitere Nullstelle").grid(row=row + 5, column=0)
             row = row + 5
-        elif len(exponenten) == 3:  # evntl.Mitternachtsformel oder Poldi
+        # evntl.Mitternachtsformel oder Poldi
+        elif len(exponenten) == 3:
             if "0" in nur_expos and "1" in nur_expos and "2" in nur_expos:
                 a = eval(nur_basen[nur_expos.index("2")])
                 b = eval(nur_basen[nur_expos.index("1")])
@@ -138,8 +146,9 @@ def nullstellen_berechnen(funktion, row, frame):
                 else:
                     erg = (-b+(diskriminante**(1/2)))/(2*a)
                     if diskriminante == 0:
-                        punkte.append(Punkt(erg, 0, "Nst1"))
+                        punkte.append(Punkt(erg, 0, "Nst"))
                         tk.Label(frame, text="x = "+str(erg)).grid(row=row + 2, column=1)
+                        tk.Label(frame, text="Nst = " + str(punkte[0])).grid(row=row + 3, column=0, sticky=tk.W)
                     else:
                         erg2 = (-b - (diskriminante ** (1 / 2))) / (2 * a)
                         punkte.append(Punkt(erg, 0, "Nst1"))
@@ -149,11 +158,116 @@ def nullstellen_berechnen(funktion, row, frame):
                         tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 4, column=0, sticky=tk.W)
                 row = row+4
             else:
-                tk.Label(frame, text="Poldi").grid(row=row+1, column=1)
+                needs_polinomdivision = True
             row = row + 1
         else:  # Poldi
-            tk.Label(frame, text="Poldi").grid(row=row + 1, column=1)
-            row = row+1
+            needs_polinomdivision = True
+        if needs_polinomdivision:
+            tk.Label(frame, text="Polinomdivision").grid(row=row + 1, column=1)
+            tk.Label(frame, text="Ausgeschreibene Polinomfunktion: "+funktion.funktion_polinom_aufgefüllt_x_ersetzbar).grid(row=row + 2, column=1)
+            geratene_nullstelle = None
+            x = 0
+            try:
+                if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                    geratene_nullstelle = 0
+            except:
+                pass
+            if geratene_nullstelle == None:
+                for x in range(-100, 100):
+                    try:
+                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                            geratene_nullstelle = x
+                    except:
+                        pass
+            if geratene_nullstelle == None:
+                x = -100.5
+                while x <= 100.5:
+                    try:
+                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                            geratene_nullstelle = x
+                    except:
+                        pass
+                    x += 1
+            if geratene_nullstelle == None:
+                for x in funktion.nur_basen:
+                    try:
+                        x = eval(funktion.funktion_to_computer_readable(funktion.funktion_verschönern(x)))
+                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                            geratene_nullstelle = x
+                    except:
+                        pass
+                    try:
+                        x = -x
+                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                            geratene_nullstelle = x
+                    except:
+                        pass
+            if geratene_nullstelle == None:
+                tk.Label(frame, text="geratene Nullstelle: keine Nullstelle gefunden").grid(row=row + 3, column=1)
+            else:
+                tk.Label(frame, text="geratene Nullstelle: x = " + str(geratene_nullstelle)+" -> ").grid(row=row + 3, column=1)
+                row = row+3
+                num_expos = 0
+                übriger_funktionsterm = ""
+                # Polinomdivision
+                for expo_und_basis in funktion.exponenten_aufgefüllt_array:
+                    expo_teil = expo_und_basis[0] + "*x'" + expo_und_basis[1]
+                    expo_mit_x = "*x'" + expo_und_basis[1]
+                    basis = eval(expo_und_basis[0])
+                    tk.Label(frame, text=expo_teil).grid(row=row, column=num_expos*2+3)
+                    if num_expos == 0:
+                        letzte_basis = eval(expo_und_basis[0])
+                        tk.Label(frame, text=expo_teil).grid(row=row+1, column=3)
+                        tk.Label(frame, text=")").grid(row=row+1, column=6)
+                        tk.Label(frame, text="-(").grid(row=row+1, column=2)
+                        tk.Label(frame, text=str_plus(letzte_basis) + expo_mit_x).grid(row=row + 2, column=5)
+                    elif num_expos == 1:
+                        letzte_basis = letzte_basis*geratene_nullstelle
+                        tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+1, column=5)
+                        letzte_basis = basis-letzte_basis
+                        tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+2, column=5)
+                        tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+3, column=5)
+                    elif num_expos > 1:
+                        tk.Label(frame, text=expo_teil).grid(row=row+(num_expos-1)*2, column=num_expos*2+3)
+                        letzte_basis = letzte_basis * geratene_nullstelle
+                        tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+(num_expos-1)*2+1, column=num_expos*2+3)
+                        if num_expos == len(funktion.exponenten_aufgefüllt_array)-1:
+                            tk.Label(frame, text="+0").grid(row=row+(num_expos-1)*2+2, column=num_expos*2+3)
+                        else:
+                            letzte_basis = basis - letzte_basis
+                            tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+(num_expos-1)*2+2, column=num_expos*2+3)
+                            tk.Label(frame, text=str_plus(letzte_basis)+expo_mit_x).grid(row=row+(num_expos-1)*2+3, column=num_expos*2+3)
+                            if num_expos == len(funktion.exponenten_aufgefüllt_array)-2:
+                                tk.Label(frame, text="0").grid(row=row+(num_expos-1)*2+4, column=num_expos*2+3)
+                        tk.Label(frame, text="-(").grid(row=row+1+(num_expos-1)*2, column=num_expos*2)
+                        tk.Label(frame, text=")").grid(row=row+1+(num_expos-1)*2, column=num_expos*2+4)
+                    # Endfunktion erweitern
+                    exponent_für_übrige_funktion = eval(expo_und_basis[1]) - 1
+                    tk.Label(frame, text=str_plus(letzte_basis) + "*x'" + str(exponent_für_übrige_funktion)).grid(row=row, column=len(funktion.exponenten_aufgefüllt_array) * 2 + num_expos + 4)
+                    if letzte_basis == 1:
+                        if exponent_für_übrige_funktion== 0:
+                            übriger_funktionsterm += "+1"
+                        elif exponent_für_übrige_funktion == 1:
+                            übriger_funktionsterm += "+1x"
+                        else:
+                            übriger_funktionsterm += "+1x'"+str(exponent_für_übrige_funktion)
+                    elif letzte_basis > 1:
+                        if exponent_für_übrige_funktion == 0:
+                            übriger_funktionsterm += str_plus(letzte_basis)
+                        elif exponent_für_übrige_funktion == 1:
+                            übriger_funktionsterm += str_plus(letzte_basis)+"x"
+                        else:
+                            übriger_funktionsterm += str_plus(letzte_basis)+"x'"+str(exponent_für_übrige_funktion)
+                    num_expos += 1
+                tk.Label(frame, text= " / (x-"+str(geratene_nullstelle)+") = ").grid(row=row, column=num_expos*2+3)
+                row = row+(len(funktion.exponenten_aufgefüllt_array))*2+4
+                punkte.append(Punkt(geratene_nullstelle,0,"Nst1"))
+                tk.Label(frame, text="geratene Nullstelle passt: Nst1 = "+str(punkte[0])).grid(row=row, column=0,sticky=tk.W)
+                übriger_funktionsterm = funktion.funktion_verschönern(übriger_funktionsterm)
+                übrige_funktion = Funktion()
+                übrige_funktion.set_funktion(übriger_funktionsterm)
+                tk.Label(frame, text="Restlich Funtkion:" + übriger_funktionsterm).grid(row=row+1, column=1)
+                nullstellen_berechnen(übrige_funktion,row+2,frame)
     else:
         tk.Label(frame, text="Nullstellen von nicht Polinomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
         row = row + 1

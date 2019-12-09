@@ -14,6 +14,8 @@ import Kruemmung_Frame
 import Symmetrie_Frame
 import Graph_Frame
 import TangenteNormale_Frame
+import Stammfunktion_Frame
+import Intergral_Frame
 
 import Funktion
 
@@ -36,13 +38,14 @@ class MainWindow(tk.Frame):
         if passt==True:
             for frame in self.frames:
                 frame.update(self.funktion)
+            self.Graph_Frame.update(self.funktion)
             self.eingabe_passt.config(text="Funktion passt")
             if DEBUG:
                 text = self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
                 if self.funktion.is_polinomfunktion:
                     text += "\n Exponenten: "+str(self.funktion.exponenten_array)
-                    text += "\n = " + str(self.funktion.funktion_exponential_x_ersetzbar)
-                    text += "\n = " + str(self.funktion.funktion_exponential_computer_readable)
+                    text += "\n = " + str(self.funktion.funktion_polinom_x_ersetzbar)
+                    text += "\n = " + str(self.funktion.funktion_polinom_computer_readable)
                 else:
                     text += "\n keine Exponentialgleichung"
                 self.debug.config(text=text)
@@ -54,7 +57,7 @@ class MainWindow(tk.Frame):
     def createWidgets(self):
 
         #Eingabefeld
-        self.formlezeichen_info = tk.Label(self, text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\npi,e, c,g\nsin,cos,tan,arcsin,...")
+        self.formlezeichen_info = tk.Label(self, text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\npi,e,c,g\nsin,cos,tan,arcsin,...")
         self.formlezeichen_info.grid(row=0, column=0, sticky=tk.W)
         self.eingabe_info = tk.Label(self,text="Hier Funktion eingeben: f(x)=")
         self.eingabe_info.grid(row=0, column=1, sticky=tk.E)
@@ -68,7 +71,7 @@ class MainWindow(tk.Frame):
             self.debug = tk.Label(self, text="")
             self.debug.grid(row=1, column=0,columnspan=5)
 
-        #Note-Book zur Auswsahl der Kurvendiskussionsthemen
+        #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
         self.pane.grid(row=2,column=0,columnspan=5,sticky=tk.NSEW)
 
@@ -98,9 +101,14 @@ class MainWindow(tk.Frame):
         self.Krümmung_Frame = Kruemmung_Frame.Krümmung_Frame(self.Ableitung_Frame)
         self.frames.append(self.Krümmung_Frame)
         self.pane.add(self.Krümmung_Frame, text="Krümmung", padding=0)
+        self.Stammfunktion_Frame = Stammfunktion_Frame.Stammfunktion_Frame()
+        self.frames.append(self.Stammfunktion_Frame)
+        self.pane.add(self.Stammfunktion_Frame, text="Stammfunktion", padding=0)
+        self.Integrale_Frame = Intergral_Frame.Intergral_Frame()
+        self.frames.append(self.Integrale_Frame)
+        self.pane.add(self.Integrale_Frame, text="Intergral", padding=0)
 
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame)
-        self.frames.append(self.Graph_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame,self.Integrale_Frame)
 
 
 if __name__ == '__main__':

@@ -27,6 +27,6 @@ class Stammfunktion_Frame(tk.Frame):
 
         if self.__funktion != None:
             self.stammfunktion_bestimmen()
+            tk.Label(self, text="Stammfunktion comming soon...").grid(row=0, column=0)
         else:
-            self.funktion_text = tk.Label(self, text="Für Stammfunktion")
-            self.funktion_text.grid(row=0, column=0)
+            tk.Label(self, text="Für Stammfunktion Funktion oben eingeben").grid(row=0, column=0)

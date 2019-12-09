@@ -59,3 +59,18 @@ class Graph():
             else:
                 funktionswert_an_i = 0
             self.y_werte.append(funktionswert_an_i)
+
+
+class Fläche():
+    face_color = "red"
+    edge_color = "red"
+    color_name = "rot"
+    name = ""
+    von_x = -1
+    bis_x = 1
+
+    def __init__(self,facecolor,edge_color,color_name,name):
+        self.face_color = facecolor
+        self.edge_color = edge_color
+        self.color_name = color_name
+        self.name = name

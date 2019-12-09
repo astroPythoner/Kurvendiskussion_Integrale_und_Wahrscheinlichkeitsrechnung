@@ -1,16 +1,24 @@
 import math
 
+from time import sleep
+
 class Funktion():
 
     funktion_user_kurz = ""
     funktion_user_x_ersetztbar = ""
     funktion_computer_readable = ""
-    funktion_exponential_x_ersetzbar = ""
-    funktion_exponential_computer_readable = ""
+    funktion_polinom_x_ersetzbar = ""
+    funktion_polinom_computer_readable = ""
     exponenten_array = []
     nur_exponenten = []
     nur_basen = []
+    funktion_polinom_aufgefüllt_x_ersetzbar = ""
+    funktion_polinom_aufgefüllt_computer_readable = ""
+    exponenten_aufgefüllt_array = []
+    nur_exponenten_aufgefüllt = []
+    nur_basen_aufgefüllt = []
     is_polinomfunktion = False
+
 
     def funktion_verschönern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
@@ -142,10 +150,30 @@ class Funktion():
         while switched_something:
             switched_something = False
             for j in range(len(exponenten_mit_basis)-1):
-                if exponenten_mit_basis[j+1][1] > exponenten_mit_basis[j][1]:
+                if eval(exponenten_mit_basis[j+1][1]) > eval(exponenten_mit_basis[j][1]):
                     switched_something = True
                     exponenten_mit_basis[j], exponenten_mit_basis[j + 1] = exponenten_mit_basis[j + 1], exponenten_mit_basis[j]
         return exponenten_mit_basis
+
+    def sortierte_exponenten_auffüllen(self,exponenten_sortiert_mit_basis):
+        return_array = []
+        for expo_num in range(len(exponenten_sortiert_mit_basis)-1):
+            expo = int(eval(exponenten_sortiert_mit_basis[expo_num][1]))
+            return_array.append(exponenten_sortiert_mit_basis[expo_num])
+            for x in range(expo-1,int(eval(exponenten_sortiert_mit_basis[expo_num+1][1])),-1):
+                return_array.append(["+0",str(x)])
+        return_array.append(exponenten_sortiert_mit_basis[-1])
+        if eval(exponenten_sortiert_mit_basis[-1][1]) > 0:
+            for x in range(int(eval(exponenten_sortiert_mit_basis[-1][1])-1), -1, -1):
+                return_array.append(["+0", str(x)])
+        switched_something = True
+        while switched_something:
+            switched_something = False
+            for j in range(len(return_array) - 1):
+                if eval(return_array[j + 1][1]) > eval(return_array[j][1]):
+                    switched_something = True
+                    return_array[j], return_array[j + 1] = return_array[j + 1], return_array[j]
+        return return_array
 
     def check_funktion_exponential_funktion_and_convert(self,funktion):
         funktion = funktion.replace(" ","")
@@ -359,19 +387,32 @@ class Funktion():
                 self.exponenten_array = []
                 self.nur_exponenten = []
                 self.nur_basen = []
+                self.exponenten_aufgefüllt_array = []
+                self.nur_exponenten_aufgefüllt = []
+                self.nur_basen_aufgefüllt = []
                 exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
                 if exponenten == False or exponenten == None:
                     self.is_polinomfunktion = False
-                    self.funktion_exponential_x_ersetzbar = ""
-                    self.funktion_exponential_computer_readable = ""
+                    self.funktion_polinom_x_ersetzbar = ""
+                    self.funktion_polinom_computer_readable = ""
+                    self.funktion_polinom_aufgefüllt_x_ersetzbar = ""
+                    self.funktion_polinom_aufgefüllt_computer_readable = ""
                 else:
                     self.is_polinomfunktion = True
                     self.exponenten_array = exponenten
                     for exponent in self.exponenten_array:
                         self.nur_exponenten.append(exponent[1])
                         self.nur_basen.append(exponent[0])
-                    self.funktion_exponential_x_ersetzbar = self.funktion_verschönern(expo_funktion)
-                    self.funktion_exponential_computer_readable = self.funktion_to_computer_readable(self.funktion_exponential_x_ersetzbar)
+                    self.funktion_polinom_x_ersetzbar = self.funktion_verschönern(expo_funktion)
+                    self.funktion_polinom_computer_readable = self.funktion_to_computer_readable(self.funktion_polinom_x_ersetzbar)
+                    self.exponenten_aufgefüllt_array = self.sortierte_exponenten_auffüllen(exponenten)
+                    funktion = ""
+                    for exponent in self.exponenten_aufgefüllt_array:
+                        self.nur_exponenten_aufgefüllt.append(exponent[1])
+                        self.nur_basen_aufgefüllt.append(exponent[0])
+                        funktion += exponent[0] + "*x'" + exponent[1]
+                    self.funktion_polinom_aufgefüllt_x_ersetzbar = self.funktion_verschönern(funktion)
+                    self.funktion_polinom_aufgefüllt_computer_readable = self.funktion_to_computer_readable(self.funktion_polinom_x_ersetzbar)
                 return True
             else:
                 # Fehler in Funktion

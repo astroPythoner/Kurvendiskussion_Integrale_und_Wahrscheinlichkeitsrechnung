@@ -19,7 +19,7 @@ class GlobalesVerhalten_Frame(tk.Frame):
             widget.destroy()
 
         if self.__funktion != None:
-            tk.Label(self, text="Globales Verhalten: " + self.__funktion.funktion_exponential_x_ersetzbar).grid(row=0, column=0,sticky=tk.W)
+            tk.Label(self, text="Globales Verhalten: " + self.__funktion.funktion_polinom_x_ersetzbar).grid(row=0, column=0,sticky=tk.W)
             if not "x" in self.__funktion.funktion_user_x_ersetztbar:
                 wert = eval(self.__funktion.funktion_computer_readable)
                 tk.Label(self, text="lim x->∞ = " + str(wert)).grid(row=1, column=1)
@@ -63,12 +63,12 @@ class GlobalesVerhalten_Frame(tk.Frame):
                             geht_gegen_array_plus_unendlich.append("+0")
                             geht_gegen_array_minus_unendlich.append("+0")
                     else:
-                        if basis >= 0:
-                            geht_gegen_array_plus_unendlich.append("+"+str(basis))
-                            geht_gegen_array_minus_unendlich.append("+"+str(basis))
-                        else:
+                        if str(basis)[0] == "-":
                             geht_gegen_array_plus_unendlich.append(str(basis))
                             geht_gegen_array_minus_unendlich.append(str(basis))
+                        else:
+                            geht_gegen_array_plus_unendlich.append("+"+str(basis))
+                            geht_gegen_array_minus_unendlich.append("+"+str(basis))
                 geht_gegen_funktion_plus_unendlich = ""
                 geht_gegen_funktion_minus_unendlich = ""
                 for i in range(len(geht_gegen_array_plus_unendlich)):
