@@ -180,14 +180,23 @@ def nullstellen_berechnen(funktion, row, frame):
                     except:
                         pass
             if geratene_nullstelle == None:
-                x = -100.5
-                while x <= 100.5:
+                x = -100
+                while x <= 100:
                     try:
                         if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
-                    x += 1
+                    x += 0.05
+            if geratene_nullstelle == None:
+                x = -5
+                while x <= 5:
+                    try:
+                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                            geratene_nullstelle = x
+                    except:
+                        pass
+                    x += 0.0001
             if geratene_nullstelle == None:
                 for x in funktion.nur_basen:
                     try:
@@ -251,11 +260,13 @@ def nullstellen_berechnen(funktion, row, frame):
                             übriger_funktionsterm += "+1x"
                         else:
                             übriger_funktionsterm += "+1x'"+str(exponent_für_übrige_funktion)
-                    elif letzte_basis > 1:
+                    elif letzte_basis!=0:
                         if exponent_für_übrige_funktion == 0:
                             übriger_funktionsterm += str_plus(letzte_basis)
                         elif exponent_für_übrige_funktion == 1:
                             übriger_funktionsterm += str_plus(letzte_basis)+"x"
+                        elif exponent_für_übrige_funktion < 0:
+                            übriger_funktionsterm += str_plus(letzte_basis) + "x'(" + str(exponent_für_übrige_funktion)+")"
                         else:
                             übriger_funktionsterm += str_plus(letzte_basis)+"x'"+str(exponent_für_übrige_funktion)
                     num_expos += 1
@@ -266,8 +277,10 @@ def nullstellen_berechnen(funktion, row, frame):
                 übriger_funktionsterm = funktion.funktion_verschönern(übriger_funktionsterm)
                 übrige_funktion = Funktion()
                 übrige_funktion.set_funktion(übriger_funktionsterm)
-                tk.Label(frame, text="Restlich Funtkion:" + übriger_funktionsterm).grid(row=row+1, column=1)
-                nullstellen_berechnen(übrige_funktion,row+2,frame)
+                tk.Label(frame, text="Restliche Funtkion:" + übriger_funktionsterm).grid(row=row+1, column=1)
+                weitere_punkte, row2 = nullstellen_berechnen(übrige_funktion,row+2,frame)
+                for punkt in weitere_punkte:
+                    punkte.append(punkt)
     else:
         tk.Label(frame, text="Nullstellen von nicht Polinomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
         row = row + 1

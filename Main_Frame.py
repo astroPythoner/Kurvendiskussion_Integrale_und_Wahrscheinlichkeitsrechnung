@@ -4,6 +4,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+from random import randint
 
 import SchnittpunktYAchse_Frame
 import Ableitung_Frame
@@ -11,12 +12,12 @@ import Nullstellen_Frame
 import GlobalesVerhalten_Frame
 import Steigung_Frame
 import Kruemmung_Frame
-import Symmetrie_Frame
 import Graph_Frame
 import TangenteNormale_Frame
 import Stammfunktion_Frame
 import Intergral_Frame
 
+import RandomFunktion
 import Funktion
 
 root = None
@@ -32,6 +33,7 @@ class MainWindow(tk.Frame):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.createWidgets()
+        self.funktion_random_erstellen_button_pressed()
 
     def funktion_übernehmen_button_pressed(self):
         passt = self.funktion.set_funktion(self.eingabe.get())
@@ -54,22 +56,30 @@ class MainWindow(tk.Frame):
         else:
             self.eingabe_passt.config(text="Funktion fehlerhaft")
 
+    def funktion_random_erstellen_button_pressed(self):
+        self.eingabe.delete(0,tk.END)
+        random_funktion = RandomFunktion.get_random_polinomfunktion(randint(2,4))
+        self.eingabe.insert(0,random_funktion)
+        self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
+
     def createWidgets(self):
 
         #Eingabefeld
         self.formlezeichen_info = tk.Label(self, text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\npi,e,c,g\nsin,cos,tan,arcsin,...")
-        self.formlezeichen_info.grid(row=0, column=0, sticky=tk.W)
+        self.formlezeichen_info.grid(row=0, column=0, sticky=tk.W, rowspan=2)
         self.eingabe_info = tk.Label(self,text="Hier Funktion eingeben: f(x)=")
         self.eingabe_info.grid(row=0, column=1, sticky=tk.E)
         self.eingabe = tk.Entry(self)
         self.eingabe.grid(row=0,column=2, sticky=tk.EW)
         self.eingabe_button = tk.Button(self, text="übernehmen",command=self.funktion_übernehmen_button_pressed)
         self.eingabe_button.grid(row=0, column=3, sticky=tk.W)
+        self.random_funktion_button = tk.Button(self, text="zufällige Funktion", command=self.funktion_random_erstellen_button_pressed)
+        self.random_funktion_button.grid(row=1, column=3, sticky=tk.NW)
         self.eingabe_passt = tk.Label(self, text="")
         self.eingabe_passt.grid(row=0, column=4, sticky=tk.W)
         if DEBUG:
             self.debug = tk.Label(self, text="")
-            self.debug.grid(row=1, column=0,columnspan=5)
+            self.debug.grid(row=2, column=0,columnspan=5)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
@@ -86,9 +96,6 @@ class MainWindow(tk.Frame):
         self.GlobalesVerhalten_Frame = GlobalesVerhalten_Frame.GlobalesVerhalten_Frame()
         self.frames.append(self.GlobalesVerhalten_Frame)
         self.pane.add(self.GlobalesVerhalten_Frame, text="Globales Verhalten", padding=0)
-        self.Symmetrie_Frame = Symmetrie_Frame.Symmetrie_Frame()
-        self.frames.append(self.Symmetrie_Frame)
-        self.pane.add(self.Symmetrie_Frame, text="Symmetrie", padding=0)
         self.Ableitung_Frame = Ableitung_Frame.Ableitung_Frame()
         self.frames.append(self.Ableitung_Frame)
         self.TangenteNormale_Frame = TangenteNormale_Frame.TangenteNormale_Frame(self.Ableitung_Frame)

@@ -410,7 +410,10 @@ class Funktion():
                     for exponent in self.exponenten_aufgefüllt_array:
                         self.nur_exponenten_aufgefüllt.append(exponent[1])
                         self.nur_basen_aufgefüllt.append(exponent[0])
-                        funktion += exponent[0] + "*x'" + exponent[1]
+                        if eval(exponent[1])<0:
+                            funktion += exponent[0] + "*x'(" + exponent[1]+")"
+                        else:
+                            funktion += exponent[0] + "*x'" + exponent[1]
                     self.funktion_polinom_aufgefüllt_x_ersetzbar = self.funktion_verschönern(funktion)
                     self.funktion_polinom_aufgefüllt_computer_readable = self.funktion_to_computer_readable(self.funktion_polinom_x_ersetzbar)
                 return True
