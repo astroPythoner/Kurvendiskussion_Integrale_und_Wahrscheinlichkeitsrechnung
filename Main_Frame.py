@@ -44,10 +44,10 @@ class MainWindow(tk.Frame):
             self.eingabe_passt.config(text="Funktion passt")
             if DEBUG:
                 text = self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
-                if self.funktion.is_polinomfunktion:
+                if self.funktion.is_polynomfunktion:
                     text += "\n Exponenten: "+str(self.funktion.exponenten_array)
-                    text += "\n = " + str(self.funktion.funktion_polinom_x_ersetzbar)
-                    text += "\n = " + str(self.funktion.funktion_polinom_computer_readable)
+                    text += "\n = " + str(self.funktion.funktion_polynom_x_ersetzbar)
+                    text += "\n = " + str(self.funktion.funktion_polynom_computer_readable)
                 else:
                     text += "\n keine Exponentialgleichung"
                 self.debug.config(text=text)
@@ -58,8 +58,8 @@ class MainWindow(tk.Frame):
 
     def funktion_random_erstellen_button_pressed(self):
         self.eingabe.delete(0,tk.END)
-        random_funktion = RandomFunktion.get_random_polinomfunktion(randint(2,4))
-        self.eingabe.insert(0,random_funktion)
+        random_funktion = RandomFunktion.get_random_polynomfunktion(randint(2,4))
+        self.eingabe.insert(0,random_funktion.funktion_user_kurz)
         self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
 
     def createWidgets(self):
@@ -114,8 +114,9 @@ class MainWindow(tk.Frame):
         self.Integrale_Frame = Intergral_Frame.Intergral_Frame()
         self.frames.append(self.Integrale_Frame)
         self.pane.add(self.Integrale_Frame, text="Intergral", padding=0)
+        self.Integrale_Frame.add_stammfunktion(self.Stammfunktion_Frame)
 
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame,self.Integrale_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame,self.Stammfunktion_Frame,self.Integrale_Frame)
 
 
 if __name__ == '__main__':

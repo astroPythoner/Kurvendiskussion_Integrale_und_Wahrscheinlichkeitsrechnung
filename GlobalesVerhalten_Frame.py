@@ -19,12 +19,12 @@ class GlobalesVerhalten_Frame(tk.Frame):
             widget.destroy()
 
         if self.__funktion != None:
-            tk.Label(self, text="Globales Verhalten: " + self.__funktion.funktion_polinom_x_ersetzbar).grid(row=0, column=0,sticky=tk.W)
+            tk.Label(self, text="Globales Verhalten: " + self.__funktion.funktion_polynom_x_ersetzbar).grid(row=0, column=0,sticky=tk.W)
             if not "x" in self.__funktion.funktion_user_x_ersetztbar:
                 wert = eval(self.__funktion.funktion_computer_readable)
                 tk.Label(self, text="lim x->∞ = " + str(wert)).grid(row=1, column=1)
                 tk.Label(self, text="lim x->-∞ = " + str(wert)).grid(row=2, column=1)
-            elif self.__funktion.is_polinomfunktion:
+            elif self.__funktion.is_polynomfunktion:
                 geht_gegen_array_plus_unendlich = []
                 geht_gegen_array_minus_unendlich = []
                 for i in self.__funktion.exponenten_array:
@@ -87,6 +87,6 @@ class GlobalesVerhalten_Frame(tk.Frame):
                     else:
                         tk.Label(self, text="lim x->-∞ = " + str(eval(geht_gegen_funktion_minus_unendlich))).grid(row=4,column=0)
             else:
-                tk.Label(self, text="Globales Verhalten für nicht Polinomfunktionen comming soon..." + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
+                tk.Label(self, text="Globales Verhalten für nicht polynomfunktionen comming soon..." + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
         else:
             tk.Label(self, text="Für Berechnung des globalen Verhaltens Funktion oben eingeben").grid(row=0, column=0)

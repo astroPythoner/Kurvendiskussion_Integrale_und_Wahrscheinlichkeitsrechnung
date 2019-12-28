@@ -33,13 +33,13 @@ class Graph():
     genauigkeit = 10
 
     def __init__(self,funktion,color,color_name,name):
-        self.funktion = funktion
         self.color = color
         self.color_name = color_name
         self.name = name
         self.neu_funktion(funktion)
 
     def neu_funktion(self,funktion):
+        self.funktion = funktion
         self.x_werte = []
         for i in range(-(self.max_x * self.genauigkeit), (self.max_x * self.genauigkeit)):
             self.x_werte.append(i / self.genauigkeit)

@@ -1,4 +1,4 @@
-from Funktion import Funktion
+from Funktion import Funktion, vorzeichen_str
 from Grundklassen import Graph
 
 import math
@@ -40,18 +40,21 @@ class TangenteNormale_Frame(tk.Frame):
             self.spinbox.config(command=self.scrollbar_bewegt)
             self.spinbox.grid(row=0, column=1,sticky=tk.W)
             tk.Label(self, text=str(self.x_wert.get())+" in Gleichungen einsetzten").grid(row=1, column=0,sticky=tk.W)
-            tk.Label(self, text="f("+str(self.x_wert.get())+") = "+self.__funktion.funktion_verschönern(self.__funktion.funktion_user_x_ersetztbar.replace("x","("+str(self.x_wert.get())+")"))).grid(row=2, column=1)
+            tk.Label(self, text="f("+str(self.x_wert.get())+") = "+self.__funktion.funktion_x_eingesetzt(self.x_wert.get())).grid(row=2, column=1)
             try:
-                erg_normale_funktion = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_user_x_ersetztbar.replace("x","("+str(self.x_wert.get())+")")))
+                erg_normale_funktion = self.__funktion.x_einsetzen(self.x_wert.get())
+                if isinstance(erg_normale_funktion, complex):
+                    erg_normale_funktion = "nicht definiert"
             except:
                 erg_normale_funktion = "nicht definiert"
             tk.Label(self, text="f("+str(self.x_wert.get())+") = "+str(erg_normale_funktion)).grid(row=3, column=1)
-            if len(self.ableitung.funktionen) > 0 and self.ableitung.funktionen[0] != None:
-                ableitung = Funktion()
-                ableitung.set_funktion(self.ableitung.funktionen[0].funktion.funktion_user_x_ersetztbar)
-                tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + self.__funktion.funktion_verschönern(ableitung.funktion_user_x_ersetztbar.replace("x", "(" + str(self.x_wert.get()) + ")"))).grid(row=4, column=1)
+            if len(self.ableitung.funktionen) > 0 and self.ableitung.funktionen[0].funktion != None:
+                ableitung = self.ableitung.funktionen[0].funktion
+                tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + ableitung.funktion_x_eingesetzt(self.x_wert.get())).grid(row=4, column=1)
                 try:
-                    erg_ableitung = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_verschönern(ableitung.funktion_user_x_ersetztbar.replace("x", "(" + str(self.x_wert.get()) + ")"))))
+                    erg_ableitung = ableitung.x_einsetzen(self.x_wert.get())
+                    if isinstance(erg_ableitung, complex):
+                        erg_normale_funktion = "nicht definiert"
                 except:
                     erg_ableitung = "nicht definiert"
                 tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + str(erg_ableitung)).grid(row=5, column=1)
@@ -59,15 +62,13 @@ class TangenteNormale_Frame(tk.Frame):
                 tk.Label(self, text="f'(x) nicht bekannt").grid(row=4,column=1)
                 erg_ableitung = "nicht definiert"
             tk.Label(self, text="Tangente nach Formel t(x) = f'(x0)*(x-x0)+f(x0):").grid(row=6, column=0,sticky=tk.W)
-            tk.Label(self, text="Normale nach Formel n(x) = -1/(f'(x0))*(x-x0)+f(x0):").grid(row=8, column=0, sticky=tk.W)
-            if erg_ableitung != "nicht definiert" or erg_normale_funktion != "nicht definiert":
+            tk.Label(self, text="Normale nach Formel n(x) = (-1/f'(x0))*(x-x0)+f(x0):").grid(row=8, column=0, sticky=tk.W)
+            if erg_ableitung != "nicht definiert" and erg_normale_funktion != "nicht definiert":
                 t = Funktion()
                 if self.x_wert.get() == 0:
-                    t.set_funktion(str(erg_ableitung) + " * x +" + str(erg_normale_funktion))
-                elif str(self.x_wert.get())[0] == "-":
-                    t.set_funktion(str(erg_ableitung)+" * (x+"+str(self.x_wert.get())[1:]+")+"+str(erg_normale_funktion))
+                    t.set_funktion(str(erg_ableitung) + " * x " + vorzeichen_str(erg_normale_funktion,True))
                 else:
-                    t.set_funktion(str(erg_ableitung) + " * (x-" + str(self.x_wert.get()) + ")+" + str(erg_normale_funktion))
+                    t.set_funktion(str(erg_ableitung) + " * (x" + vorzeichen_str(self.x_wert.get()) + ") " + vorzeichen_str(erg_normale_funktion,True))
                 if t.funktion_user_kurz != "":
                     graph_t = Graph(t,"#FFBB00","dunkelgelb","t(x)")
                     self.funktionen.append(graph_t)
@@ -77,11 +78,9 @@ class TangenteNormale_Frame(tk.Frame):
                 if erg_ableitung != 0:
                     n = Funktion()
                     if self.x_wert.get() == 0:
-                        n.set_funktion("-1/(" + str(erg_ableitung) + ") * x +" + str(erg_normale_funktion))
-                    elif str(self.x_wert.get())[0] == "-":
-                        n.set_funktion("-1/("+str(erg_ableitung)+") * (x+"+str(self.x_wert.get())[1:]+")+"+str(erg_normale_funktion))
+                        n.set_funktion("(-1/"+str(erg_ableitung) + ") * x " + vorzeichen_str(erg_normale_funktion,True))
                     else:
-                        n.set_funktion("-1/(" + str(erg_ableitung) + ") * (x-" + str(self.x_wert.get()) + ")+" + str(erg_normale_funktion))
+                        n.set_funktion("(-1/"+str(erg_ableitung) + ") * (x" + vorzeichen_str(self.x_wert.get()) + ") "+ vorzeichen_str(erg_normale_funktion,True))
                     if n.funktion_user_kurz != "":
                         graph_n = Graph(n,"#FFCC33","hellgelb","n(x)")
                         self.funktionen.append(graph_n)

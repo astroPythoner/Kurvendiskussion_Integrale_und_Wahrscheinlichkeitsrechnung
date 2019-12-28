@@ -19,9 +19,10 @@ class Graph_Frame(tk.Frame):
     steig = None
     kruem = None
     tanNor = None
+    stamfunk = None
     integr = None
     punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo"}
-    funktion_frames = [abl,tanNor]
+    funktion_frames = [abl,tanNor,stamfunk]
     funktion_frames_aktiv = []
     flächen_frames = [integr]
     flächen_frames_aktiv = []
@@ -41,16 +42,17 @@ class Graph_Frame(tk.Frame):
         self.graph_aktiv.set(True)
         self.update()
 
-    def add_frames(self,sy,nst,abl,tanNor,steig,kruem,integr):
+    def add_frames(self,sy,nst,abl,tanNor,steig,kruem,stamfunk,integr):
         self.sy = sy
         self.nst = nst
         self.abl = abl
         self.steig = steig
         self.kruem = kruem
         self.tanNor = tanNor
+        self.stamfunk = stamfunk
         self.integr = integr
         self.punkt_frames = {self.sy:"#008800o",self.nst:"#00CC00o",self.steig:"#CC2222o",self.kruem:"#FF22FFo"}
-        self.funktion_frames = [self.abl,self.tanNor]
+        self.funktion_frames = [self.abl,self.tanNor,self.stamfunk]
         self.funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             try:

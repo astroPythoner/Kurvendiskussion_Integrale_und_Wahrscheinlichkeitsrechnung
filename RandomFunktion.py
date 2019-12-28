@@ -1,4 +1,5 @@
 from random import randint
+from Funktion import Funktion, polynom_to_str
 
 def fakultät(n):
     if n == 0:
@@ -20,24 +21,14 @@ def alle_kombis_addieren(zahlen,länge_kombis):
             erg += zahlen[i]*j
     return erg
 
-def get_random_polinomfunktion(höchster_exponent,min_nullstelle=-5,max_nullstelle=5):
-    """gibt eine zufällige Polinomfunktion mit höchster_exponent bei dem alle Nullstellen erratbar sind"""
+def get_random_polynomfunktion(höchster_exponent,min_nullstelle=-5,max_nullstelle=5):
+    """gibt eine zufällige polynomfunktion mit höchster_exponent bei dem alle Nullstellen erratbar sind"""
     nullstellen = []
     for x in range(höchster_exponent):
         nullstellen.append(randint(min_nullstelle,max_nullstelle))
-    return_funktion = "x'"+str(höchster_exponent)+" + "
+    return_funktion = "x'"+str(höchster_exponent)
     for expo in range(höchster_exponent):
         current_exponent = höchster_exponent-expo-1
         vor_faktor = alle_kombis_addieren(nullstellen,expo+1)
-        if vor_faktor != 0:
-            if vor_faktor < 0:
-                return_funktion = return_funktion[:-2]
-            if current_exponent == 0:
-                return_funktion += str(int(vor_faktor))
-            elif current_exponent == 1:
-                return_funktion += str(int(vor_faktor))+"*x + "
-            else:
-                return_funktion += str(int(vor_faktor))+"*x'"+str(current_exponent)+" + "
-    if return_funktion[-3:] == " + ":
-        return_funktion = return_funktion[:-3]
-    return return_funktion
+        return_funktion += polynom_to_str(vor_faktor,current_exponent)
+    return Funktion(return_funktion)

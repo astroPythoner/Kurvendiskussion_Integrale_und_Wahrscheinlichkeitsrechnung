@@ -2,23 +2,111 @@ import math
 
 from time import sleep
 
+def vorzeichen_str(wert,mitleerzeichen=False):
+    if isinstance(wert,int) or isinstance(wert,float):
+        if wert < 0:
+            if mitleerzeichen:
+                return "- "+str(wert*-1)
+            else:
+                return str(wert)
+        else:
+            if mitleerzeichen:
+                return "+ " + str(wert)
+            else:
+                return "+"+str(wert)
+    elif isinstance(wert,str):
+        if wert[0] in ["+","-","/","*"]:
+            if mitleerzeichen:
+                if wert[1] != " ":
+                    return wert[0]+" "+wert[1:]
+                else:
+                    return wert
+            else:
+                return wert
+        else:
+            if mitleerzeichen:
+                return "+ "+wert
+            else:
+                return "+"+wert
+
+def polynom_to_str(basis,expo):
+    if isinstance(expo,str):
+        if expo[0] == "+":
+            expo = expo[1:]
+        int_expo = eval(expo)
+    else:
+        int_expo = expo
+    if isinstance(basis,str):
+        if basis[0] == "+":
+            basis = basis[1:]
+        int_basis = eval(basis)
+    else:
+        int_basis = basis
+        basis = str(basis)
+    if int_basis == 0:
+        return ""
+    if int_expo == 0:
+        return vorzeichen_str(basis)
+    elif int_expo == 1:
+        if int_basis == 1:
+            return "+x"
+        elif int_basis == -1:
+            return "-x"
+        else:
+            return vorzeichen_str(basis+"*x")
+    elif int_expo == -1:
+        if int_basis == 1:
+            return "+x'(-1)"
+        elif int_basis == -1:
+            return "-x'(-1)"
+        else:
+            return vorzeichen_str(basis+"*x'(-1)")
+    else:
+        if int_basis == 1:
+            return "+x'"+str(expo)
+        elif int_basis == -1:
+            return "-x'"+str(expo)
+        else:
+            if isinstance(expo,str) and not expo.isnumeric():
+                return vorzeichen_str(basis + "*x'(" + expo+")")
+            elif isinstance(expo,str) and expo.isnumeric() and int_expo<0:
+                return vorzeichen_str(basis + "*x'(" + expo+")")
+            elif isinstance(expo,str) and expo.isnumeric():
+                return vorzeichen_str(basis+"*x'"+expo)
+            elif int_expo < 0:
+                return vorzeichen_str(basis + "*x'(" + str(int_expo)) + ")"
+            else:
+                return vorzeichen_str(basis + "*x'" + str(int_expo))
+
+def polynom_array_to_str(array):
+    return polynom_to_str(array[0],array[1])
+
 class Funktion():
 
     funktion_user_kurz = ""
     funktion_user_x_ersetztbar = ""
     funktion_computer_readable = ""
-    funktion_polinom_x_ersetzbar = ""
-    funktion_polinom_computer_readable = ""
+    funktion_polynom_x_ersetzbar = ""
+    funktion_polynom_computer_readable = ""
     exponenten_array = []
     nur_exponenten = []
     nur_basen = []
-    funktion_polinom_aufgefüllt_x_ersetzbar = ""
-    funktion_polinom_aufgefüllt_computer_readable = ""
+    funktion_polynom_aufgefüllt_x_ersetzbar = ""
+    funktion_polynom_aufgefüllt_computer_readable = ""
     exponenten_aufgefüllt_array = []
     nur_exponenten_aufgefüllt = []
     nur_basen_aufgefüllt = []
-    is_polinomfunktion = False
+    is_polynomfunktion = False
 
+    def __init__(self,funktion=None):
+        if funktion != None:
+            self.set_funktion(funktion)
+
+    def __str__(self):
+        if self.is_polynomfunktion:
+            return "Polynomfunktion: " + self.funktion_user_kurz
+        else:
+            return "Funktion: "+self.funktion_user_kurz
 
     def funktion_verschönern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
@@ -365,6 +453,27 @@ class Funktion():
                         output.append(splitet2)
         return output
 
+    def x_einsetzen(self,x):
+        return eval(self.funktion_computer_readable.replace("x","("+str(x)+")"))
+
+    def funktion_x_eingesetzt(self,x):
+        if isinstance(x,int) or isinstance(x,float):
+            if x < 0:
+                return self.funktion_user_x_ersetztbar.replace("x", "(" + str(x) + ")")
+            else:
+                return self.funktion_user_x_ersetztbar.replace("x", str(x))
+        elif isinstance(x,str):
+            if x.isnumeric():
+                if eval(x) < 0:
+                    return self.funktion_user_x_ersetztbar.replace("x", "(" + str(eval(x)) + ")")
+                else:
+                    return self.funktion_user_x_ersetztbar.replace("x", str(eval(x)))
+            else:
+                return self.funktion_user_x_ersetztbar.replace("x", "(" + x + ")")
+        else:
+            print(x)
+            return ""
+
     def set_funktion(self,funktion):
         funktion = self.funktion_verschönern(self.funktion_verschönern(self.funktion_verschönern(funktion)))
         computer_funktion = self.funktion_to_computer_readable(funktion)
@@ -392,19 +501,19 @@ class Funktion():
                 self.nur_basen_aufgefüllt = []
                 exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
                 if exponenten == False or exponenten == None:
-                    self.is_polinomfunktion = False
-                    self.funktion_polinom_x_ersetzbar = ""
-                    self.funktion_polinom_computer_readable = ""
-                    self.funktion_polinom_aufgefüllt_x_ersetzbar = ""
-                    self.funktion_polinom_aufgefüllt_computer_readable = ""
+                    self.is_polynomfunktion = False
+                    self.funktion_polynom_x_ersetzbar = ""
+                    self.funktion_polynom_computer_readable = ""
+                    self.funktion_polynom_aufgefüllt_x_ersetzbar = ""
+                    self.funktion_polynom_aufgefüllt_computer_readable = ""
                 else:
-                    self.is_polinomfunktion = True
+                    self.is_polynomfunktion = True
                     self.exponenten_array = exponenten
                     for exponent in self.exponenten_array:
                         self.nur_exponenten.append(exponent[1])
                         self.nur_basen.append(exponent[0])
-                    self.funktion_polinom_x_ersetzbar = self.funktion_verschönern(expo_funktion)
-                    self.funktion_polinom_computer_readable = self.funktion_to_computer_readable(self.funktion_polinom_x_ersetzbar)
+                    self.funktion_polynom_x_ersetzbar = self.funktion_verschönern(expo_funktion)
+                    self.funktion_polynom_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
                     self.exponenten_aufgefüllt_array = self.sortierte_exponenten_auffüllen(exponenten)
                     funktion = ""
                     for exponent in self.exponenten_aufgefüllt_array:
@@ -414,62 +523,11 @@ class Funktion():
                             funktion += exponent[0] + "*x'(" + exponent[1]+")"
                         else:
                             funktion += exponent[0] + "*x'" + exponent[1]
-                    self.funktion_polinom_aufgefüllt_x_ersetzbar = self.funktion_verschönern(funktion)
-                    self.funktion_polinom_aufgefüllt_computer_readable = self.funktion_to_computer_readable(self.funktion_polinom_x_ersetzbar)
+                    self.funktion_polynom_aufgefüllt_x_ersetzbar = self.funktion_verschönern(funktion)
+                    self.funktion_polynom_aufgefüllt_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
                 return True
             else:
                 # Fehler in Funktion
                 return False
         else:
             return "unverändert"
-
-
-
-'''
-print(funktion)
-funktion.replace(" ","")
-erg = []
-# Klammern
-funktion_klammer_geteilt = self.string_an_zeichen_teilen(funktion,"(",")")
-print(funktion_klammer_geteilt)
-for funktionsteil in funktion_klammer_geteilt:
-    # Striche (+ und -)
-    if funktionsteil != "(" and funktionsteil != ")":
-        print("teil:",funktionsteil)
-        if "x" in funktionsteil:
-            funktion_strich_geteilt = self.string_an_zeichen_teilen(funktionsteil,"+","-")
-            for funktionsteil2 in funktion_strich_geteilt:
-                if funktionsteil2 != "+" and funktionsteil2 != "-":
-                    if "x" in funktionsteil2:
-                        if "'" in funktionsteil2:
-                            print("1 exponent:",funktionsteil2)
-                            erg.append(funktionsteil2)
-                        else:
-                            print("1 x_teil:",funktionsteil2)
-                            erg.append(funktionsteil2)
-                    else:
-                        try:
-                            eval(funktionsteil2)
-                            if isinstance(eval(funktionsteil2),int):
-                                print("1 vereinfachter_funktionesteil:",eval(funktionsteil2))
-                                erg.append(eval(funktionsteil2))
-                            else:
-                                print("1 nicht vereinfachter_funktionesteil:",funktionsteil2)
-                                erg.append(funktionsteil2)
-                        except:
-                            print("1 nicht vereinfachter_funktionesteil:", funktionsteil2)
-                            erg.append(funktionsteil2)
-        else:
-            try:
-                eval(funktionsteil)
-                if isinstance(eval(funktionsteil), int):
-                    print("1 vereinfachter_funktionesteil:", eval(funktionsteil))
-                    erg.append(eval(funktionsteil))
-                else:
-                    print("1 nicht vereinfachter_funktionesteil:", funktionsteil)
-                    erg.append(funktionsteil)
-            except:
-                print("1 nicht vereinfachter_funktionesteil:", funktionsteil)
-                erg.append(funktionsteil)
-return erg
-'''

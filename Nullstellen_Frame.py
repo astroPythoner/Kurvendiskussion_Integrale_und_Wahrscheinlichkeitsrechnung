@@ -19,11 +19,11 @@ def nullstellen_berechnen(funktion, row, frame):
         else:
             tk.Label(frame, text="Ist nie null -> keine Nullstelle").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
         row = row + 1
-    elif funktion.is_polinomfunktion:
+    elif funktion.is_polynomfunktion:
         exponenten = funktion.exponenten_array
         nur_expos = funktion.nur_exponenten
         nur_basen = funktion.nur_basen
-        needs_polinomdivision = False
+        needs_polynomdivision = False
         # x=0 (0=mx'b -> x=0)
         if len(exponenten) == 1:
             if funktion.funktion_user_kurz[0] != "x":
@@ -158,24 +158,24 @@ def nullstellen_berechnen(funktion, row, frame):
                         tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 4, column=0, sticky=tk.W)
                 row = row+4
             else:
-                needs_polinomdivision = True
+                needs_polynomdivision = True
             row = row + 1
         else:  # Poldi
-            needs_polinomdivision = True
-        if needs_polinomdivision:
-            tk.Label(frame, text="Polinomdivision").grid(row=row + 1, column=1)
-            tk.Label(frame, text="Ausgeschreibene Polinomfunktion: "+funktion.funktion_polinom_aufgefüllt_x_ersetzbar).grid(row=row + 2, column=1)
+            needs_polynomdivision = True
+        if needs_polynomdivision:
+            tk.Label(frame, text="polynomdivision").grid(row=row + 1, column=1)
+            tk.Label(frame, text="Ausgeschreibene polynomfunktion: "+funktion.funktion_polynom_aufgefüllt_x_ersetzbar).grid(row=row + 2, column=1)
             geratene_nullstelle = None
             x = 0
             try:
-                if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                     geratene_nullstelle = 0
             except:
                 pass
             if geratene_nullstelle == None:
                 for x in range(-100, 100):
                     try:
-                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                        if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
@@ -183,7 +183,7 @@ def nullstellen_berechnen(funktion, row, frame):
                 x = -100
                 while x <= 100:
                     try:
-                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                        if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
@@ -192,7 +192,7 @@ def nullstellen_berechnen(funktion, row, frame):
                 x = -5
                 while x <= 5:
                     try:
-                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                        if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
@@ -201,13 +201,13 @@ def nullstellen_berechnen(funktion, row, frame):
                 for x in funktion.nur_basen:
                     try:
                         x = eval(funktion.funktion_to_computer_readable(funktion.funktion_verschönern(x)))
-                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                        if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
                     try:
                         x = -x
-                        if eval(funktion.funktion_polinom_aufgefüllt_computer_readable) == 0:
+                        if eval(funktion.funktion_polynom_aufgefüllt_computer_readable) == 0:
                             geratene_nullstelle = x
                     except:
                         pass
@@ -218,7 +218,7 @@ def nullstellen_berechnen(funktion, row, frame):
                 row = row+3
                 num_expos = 0
                 übriger_funktionsterm = ""
-                # Polinomdivision
+                # polynomdivision
                 for expo_und_basis in funktion.exponenten_aufgefüllt_array:
                     expo_teil = expo_und_basis[0] + "*x'" + expo_und_basis[1]
                     expo_mit_x = "*x'" + expo_und_basis[1]
@@ -274,15 +274,13 @@ def nullstellen_berechnen(funktion, row, frame):
                 row = row+(len(funktion.exponenten_aufgefüllt_array))*2+4
                 punkte.append(Punkt(geratene_nullstelle,0,"Nst1"))
                 tk.Label(frame, text="geratene Nullstelle passt: Nst1 = "+str(punkte[0])).grid(row=row, column=0,sticky=tk.W)
-                übriger_funktionsterm = funktion.funktion_verschönern(übriger_funktionsterm)
-                übrige_funktion = Funktion()
-                übrige_funktion.set_funktion(übriger_funktionsterm)
-                tk.Label(frame, text="Restliche Funtkion:" + übriger_funktionsterm).grid(row=row+1, column=1)
+                übrige_funktion = Funktion(übriger_funktionsterm)
+                tk.Label(frame, text="Restliche Funtkion:" + übrige_funktion.funktion_user_kurz).grid(row=row+1, column=1)
                 weitere_punkte, row2 = nullstellen_berechnen(übrige_funktion,row+2,frame)
                 for punkt in weitere_punkte:
                     punkte.append(punkt)
     else:
-        tk.Label(frame, text="Nullstellen von nicht Polinomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
+        tk.Label(frame, text="Nullstellen von nicht Polynomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
         row = row + 1
     return punkte,row
 
