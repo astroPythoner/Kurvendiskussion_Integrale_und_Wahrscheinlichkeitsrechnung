@@ -15,7 +15,7 @@ import Kruemmung_Frame
 import Graph_Frame
 import TangenteNormale_Frame
 import Stammfunktion_Frame
-import Intergral_Frame
+import Integral_Frame
 
 import RandomFunktion
 import Funktion
@@ -111,10 +111,9 @@ class MainWindow(tk.Frame):
         self.Stammfunktion_Frame = Stammfunktion_Frame.Stammfunktion_Frame()
         self.frames.append(self.Stammfunktion_Frame)
         self.pane.add(self.Stammfunktion_Frame, text="Stammfunktion", padding=0)
-        self.Integrale_Frame = Intergral_Frame.Intergral_Frame()
+        self.Integrale_Frame = Integral_Frame.Integral_Frame(self.Stammfunktion_Frame,self.Nullsetllen_Frame)
         self.frames.append(self.Integrale_Frame)
-        self.pane.add(self.Integrale_Frame, text="Intergral", padding=0)
-        self.Integrale_Frame.add_stammfunktion(self.Stammfunktion_Frame)
+        self.pane.add(self.Integrale_Frame, text="Integral", padding=0)
 
         self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame,self.Stammfunktion_Frame,self.Integrale_Frame)
 

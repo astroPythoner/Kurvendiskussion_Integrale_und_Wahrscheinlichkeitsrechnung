@@ -1,9 +1,7 @@
 import math
 
 class Punkt():
-    x = 0
-    y = 0
-    name = ""
+    __slots__ = ('x','y','name')
 
     def __init__(self,x,y,name):
         self.x = x
@@ -16,9 +14,15 @@ class Punkt():
     def get_koordinaten_einzeln(self):
         return self.x, self.y
 
-    def __str__(self):
+    def __repr__(self):
         return "("+str(round(self.x,5))+" | "+str(round(self.y,5))+")"
 
+    def __cmp__(self, other):
+        return self.x > other.x
+    def __lt__(self, other):
+        return self.x < other.x
+    def __gt__(self, other):
+        return self.x > other.x
 
 class Graph():
     funktion = ""

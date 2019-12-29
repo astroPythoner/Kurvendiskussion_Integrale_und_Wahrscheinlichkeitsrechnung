@@ -37,7 +37,8 @@ class Steigung_Frame(tk.Frame):
                 tk.Label(self, text="f'(x) = " + ableitung.funktion_user_kurz).grid(row=1, column=1)
                 tk.Label(self, text="Eventuelle Extrempunkte durch f'(x) = 0:").grid(row=2, column=0, sticky=tk.W)
                 nullstellen,row = nullstellen_berechnen(ableitung,3,self)
-                tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f''(nst) ≠ 0:").grid(row=row+1, column=0, sticky=tk.W)
+                if len(nullstellen) >= 1:
+                    tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f''(nst) ≠ 0:").grid(row=row+1, column=0, sticky=tk.W)
                 for nst in nullstellen:
                     if len(self.ableitung.funktionen) > 1 and self.ableitung.funktionen[1].funktion != None:
                         zweite_ableitung = self.ableitung.funktionen[1].funktion
