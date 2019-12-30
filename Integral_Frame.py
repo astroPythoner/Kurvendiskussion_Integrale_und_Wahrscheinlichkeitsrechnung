@@ -55,8 +55,10 @@ class Integral_Frame(tk.Frame):
         tk.Label(self, text="F("+str(self.x_start.get())+") = "+str(erster_wert)).grid(row=4, column=1, sticky=tk.W)
         tk.Label(self, text="F("+str(self.x_ende.get())+") = "+str(zweiter_wert)).grid(row=5, column=1, sticky=tk.W)
         tk.Label(self, text="!! ACHTUNG Wenn nicht gefundene Nullstellen zwischen den Punkten liegen werden die Flächen unter dem Graph negativ gesehen und im Ergebnis abgezogen").grid(row=6, column=0, sticky=tk.W, columnspan=2)
-        # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
-        if self.nullstellen != None:
+        if erster_wert == "nicht definiert" or zweiter_wert == "nicht definiert":
+            tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen").grid(row=7, column=0, sticky=tk.W, columnspan=2)
+        elif self.nullstellen != None:
+            # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
             for punkt in self.nullstellen.punkte:
                 if self.x_start.get() < punkt.x < self.x_ende.get():
@@ -77,16 +79,21 @@ class Integral_Frame(tk.Frame):
                 row = 10+count
                 werte_nullstellen.insert(0,erster_wert)
                 werte_nullstellen.insert(len(werte_nullstellen),zweiter_wert)
-                tk.Label(self, text="3. Differenz zwischen den errechneten Werten finden:").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
-                ergbnis_teile = []
-                for punkt_num in range(len(werte_nullstellen)-1):
-                    erg = abs(werte_nullstellen[punkt_num] - werte_nullstellen[punkt_num+1])
-                    ergbnis_teile.append(erg)
-                    tk.Label(self, text="| " + str(werte_nullstellen[punkt_num]) + " "+vorzeichen_str(werte_nullstellen[punkt_num+1]) + " | = " + str(erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
-                row = row+2+punkt_num
-                tk.Label(self,text="4. Ergebnisse zusammenzhlen:").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
-                tk.Label(self, text="Fläche = "+str(math.fsum(ergbnis_teile))).grid(row=row+2, column=1, sticky=tk.W)
+                if "nicht definiert" in werte_nullstellen:
+                    tk.Label(self, text="Ergebnis kann nicht berechnet werden, da eine nicht definiert Zahl in Ergebnissen").grid(row=7, column=0, sticky=tk.W, columnspan=2)
+                else:
+                    # Differenzen berechnen
+                    tk.Label(self, text="3. Differenz zwischen den errechneten Werten finden:").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
+                    ergbnis_teile = []
+                    for punkt_num in range(len(werte_nullstellen)-1):
+                        erg = abs(werte_nullstellen[punkt_num] - werte_nullstellen[punkt_num+1])
+                        ergbnis_teile.append(erg)
+                        tk.Label(self, text="| " + str(werte_nullstellen[punkt_num]) + " "+vorzeichen_str(werte_nullstellen[punkt_num+1]) + " | = " + str(erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
+                    row = row+2+punkt_num
+                    tk.Label(self,text="4. Ergebnisse zusammenzhlen:").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
+                    tk.Label(self, text="Fläche = "+str(math.fsum(ergbnis_teile))).grid(row=row+2, column=1, sticky=tk.W)
             else:
+                # Differenz berechnen
                 tk.Label(self, text="2. Differenz der beiden Werte finden:").grid(row=7, column=0, sticky=tk.W, columnspan=2)
                 erg = abs(erster_wert-zweiter_wert)
                 tk.Label(self, text="| "+str(erster_wert)+" "+vorzeichen_str(erg)+" | = "+str(erg)).grid(row=7, column=1, sticky=tk.W)

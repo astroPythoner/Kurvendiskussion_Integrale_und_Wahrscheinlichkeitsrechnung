@@ -42,13 +42,8 @@ class Krümmung_Frame(tk.Frame):
                         tk.Label(self, text="f'''(" + str(nst.x) + ") = " + dritte_ableitung.funktion_user_kurz).grid(row=row + 2, column=1)
                         if "x" in dritte_ableitung.funktion_user_x_ersetztbar:
                             tk.Label(self, text="f'''(" + str(nst.x) + ") = " + dritte_ableitung.funktion_x_eingesetzt(nst.x)).grid(row=row + 3, column=1)
-                        try:
-                            self.erg = dritte_ableitung.x_einsetzen(nst.x)
-                            if isinstance(self.erg, complex):
-                                self.erg = None
-                        except:
-                            self.erg = None
-                        if self.erg != None:
+                        self.erg = dritte_ableitung.x_einsetzen(nst.x)
+                        if self.erg != "nicht definiert":
                             tk.Label(self, text="f'''(" + str(nst.x) + ") = " + str(self.erg)).grid(row=row + 4, column=1)
                             if self.erg == 0:
                                 tk.Label(self, text="Kein Wendepunkt, da f''' = 0 ist.").grid(row=row + 5, column=0, sticky=tk.W)
@@ -59,7 +54,7 @@ class Krümmung_Frame(tk.Frame):
                                 tk.Label(self, text="WP" + str(num_wendepunkt) + " = (" + str(round(nst.x, 5)) + "|f(" + str(round(nst.x, 5)) + ")) = " + str(wp)).grid(row=row + 6, column=0,sticky=tk.W)
                                 self.punkte.append(wp)
                         else:
-                            tk.Label(self, text="f(0) = nicht definiert").grid(row=row + 4, column=1)
+                            tk.Label(self, text="f(0) = "+self.erg).grid(row=row + 4, column=1)
                             tk.Label(self, text="Kein Extrempunkt").grid(row=row + 5, column=0, sticky=tk.W)
                         row = row + 6
                     else:

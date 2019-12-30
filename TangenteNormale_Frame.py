@@ -41,22 +41,12 @@ class TangenteNormale_Frame(tk.Frame):
             self.spinbox.grid(row=0, column=1,sticky=tk.W)
             tk.Label(self, text=str(self.x_wert.get())+" in Gleichungen einsetzten").grid(row=1, column=0,sticky=tk.W)
             tk.Label(self, text="f("+str(self.x_wert.get())+") = "+self.__funktion.funktion_x_eingesetzt(self.x_wert.get())).grid(row=2, column=1)
-            try:
-                erg_normale_funktion = self.__funktion.x_einsetzen(self.x_wert.get())
-                if isinstance(erg_normale_funktion, complex):
-                    erg_normale_funktion = "nicht definiert"
-            except:
-                erg_normale_funktion = "nicht definiert"
+            erg_normale_funktion = self.__funktion.x_einsetzen(self.x_wert.get())
             tk.Label(self, text="f("+str(self.x_wert.get())+") = "+str(erg_normale_funktion)).grid(row=3, column=1)
             if len(self.ableitung.funktionen) > 0 and self.ableitung.funktionen[0].funktion != None:
                 ableitung = self.ableitung.funktionen[0].funktion
+                erg_ableitung = ableitung.x_einsetzen(self.x_wert.get())
                 tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + ableitung.funktion_x_eingesetzt(self.x_wert.get())).grid(row=4, column=1)
-                try:
-                    erg_ableitung = ableitung.x_einsetzen(self.x_wert.get())
-                    if isinstance(erg_ableitung, complex):
-                        erg_normale_funktion = "nicht definiert"
-                except:
-                    erg_ableitung = "nicht definiert"
                 tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + str(erg_ableitung)).grid(row=5, column=1)
             else:
                 tk.Label(self, text="f'(x) nicht bekannt").grid(row=4,column=1)

@@ -3,6 +3,7 @@ import tkinter as tk
 from Funktion import Funktion, vorzeichen_str, polynom_to_str, bruch_kürzen
 from Grundklassen import Graph
 
+
 class Stammfunktion_Frame(tk.Frame):
 
     __funktion = None

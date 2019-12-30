@@ -193,6 +193,7 @@ class Funktion():
             funktion = funktion.replace("sin", "math.sin")
             funktion = funktion.replace("cos", "math.cos")
             funktion = funktion.replace("tan", "math.tan")
+        funktion = funktion.replace("ln", "math.log1p")
         return funktion
 
     def funktion_to_user_kurz(self,funktion):
@@ -467,7 +468,14 @@ class Funktion():
         return output
 
     def x_einsetzen(self,x):
-        return eval(self.funktion_computer_readable.replace("x","("+str(x)+")"))
+        try:
+            wert = eval(self.funktion_computer_readable.replace("x","("+str(x)+")"))
+            if isinstance(wert,complex):
+                return "nicht definiert"
+            elif isinstance(wert,int) or isinstance(wert,float):
+                return wert
+        except Exception:
+            return "nicht definiert"
 
     def funktion_x_eingesetzt(self,x):
         if isinstance(x,int) or isinstance(x,float):

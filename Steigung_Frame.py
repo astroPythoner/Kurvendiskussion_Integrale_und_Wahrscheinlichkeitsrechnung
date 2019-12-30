@@ -45,13 +45,8 @@ class Steigung_Frame(tk.Frame):
                         tk.Label(self, text="f''("+str(nst.x)+") = " + zweite_ableitung.funktion_user_kurz).grid(row=row+2, column=1)
                         if "x" in zweite_ableitung.funktion_user_x_ersetztbar:
                             tk.Label(self, text="f''("+str(nst.x)+") = " + zweite_ableitung.funktion_x_eingesetzt(nst.x)).grid(row=row+3, column=1)
-                        try:
-                            self.erg = zweite_ableitung.x_einsetzen(nst.x)
-                            if isinstance(self.erg, complex):
-                                self.erg = None
-                        except:
-                            self.erg = None
-                        if self.erg != None:
+                        self.erg = zweite_ableitung.x_einsetzen(nst.x)
+                        if self.erg != "nicht definiert":
                             tk.Label(self, text="f''("+str(nst.x)+") = " + str(self.erg)).grid(row=row+4, column=1)
                             if self.erg < 0:
                                 num_hochpunkt += 1
@@ -68,7 +63,7 @@ class Steigung_Frame(tk.Frame):
                                 tk.Label(self, text="TP"+str(num_tiefpunkte)+" = ("+str(round(nst.x,3))+"|f("+str(round(nst.x,3))+")) = "+str(tp)).grid(row=row + 6, column=0, sticky=tk.W)
                                 self.punkte.append(tp)
                         else:
-                            tk.Label(self, text="f(0) = nicht definiert").grid(row=row+4, column=1)
+                            tk.Label(self, text="f(0) = "+self.erg).grid(row=row+4, column=1)
                             tk.Label(self, text="Kein Extrempunkt").grid(row=row+5, column=0, sticky=tk.W)
                         row = row + 6
                     else:
