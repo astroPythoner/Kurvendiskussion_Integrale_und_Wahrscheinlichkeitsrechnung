@@ -21,11 +21,14 @@ def alle_kombis_addieren(zahlen,länge_kombis):
             erg += zahlen[i]*j
     return erg
 
-def get_random_polynomfunktion(höchster_exponent,min_nullstelle=-5,max_nullstelle=5):
+def get_random_polynomfunktion(höchster_exponent,min_nullstelle=-5,max_nullstelle=5,vorgegebene_nullstellen=[]):
     """gibt eine zufällige polynomfunktion mit höchster_exponent bei dem alle Nullstellen erratbar sind"""
-    nullstellen = []
-    for x in range(höchster_exponent):
-        nullstellen.append(randint(min_nullstelle,max_nullstelle))
+    if vorgegebene_nullstellen == [] or len(vorgegebene_nullstellen) != höchster_exponent:
+        nullstellen = []
+        for x in range(höchster_exponent):
+            nullstellen.append(randint(min_nullstelle,max_nullstelle))
+    else:
+        nullstellen = vorgegebene_nullstellen
     return_funktion = "x'"+str(höchster_exponent)
     for expo in range(höchster_exponent):
         current_exponent = höchster_exponent-expo-1

@@ -81,6 +81,19 @@ def polynom_to_str(basis,expo):
 def polynom_array_to_str(array):
     return polynom_to_str(array[0],array[1])
 
+def größter_teiler(a,b):
+    while b != 0:
+        c = a % b
+        a = b
+        b = c
+    return a
+
+def bruch_kürzen(zähler,teiler):
+    if teiler == 0:
+        return zähler,teiler
+    ggt = größter_teiler(zähler,teiler)
+    return int(zähler/ggt), int(teiler/ggt)
+
 class Funktion():
 
     funktion_user_kurz = ""
@@ -475,6 +488,11 @@ class Funktion():
             return ""
 
     def set_funktion(self,funktion):
+        for letter in funktion:
+            if letter == " " or letter == "+":
+                funktion = funktion[1:]
+            else:
+                break
         funktion = self.funktion_verschönern(self.funktion_verschönern(self.funktion_verschönern(funktion)))
         computer_funktion = self.funktion_to_computer_readable(funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:

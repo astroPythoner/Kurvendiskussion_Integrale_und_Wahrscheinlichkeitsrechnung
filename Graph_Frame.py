@@ -112,7 +112,7 @@ class Graph_Frame(tk.Frame):
             self.start_x_regler.grid(row=0,column=0, sticky=tk.NSEW)
             self.end_x_regler = tk.Scale(self, from_=1, to=self.graph.max_x, orient=tk.HORIZONTAL, variable = self.end_x, command=self.bereich_update)
             self.end_x_regler.grid(row=0, column=1, sticky=tk.NSEW)
-            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=self.funktion_ausgewählt).grid(row=1, column=2, sticky=tk.N)
+            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=self.funktion_ausgewählt).grid(row=1, column=2, sticky=tk.NW)
 
             num_funktion = 0
             for frame in self.funktion_frames:
@@ -128,6 +128,16 @@ class Graph_Frame(tk.Frame):
                     for fläche in frame.flächen:
                         num_fläche += 1
                         self.checkbox_fläche_auswahl = tk.Checkbutton(self, text=fläche.name + " (" + fläche.color_name + ")", variable=self.flächen_frames_aktiv[num_fläche - 1],command=self.funktion_ausgewählt).grid(row=num_funktion + 1 + num_fläche + 1, column=2, sticky=tk.NW)
+                except:
+                    pass
+            self.punkt_text = tk.Label(self, text="Punkte:").grid(row=1, column=3, sticky=tk.N)
+            num_punkt = 0
+            for frame in list(self.punkt_frames.keys()):
+                try:
+                    for punkt in frame.punkte:
+                        if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
+                            num_punkt += 1
+                            self.punkt_label = tk.Label(self, text=punkt.name+": "+str(punkt)).grid(row=num_punkt+1, column=3, sticky=tk.N)
                 except:
                     pass
             self.draw_graph(rows=num_funktion+1+num_fläche+1)

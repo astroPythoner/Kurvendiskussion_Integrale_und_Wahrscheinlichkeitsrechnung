@@ -26,10 +26,10 @@ class Ableitung_Frame(tk.Frame):
         if self.__funktion != None:
             self.funktionen = []
             erste_ableitung,row_1 = self.ableiten(self.__funktion, 1, 0)
-            if erste_ableitung != None:
+            if isinstance(erste_ableitung, Funktion):
                 self.funktionen.append(Graph(erste_ableitung, "#990000","dunkelrot", "f'(x)"))
                 zweite_ableitung, row_2 = self.ableiten(erste_ableitung, 2, row_1)
-                if zweite_ableitung != None:
+                if isinstance(zweite_ableitung, Funktion):
                     self.funktionen.append(Graph(zweite_ableitung, "#CC0000", "rot", "f''(x)"))
                     dritte_ableitung, row_3 = self.ableiten(zweite_ableitung, 3, row_2)
                     if dritte_ableitung != None:
@@ -49,10 +49,10 @@ class Ableitung_Frame(tk.Frame):
         tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_user_x_ersetztbar).grid(row=row+2, column=1)
         row = row+2
         if not "x" in davor_abgeleitete_funktion.funktion_user_x_ersetztbar:
-            ableitungsfunktion = "0"
+            ableitungsfunktion = Funktion("0")
             tk.Label(self, text="Kein x enthalten:").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
-            tk.Label(self, text=funktionsname+" = " + ableitungsfunktion).grid(row=row + 2, column=1)
-            tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion).grid(row=row + 3, column=0, sticky=tk.W)
+            tk.Label(self, text=funktionsname+" = 0").grid(row=row + 2, column=1)
+            tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = 0").grid(row=row + 3, column=0, sticky=tk.W)
             row = row+3
         elif davor_abgeleitete_funktion.is_polynomfunktion:
             exponenten = davor_abgeleitete_funktion.exponenten_array

@@ -9,6 +9,7 @@ class Integral_Frame(tk.Frame):
     __funktion = None
     stammfunktion = None
     nullstellen = None
+    einstellungsframe = None
 
     def __init__(self, stammfunktion, nullstellen, master=None):
         tk.Frame.__init__(self, master)
@@ -65,8 +66,8 @@ class Integral_Frame(tk.Frame):
                 nst_text = "Nulstellen: "
                 for punkt in nullstellen_dazwischen:
                     nst_text += str(punkt)+", "
-                nst_text = nst_text[:-3]
-                tk.Label(self, text=nst_text).grid(row=7, column=1,sticky=tk.W)
+                nst_text = nst_text[:-2]
+                tk.Label(self, text=nst_text).grid(row=8, column=1,sticky=tk.W)
                 tk.Label(self, text="3. Auch Nullstellen einsetzten").grid(row=9, column=0, sticky=tk.W,columnspan=2)
                 werte_nullstellen = []
                 for count,punkt in enumerate(nullstellen_dazwischen):
@@ -76,7 +77,7 @@ class Integral_Frame(tk.Frame):
                 row = 10+count
                 werte_nullstellen.insert(0,erster_wert)
                 werte_nullstellen.insert(len(werte_nullstellen),zweiter_wert)
-                tk.Label(self, text="3. Differenz der Werte zwischen den Nullstelln und den beiden x_werten finden:").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
+                tk.Label(self, text="3. Differenz zwischen den errechneten Werten finden:").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
                 ergbnis_teile = []
                 for punkt_num in range(len(werte_nullstellen)-1):
                     erg = abs(werte_nullstellen[punkt_num] - werte_nullstellen[punkt_num+1])
@@ -92,24 +93,30 @@ class Integral_Frame(tk.Frame):
 
     def createWidgets(self):
         for widget in self.winfo_children():
-            widget.destroy()
+            if not isinstance(widget,tk.Frame):
+                widget.destroy()
 
-        if self.__funktion != None:
-            self.x_start_regler = tk.Scale(self, from_=-100, to=100, orient=tk.HORIZONTAL, variable=self.x_start)
+        if self.einstellungsframe is None:
+            self.einstellungsframe = tk.Frame(self)
+            self.x_start_regler = tk.Scale(self.einstellungsframe, from_=-100, to=99, orient=tk.HORIZONTAL, variable=self.x_start)
             self.x_start_regler.config(command=self.start_x_changed)
             self.x_start_regler.grid(row=0, column=0, sticky=tk.NSEW)
-            self.x_start_spinbox = tk.Spinbox(self, from_=-100, to=100, textvariable=self.x_start)
+            self.x_start_spinbox = tk.Spinbox(self.einstellungsframe, from_=-100, to=99, textvariable=self.x_start)
             self.x_start_spinbox.config(command=self.start_x_changed)
-            self.x_start_spinbox.grid(row=0, column=1, sticky=tk.W)
-            self.x_ende_regler = tk.Scale(self, from_=-100, to=100, orient=tk.HORIZONTAL, variable=self.x_ende)
+            self.x_start_spinbox.grid(row=0, column=1, sticky=tk.S+tk.W)
+            self.x_ende_regler = tk.Scale(self.einstellungsframe, from_=-99, to=100, orient=tk.HORIZONTAL, variable=self.x_ende)
             self.x_ende_regler.config(command=self.end_x_changed)
             self.x_ende_regler.grid(row=1, column=0, sticky=tk.NSEW)
-            self.x_ende_spinbox = tk.Spinbox(self, from_=-100, to=100, textvariable=self.x_ende)
+            self.x_ende_spinbox = tk.Spinbox(self.einstellungsframe, from_=-99, to=100, textvariable=self.x_ende)
             self.x_ende_spinbox.config(command=self.end_x_changed)
-            self.x_ende_spinbox.grid(row=1, column=1, sticky=tk.W)
-            if self.stammfunktion == None or len(self.stammfunktion.funktionen) == 0 or self.stammfunktion.funktionen[0].funktion == None:
-                tk.Label(self, text="Keine Stammfunktion gefunden").grid(row=2, column=0)
+            self.x_ende_spinbox.grid(row=1, column=1, sticky=tk.S+tk.W)
+            self.einstellungsframe.columnconfigure(0,minsize=400)
+            self.einstellungsframe.grid(row=0, column=0, sticky=tk.W)
+
+        if self.__funktion is not None:
+            if self.stammfunktion is None or len(self.stammfunktion.funktionen) == 0 or self.stammfunktion.funktionen[0].funktion is None:
+                tk.Label(self, text="Keine Stammfunktion gefunden").grid(row=1, column=0)
             else:
                 self.integral_berechnen()
         else:
-            tk.Label(self, text="Für Integrale Funktion oben eingeben").grid(row=0, column=0)
+            tk.Label(self, text="Für Integrale Funktion oben eingeben").grid(row=1, column=0)

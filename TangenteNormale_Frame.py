@@ -64,29 +64,43 @@ class TangenteNormale_Frame(tk.Frame):
             tk.Label(self, text="Tangente nach Formel t(x) = f'(x0)*(x-x0)+f(x0):").grid(row=6, column=0,sticky=tk.W)
             tk.Label(self, text="Normale nach Formel n(x) = (-1/f'(x0))*(x-x0)+f(x0):").grid(row=8, column=0, sticky=tk.W)
             if erg_ableitung != "nicht definiert" and erg_normale_funktion != "nicht definiert":
-                t = Funktion()
-                if self.x_wert.get() == 0:
-                    t.set_funktion(str(erg_ableitung) + " * x " + vorzeichen_str(erg_normale_funktion,True))
-                else:
-                    t.set_funktion(str(erg_ableitung) + " * (x" + vorzeichen_str(self.x_wert.get()) + ") " + vorzeichen_str(erg_normale_funktion,True))
-                if t.funktion_user_kurz != "":
-                    graph_t = Graph(t,"#FFBB00","dunkelgelb","t(x)")
-                    self.funktionen.append(graph_t)
-                    tk.Label(self, text="t(x) = "+t.funktion_user_kurz).grid(row=7, column=1)
-                else:
-                    tk.Label(self, text="Tangentengleichung kann nicht bestimmt werden").grid(row=7, column=1)
+                # normalengleichung gzusammenbasteln
+                funktionsterm = ""
                 if erg_ableitung != 0:
-                    n = Funktion()
-                    if self.x_wert.get() == 0:
-                        n.set_funktion("(-1/"+str(erg_ableitung) + ") * x " + vorzeichen_str(erg_normale_funktion,True))
+                    funktionsterm += str(erg_ableitung)
+                    if self.x_wert.get()!= 0:
+                        funktionsterm += " * (x"+vorzeichen_str(self.x_wert.get())+") "
                     else:
-                        n.set_funktion("(-1/"+str(erg_ableitung) + ") * (x" + vorzeichen_str(self.x_wert.get()) + ") "+ vorzeichen_str(erg_normale_funktion,True))
-                    if n.funktion_user_kurz != "":
-                        graph_n = Graph(n,"#FFCC33","hellgelb","n(x)")
-                        self.funktionen.append(graph_n)
-                        tk.Label(self, text="n(x) = " + n.funktion_user_kurz).grid(row=9, column=1)
+                        funktionsterm += " * x "
+                if erg_normale_funktion != 0:
+                    funktionsterm += vorzeichen_str(erg_normale_funktion)
+                if funktionsterm == "":
+                    funktionsterm = "0"
+                t = Funktion(funktionsterm)
+                graph_t = Graph(t,"#FFBB00","dunkelgelb","t(x)")
+                self.funktionen.append(graph_t)
+                tk.Label(self, text="t(x) = "+t.funktion_user_kurz).grid(row=7, column=1)
+                # tangentengleichung zusammenbasteln
+                if erg_ableitung != 0:
+                    funktionsterm = ""
+                    if erg_ableitung < 0:
+                        funktionsterm += "(1/"+str(erg_ableitung*-1)+")"
+                    elif erg_ableitung == 1:
+                        funktionsterm += "-1"
                     else:
-                        tk.Label(self, text="Normalengleichung kann nicht bestimmt werden").grid(row=9, column=1)
+                        funktionsterm += "(-1/"+str(erg_ableitung)+")"
+                    if self.x_wert.get() != 0:
+                        funktionsterm += " * (x" + vorzeichen_str(self.x_wert.get()) + ") "
+                    else:
+                        funktionsterm += " * x "
+                    if erg_normale_funktion != 0:
+                        funktionsterm += vorzeichen_str(erg_normale_funktion)
+                    if funktionsterm == "":
+                        funktionsterm = "0"
+                    n = Funktion(funktionsterm)
+                    graph_n = Graph(n,"#FFCC33","hellgelb","n(x)")
+                    self.funktionen.append(graph_n)
+                    tk.Label(self, text="n(x) = " + n.funktion_user_kurz).grid(row=9, column=1)
                 else:
                     tk.Label(self, text="Fehler durch Null teilen -> keine Normalengleichung").grid(row=9, column=1)
             else:
