@@ -124,7 +124,6 @@ class Funktion():
     def funktion_verschönern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
         funktion = funktion.replace("^", "'")
-        funktion = funktion.replace(",", ".")
         funktion = funktion.replace("^", "'")
         funktion = funktion.replace("asin", "arcsin")
         funktion = funktion.replace("acos", "arccos")
@@ -175,13 +174,11 @@ class Funktion():
         funktion_array = []
         funktion_array.extend(funktion)
         for count,letter in enumerate(funktion_array):
-            if letter == "'":
+            if letter == "'" or letter == "":
                 funktion_array[count] = "**"
         funktion = "".join(i for i in funktion_array)
         funktion = funktion.replace("e","math.e")
         funktion = funktion.replace("pi", "math.pi")
-        funktion = funktion.replace("c", "299729458")
-        funktion = funktion.replace("g", "9.80665")
         if "asin" in funktion or "atan" in funktion or "acos" in funktion or "arcsin" in funktion or "arccos" in funktion or "arctan" in funktion:
             funktion = funktion.replace("asin", "math.asin")
             funktion = funktion.replace("acos", "math.acos")
@@ -194,6 +191,8 @@ class Funktion():
             funktion = funktion.replace("cos", "math.cos")
             funktion = funktion.replace("tan", "math.tan")
         funktion = funktion.replace("ln", "math.log1p")
+        funktion = funktion.replace("log", "math.log")
+        funktion = funktion.replace("log10", "math.log10")
         return funktion
 
     def funktion_to_user_kurz(self,funktion):
@@ -371,7 +370,7 @@ class Funktion():
                             geöffnete_klammern += 1
                         if char_nach_x == ")":
                             geöffnete_klammern -= 1
-                            if geöffnete_klammern < 0 and char_vor_x_count == len(char_vor_x_count)-2:
+                            if geöffnete_klammern < 0 and char_vor_x_count == len(char_vor_x)-2:
                                 if funktion[char_vor_x_count + 1] == "+":
                                     break
                                 elif funktion[char_vor_x_count + 1] == "-":

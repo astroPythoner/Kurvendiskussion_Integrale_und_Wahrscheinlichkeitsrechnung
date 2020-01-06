@@ -29,6 +29,8 @@ class MainWindow(tk.Frame):
     funktion = Funktion.Funktion()
     frames = []
 
+    funktionsrandom = RandomFunktion.Random_Funtkionen()
+
     def __init__(self,master=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
@@ -58,14 +60,15 @@ class MainWindow(tk.Frame):
 
     def funktion_random_erstellen_button_pressed(self):
         self.eingabe.delete(0,tk.END)
-        random_funktion = RandomFunktion.get_random_polynomfunktion(randint(2,4))
-        self.eingabe.insert(0,random_funktion.funktion_user_kurz)
-        self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
+        random_funktion = self.funktionsrandom.get_random_funktion()
+        if isinstance(random_funktion, Funktion.Funktion):
+            self.eingabe.insert(0, random_funktion.funktion_user_kurz)
+            self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
 
     def createWidgets(self):
 
         #Eingabefeld
-        self.formlezeichen_info = tk.Label(self, text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\npi,e,c,g\nsin,cos,tan,arcsin,...")
+        self.formlezeichen_info = tk.Label(self,text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\nKommazahlen: 1.5\nkonstanten: pi,e\nsin(), cos(), tan(), arcsin(),...\nlog(wert,basis), log10(), ln()")
         self.formlezeichen_info.grid(row=0, column=0, sticky=tk.W, rowspan=2)
         self.eingabe_info = tk.Label(self,text="Hier Funktion eingeben: f(x)=")
         self.eingabe_info.grid(row=0, column=1, sticky=tk.E)
@@ -75,6 +78,8 @@ class MainWindow(tk.Frame):
         self.eingabe_button.grid(row=0, column=3, sticky=tk.W)
         self.random_funktion_button = tk.Button(self, text="zufällige Funktion", command=self.funktion_random_erstellen_button_pressed)
         self.random_funktion_button.grid(row=1, column=3, sticky=tk.NW)
+        self.random_einstellungen = tk.Button(self, text="Zufallsfunktion Einstellungen", command=lambda *args: RandomFunktion.Remote_Settings(self, self.funktionsrandom))
+        self.random_einstellungen.grid(row=1, column=4, sticky=tk.NW)
         self.eingabe_passt = tk.Label(self, text="")
         self.eingabe_passt.grid(row=0, column=4, sticky=tk.W)
         if DEBUG:
