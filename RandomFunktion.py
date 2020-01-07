@@ -1,5 +1,5 @@
-from random import randint,choice
-from Funktion import Funktion, polynom_to_str
+from random import randint,choice,randrange,uniform
+from Funktion import Funktion, polynom_to_str, vorzeichen_str
 import tkinter as tk
 
 
@@ -37,7 +37,11 @@ class Random_Funtkionen:
     poly_max_expo = 4
     poly_ganzzahlige_nst = True
 
-    trigo_vorgeg_trigo = None
+    trigo_vorgeg_trigo = "None"
+    trigo_with_x_streck = True
+    trigo_with_y_streck = True
+    trigo_with_x_versch = True
+    trigo_with_y_versch = True
 
     def get_random_polynomfunktion(self):
         if self.poly_min_expo == self.poly_max_expo:
@@ -75,8 +79,41 @@ class Random_Funtkionen:
         trigonometrie = choice(["sin","cos","tan"])
         if self.trigo_vorgeg_trigo in ["sin","cos","tan"]:
             trigonometrie = self.trigo_vorgeg_trigo
-        return Funktion(trigonometrie+"(x)")
-
+        if self.trigo_with_y_streck:
+            a = round(uniform(-10, 10),1)
+            while a == 0:
+                a = round(uniform(-10,10),1)
+        else:
+            a = 1
+        if self.trigo_with_x_streck:
+            b = randint(-8, 8)
+            while b == 0:
+                b = randint(-8,8)
+        else:
+            b = 1
+        if self.trigo_with_x_versch:
+            c = round(uniform(-5,5),1)
+        else:
+            c = 0
+        if self.trigo_with_y_versch:
+            d = randint(-20,20)
+        else:
+            d = 0
+        return_funktion = ""
+        if a != 1:
+            return_funktion += str(a)+"*"
+        return_funktion += trigonometrie+"("
+        if b != 1:
+            return_funktion += str(b)+"*("
+        return_funktion += "x"
+        if c != 0:
+            return_funktion += vorzeichen_str(c)
+        if b != 1:
+            return_funktion += ")"
+        return_funktion += ")"
+        if d != 0:
+            return_funktion += vorzeichen_str(d)
+        return Funktion(return_funktion)
 
     def get_random_funktion(self):
         mögliche_funktionstypen = []
@@ -150,6 +187,24 @@ class Remote_Settings(tk.Toplevel):
         self.with_trig = tk.BooleanVar()
         self.with_trig.set(self.ran_fun.with_trigonometrischefunktion)
         tk.Checkbutton(master, text="Trigonometrische Funktion", variable=self.with_trig, onvalue=True, offvalue=False).grid(row=20, column=0, sticky=tk.W)
+        self.vorgeg_trigo = tk.StringVar()
+        self.vorgeg_trigo.set(self.ran_fun.trigo_vorgeg_trigo)
+        tk.Radiobutton(master, text="sin", variable=self.vorgeg_trigo, value="sin").grid(row=21, column=1, sticky=tk.W)
+        tk.Radiobutton(master, text="cos", variable=self.vorgeg_trigo, value="cos").grid(row=21, column=2, sticky=tk.W)
+        tk.Radiobutton(master, text="tan", variable=self.vorgeg_trigo, value="tan").grid(row=21, column=3, sticky=tk.W)
+        tk.Radiobutton(master, text="zufällig", variable=self.vorgeg_trigo, value="None").grid(row=21, column=4, sticky=tk.W)
+        self.x_streck = tk.BooleanVar()
+        self.x_streck.set(self.ran_fun.trigo_with_x_streck)
+        tk.Checkbutton(master, text="X-Streckung", variable=self.x_streck, onvalue=True, offvalue=False).grid(row=22, column=1, sticky=tk.W, columnspan=2)
+        self.y_streck = tk.BooleanVar()
+        self.y_streck.set(self.ran_fun.trigo_with_y_streck)
+        tk.Checkbutton(master, text="Y-Streckung", variable=self.y_streck, onvalue=True, offvalue=False).grid(row=22, column=3, sticky=tk.W, columnspan=2)
+        self.x_versch = tk.BooleanVar()
+        self.x_versch.set(self.ran_fun.trigo_with_x_versch)
+        tk.Checkbutton(master, text="X-Verschiebung", variable=self.x_versch, onvalue=True, offvalue=False).grid(row=23, column=1, sticky=tk.W, columnspan=2)
+        self.y_versch = tk.BooleanVar()
+        self.y_versch.set(self.ran_fun.trigo_with_y_versch)
+        tk.Checkbutton(master, text="Y-Verschiebung", variable=self.y_versch, onvalue=True, offvalue=False).grid(row=23, column=3, sticky=tk.W, columnspan=2)
 
     def buttonbox(self):
         box = tk.Frame(self)
@@ -182,3 +237,7 @@ class Remote_Settings(tk.Toplevel):
         self.ran_fun.with_exponentialfunktion = self.with_expon.get()
         self.ran_fun.with_logarithmischefunktion = self.with_log.get()
         self.ran_fun.with_trigonometrischefunktion = self.with_trig.get()
+        self.ran_fun.trigo_with_x_streck = self.x_streck.get()
+        self.ran_fun.trigo_with_y_streck = self.y_streck.get()
+        self.ran_fun.trigo_with_x_versch = self.x_versch.get()
+        self.ran_fun.trigo_with_y_versch = self.y_versch.get()

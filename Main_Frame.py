@@ -67,7 +67,7 @@ class MainWindow(tk.Frame):
         self.eingabe.delete(0,tk.END)
         random_funktion = self.funktionsrandom.get_random_funktion()
         if isinstance(random_funktion, Funktion.Funktion):
-            self.eingabe.insert(0, random_funktion.funktion_user_kurz)
+            self.eingabe.insert(0, random_funktion.funktion_user_x_ersetztbar)
             self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
 
     def createWidgets(self):

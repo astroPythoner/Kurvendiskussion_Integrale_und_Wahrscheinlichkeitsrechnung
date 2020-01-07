@@ -18,7 +18,6 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
         nur_expos = funktion.nur_exponenten
         nur_basen = funktion.nur_basen
         needs_polynomdivision = False
-        needs_x_ausklammern = False
         # x=0 (0=mx'b -> x=0)
         if len(exponenten) == 1:
             if funktion.funktion_user_kurz[0] != "x":
@@ -165,8 +164,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                 elif smallest_expo_für_ausklammern > eval(exponent):
                     smallest_expo_für_ausklammern = eval(exponent)
             # ausklammern
-            print(needs_x_ausklammern or needs_polynomdivision)
-            if (not needs_polynomdivision) or needs_x_ausklammern:
+            if not needs_polynomdivision:
                 tk.Label(frame, text=polynom_to_str(1,smallest_expo_für_ausklammern)+" ausklammern").grid(row=row + 1, column=1)
                 funktion_ausgeklammert = ""
                 for exponent in exponenten:

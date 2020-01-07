@@ -1,6 +1,5 @@
 import math
 
-from time import sleep
 
 def vorzeichen_str(wert,mitleerzeichen=False):
     if isinstance(wert,int) or isinstance(wert,float):
@@ -124,7 +123,6 @@ class Funktion():
     def funktion_verschönern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
         funktion = funktion.replace("^", "'")
-        funktion = funktion.replace("^", "'")
         funktion = funktion.replace("asin", "arcsin")
         funktion = funktion.replace("acos", "arccos")
         funktion = funktion.replace("atan", "arctan")
@@ -145,10 +143,10 @@ class Funktion():
                     count -= 1
                 if letter_danach != None and letter_danach == " ":
                     del funktion_array[count + 1]
-                if letter_davor != None and (letter_davor.isnumeric() or letter_davor==")" or letter_davor=="i" or letter_davor=="e" or letter_davor=="c" or letter_davor=="g"  or letter_davor == "x"):
+                if letter_davor != None and (letter_davor.isnumeric() or letter_davor==")" or letter_davor=="i" or letter_davor=="e" or letter_davor == "x"):
                     funktion_array.insert(count, "*")
                     count -= 1
-                if letter_danach != None and (letter_danach.isnumeric() or letter_danach == "(" or letter_danach=="p" or letter_danach=="e" or letter_danach=="c" or letter_danach=="g"  or letter_danach == "x"):
+                if letter_danach != None and (letter_danach.isnumeric() or letter_danach == "(" or letter_danach=="p" or letter_danach=="e" or letter_danach == "x" or letter_danach == "s" or letter_danach == "c" or letter_danach == "t" or letter_danach == "a"):
                     funktion_array.insert(count+1, "*")
             elif letter == " ":
                 if letter_danach != None and letter_danach == " ":
