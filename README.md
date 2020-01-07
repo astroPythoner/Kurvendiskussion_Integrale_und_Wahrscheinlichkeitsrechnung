@@ -3,7 +3,7 @@ Kurvendiskussion in Python
 
 ## Ausführen
 ```
-python3 MainFrame.py
+python3 Main_Frame.py
 ```
 
 # Notwendige Bibliotheken

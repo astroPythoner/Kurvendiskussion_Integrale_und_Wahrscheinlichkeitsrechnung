@@ -17,6 +17,7 @@ class Stammfunktion_Frame(tk.Frame):
     def update(self, neu_funktion = None):
         if neu_funktion is not None:
             self.__funktion = neu_funktion
+            self.funktionen = []
         self.createWidgets()
 
 

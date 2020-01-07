@@ -135,9 +135,8 @@ class Graph_Frame(tk.Frame):
             for frame in list(self.punkt_frames.keys()):
                 try:
                     for punkt in frame.punkte:
-                        if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
-                            num_punkt += 1
-                            self.punkt_label = tk.Label(self, text=punkt.name+": "+str(punkt)).grid(row=num_punkt+1, column=3, sticky=tk.N)
+                        num_punkt += 1
+                        self.punkt_label = tk.Label(self, text=punkt.name+": "+str(punkt)).grid(row=num_punkt+1, column=3, sticky=tk.N)
                 except:
                     pass
             self.draw_graph(rows=num_funktion+1+num_fläche+1)

@@ -54,12 +54,12 @@ class TangenteNormale_Frame(tk.Frame):
             tk.Label(self, text="Tangente nach Formel t(x) = f'(x0)*(x-x0)+f(x0):").grid(row=6, column=0,sticky=tk.W)
             tk.Label(self, text="Normale nach Formel n(x) = (-1/f'(x0))*(x-x0)+f(x0):").grid(row=8, column=0, sticky=tk.W)
             if erg_ableitung != "nicht definiert" and erg_normale_funktion != "nicht definiert":
-                # normalengleichung gzusammenbasteln
+                # normalengleichung zusammenbasteln
                 funktionsterm = ""
                 if erg_ableitung != 0:
                     funktionsterm += str(erg_ableitung)
                     if self.x_wert.get()!= 0:
-                        funktionsterm += " * (x"+vorzeichen_str(self.x_wert.get())+") "
+                        funktionsterm += " * (x"+vorzeichen_str(self.x_wert.get()*-1)+") "
                     else:
                         funktionsterm += " * x "
                 if erg_normale_funktion != 0:
@@ -80,7 +80,7 @@ class TangenteNormale_Frame(tk.Frame):
                     else:
                         funktionsterm += "(-1/"+str(erg_ableitung)+")"
                     if self.x_wert.get() != 0:
-                        funktionsterm += " * (x" + vorzeichen_str(self.x_wert.get()) + ") "
+                        funktionsterm += " * (x" + vorzeichen_str(self.x_wert.get()*-1) + ") "
                     else:
                         funktionsterm += " * x "
                     if erg_normale_funktion != 0:

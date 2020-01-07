@@ -63,13 +63,13 @@ class Random_Funtkionen:
         return Funktion(return_funktion)
 
     def get_random_wurzelfunktion(self):
-        return Funktion("x'(1/3)")
+        return Funktion("3*x'(1/3)")
 
     def get_random_exponentialfunktion(self):
         return Funktion("5'x")
 
     def get_random_logarithmischefunktion(self):
-        return Funktion("log(2,5)")
+        return Funktion("log(2,5x)")
 
     def get_random_trigonometrischefunktion(self):
         trigonometrie = choice(["sin","cos","tan"])
@@ -121,7 +121,7 @@ class Remote_Settings(tk.Toplevel):
     def body(self, master):
         self.with_poly = tk.BooleanVar()
         self.with_poly.set(self.ran_fun.with_polynomfunktion)
-        tk.Checkbutton(master,text="Polynomfunktionen",variable=self.with_poly,onvalue=True,offvalue=False).grid(row=0,column=0, sticky=tk.W)
+        tk.Checkbutton(master,text="Polynomfunktion",variable=self.with_poly,onvalue=True,offvalue=False).grid(row=0,column=0, sticky=tk.W)
         self.ganze_nst = tk.BooleanVar()
         self.ganze_nst.set(self.ran_fun.poly_ganzzahlige_nst)
         tk.Checkbutton(master, text="Ganzzahlige Nullstellen zwischen:", variable=self.ganze_nst, onvalue=True, offvalue=False).grid(row=1, column=1, sticky=tk.W)

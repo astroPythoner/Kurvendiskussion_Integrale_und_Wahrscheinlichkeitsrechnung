@@ -22,7 +22,7 @@ import Funktion
 
 root = None
 
-DEBUG = True
+DEBUG = False
 
 class MainWindow(tk.Frame):
 
@@ -45,14 +45,19 @@ class MainWindow(tk.Frame):
             self.Graph_Frame.update(self.funktion)
             self.eingabe_passt.config(text="Funktion passt")
             if DEBUG:
-                text = self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
+                text = "Debug: "+self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
                 if self.funktion.is_polynomfunktion:
                     text += "\n Exponenten: "+str(self.funktion.exponenten_array)
                     text += "\n = " + str(self.funktion.funktion_polynom_x_ersetzbar)
                     text += "\n = " + str(self.funktion.funktion_polynom_computer_readable)
                 else:
                     text += "\n keine Exponentialgleichung"
-                self.debug.config(text=text)
+            else:
+                if self.funktion.is_polynomfunktion:
+                    text = "Polynomfunktion: "+self.funktion.funktion_user_kurz
+                else:
+                    text = self.funktion.funktion_user_kurz + "\nTipp: gebe eine Polynomfunktion ein (z.B.: 4x'3 + 2x'2 + 9x)"
+            self.funktion_info_text.config(text=text)
         elif passt == "unverändert":
             self.eingabe_passt.config(text="Funktion nicht verändert")
         else:
@@ -82,9 +87,8 @@ class MainWindow(tk.Frame):
         self.random_einstellungen.grid(row=1, column=4, sticky=tk.NW)
         self.eingabe_passt = tk.Label(self, text="")
         self.eingabe_passt.grid(row=0, column=4, sticky=tk.W)
-        if DEBUG:
-            self.debug = tk.Label(self, text="")
-            self.debug.grid(row=2, column=0,columnspan=5)
+        self.funktion_info_text = tk.Label(self, text="")
+        self.funktion_info_text.grid(row=1, column=1, columnspan=2)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
