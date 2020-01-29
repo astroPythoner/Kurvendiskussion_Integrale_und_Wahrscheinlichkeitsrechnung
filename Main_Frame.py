@@ -37,7 +37,7 @@ class MainWindow(tk.Frame):
         self.createWidgets()
         self.funktion_random_erstellen_button_pressed()
 
-    def funktion_übernehmen_button_pressed(self):
+    def funktion_uebernehmen_button_pressed(self):
         passt = self.funktion.set_funktion(self.eingabe.get())
         if passt==True:
             for frame in self.frames:
@@ -79,7 +79,7 @@ class MainWindow(tk.Frame):
         self.eingabe_info.grid(row=0, column=1, sticky=tk.E)
         self.eingabe = tk.Entry(self)
         self.eingabe.grid(row=0,column=2, sticky=tk.EW)
-        self.eingabe_button = tk.Button(self, text="übernehmen",command=self.funktion_übernehmen_button_pressed)
+        self.eingabe_button = tk.Button(self, text="übernehmen",command=self.funktion_uebernehmen_button_pressed)
         self.eingabe_button.grid(row=0, column=3, sticky=tk.W)
         self.random_funktion_button = tk.Button(self, text="zufällige Funktion", command=self.funktion_random_erstellen_button_pressed)
         self.random_funktion_button.grid(row=1, column=3, sticky=tk.NW)
@@ -114,9 +114,9 @@ class MainWindow(tk.Frame):
         self.Steigung_Frame = Steigung_Frame.Steigung_Frame(self.Ableitung_Frame)
         self.frames.append(self.Steigung_Frame)
         self.pane.add(self.Steigung_Frame, text="Steigung", padding=0)
-        self.Krümmung_Frame = Kruemmung_Frame.Krümmung_Frame(self.Ableitung_Frame)
-        self.frames.append(self.Krümmung_Frame)
-        self.pane.add(self.Krümmung_Frame, text="Krümmung", padding=0)
+        self.Kruemmung_Frame = Kruemmung_Frame.Kruemmung_Frame(self.Ableitung_Frame)
+        self.frames.append(self.Kruemmung_Frame)
+        self.pane.add(self.Kruemmung_Frame, text="Krümmung", padding=0)
         self.Stammfunktion_Frame = Stammfunktion_Frame.Stammfunktion_Frame()
         self.frames.append(self.Stammfunktion_Frame)
         self.pane.add(self.Stammfunktion_Frame, text="Stammfunktion", padding=0)
@@ -124,7 +124,7 @@ class MainWindow(tk.Frame):
         self.frames.append(self.Integrale_Frame)
         self.pane.add(self.Integrale_Frame, text="Integral", padding=0)
 
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Krümmung_Frame,self.Stammfunktion_Frame,self.Integrale_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame,self.Nullsetllen_Frame,self.Ableitung_Frame,self.TangenteNormale_Frame,self.Steigung_Frame,self.Kruemmung_Frame,self.Stammfunktion_Frame,self.Integrale_Frame)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import math
 import tkinter as tk
 from Funktion import vorzeichen_str
 
-from Grundklassen import Fläche
+from Grundklassen import Flaeche
 
 class Integral_Frame(tk.Frame):
 
@@ -14,7 +14,7 @@ class Integral_Frame(tk.Frame):
     def __init__(self, stammfunktion, nullstellen, master=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
-        self.flächen = [Fläche(0.9,0.6,"blaugrau","Integral")]
+        self.flaechen = [Flaeche(0.9,0.6,"blaugrau","Integral")]
         self.x_start = tk.IntVar()
         self.x_start.set(-1)
         self.last_x_start_wert = -1
@@ -33,7 +33,7 @@ class Integral_Frame(tk.Frame):
     def start_x_changed(self,wert=None):
         if wert != self.last_x_start_wert:
             self.last_x_start_wert = wert
-            self.flächen[0].von_x = self.x_start.get()
+            self.flaechen[0].von_x = self.x_start.get()
             self.createWidgets()
             if self.x_start.get() >= self.x_ende.get():
                 self.x_ende.set(self.x_start.get()+1)
@@ -41,7 +41,7 @@ class Integral_Frame(tk.Frame):
     def end_x_changed(self,wert=None):
         if wert != self.last_x_ende_wert:
             self.last_x_ende_wert = wert
-            self.flächen[0].bis_x = self.x_ende.get()
+            self.flaechen[0].bis_x = self.x_ende.get()
             self.createWidgets()
             if self.x_ende.get() <= self.x_start.get():
                 self.x_start.set(self.x_ende.get()-1)

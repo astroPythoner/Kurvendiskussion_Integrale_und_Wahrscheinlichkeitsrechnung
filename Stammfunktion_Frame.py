@@ -1,6 +1,6 @@
 import math
 import tkinter as tk
-from Funktion import Funktion, vorzeichen_str, polynom_to_str, bruch_kürzen
+from Funktion import Funktion, vorzeichen_str, polynom_to_str, bruch_kuerzen
 from Grundklassen import Graph
 
 
@@ -37,16 +37,18 @@ class Stammfunktion_Frame(tk.Frame):
                     stammfunktion_lang += vorzeichen_str(str(eval(polynom[0]))+"*ln(x)")
                 else:
                     stammfunktion_lang += " + ("+str(eval(polynom[0]))+"/("+str(eval(polynom[1]))+"+1))*x'("+str(eval(polynom[1]))+"+1)"
-                    zähler, nenner = bruch_kürzen(eval(polynom[0]), eval(polynom[1])+1)
+                    zaehler, nenner = bruch_kuerzen(eval(polynom[0]), eval(polynom[1])+1)
                     if nenner == 1:
-                        stammfunktion_kurz += polynom_to_str(zähler, eval(polynom[1])+1)
+                        stammfunktion_kurz += polynom_to_str(zaehler, eval(polynom[1])+1)
                     else:
-                        stammfunktion_kurz += polynom_to_str("("+str(zähler)+"/"+str(nenner)+")",eval(polynom[1])+1)
+                        stammfunktion_kurz += polynom_to_str("("+str(zaehler)+"/"+str(nenner)+")",eval(polynom[1])+1)
             stammfunk.set_funktion(stammfunktion_kurz)
+            print(stammfunktion_kurz)
+            print(stammfunk)
             tk.Label(self, text="F(x) = "+stammfunktion_lang).grid(row=2, column=1)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=3, column=1)
         else:
-            tk.Label(self, text="Stammfunktion von nicht polynomfunktionen comming soon ...").grid(row=1, column=0,sticky=tk.W,columnspan=2)
+            tk.Label(self, text="Stammfunktion von nicht Polynomfunktionen comming soon ...").grid(row=1, column=0,sticky=tk.W,columnspan=2)
             return
         tk.Label(self, text="Stammfunktion: F(x) = " + stammfunk.funktion_user_kurz).grid(row=4, column=0, sticky=tk.W, columnspan=2)
         self.funktionen = [Graph(stammfunk, "#443344", "grau", "F(x)")]

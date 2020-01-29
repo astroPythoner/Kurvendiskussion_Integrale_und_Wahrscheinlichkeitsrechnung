@@ -29,6 +29,7 @@ def vorzeichen_str(wert,mitleerzeichen=False):
                 return "+"+wert
 
 def polynom_to_str(basis,expo):
+    # Basis und Exponent in richtige From bringen
     if isinstance(expo,str):
         if expo[0] == "+":
             expo = expo[1:]
@@ -42,6 +43,7 @@ def polynom_to_str(basis,expo):
     else:
         int_basis = basis
         basis = str(basis)
+    # Hier Exponent und Basis zusammenbasteln
     if int_basis == 0:
         return ""
     if int_expo == 0:
@@ -53,13 +55,13 @@ def polynom_to_str(basis,expo):
             return "-x"
         else:
             return vorzeichen_str(basis+"*x")
-    elif int_expo == -1:
+    elif int_expo < 0:
         if int_basis == 1:
-            return "+x'(-1)"
+            return "+x'("+vorzeichen_str(expo)+")"
         elif int_basis == -1:
-            return "-x'(-1)"
+            return "-x'("+vorzeichen_str(expo)+")"
         else:
-            return vorzeichen_str(basis+"*x'(-1)")
+            return vorzeichen_str(basis+"*x'("+vorzeichen_str(expo)+")")
     else:
         if int_basis == 1:
             return "+x'"+str(expo)
@@ -80,18 +82,18 @@ def polynom_to_str(basis,expo):
 def polynom_array_to_str(array):
     return polynom_to_str(array[0],array[1])
 
-def größter_teiler(a,b):
+def groeßter_teiler(a,b):
     while b != 0:
         c = a % b
         a = b
         b = c
     return a
 
-def bruch_kürzen(zähler,teiler):
+def bruch_kuerzen(zaehler,teiler):
     if teiler == 0:
-        return zähler,teiler
-    ggt = größter_teiler(zähler,teiler)
-    return int(zähler/ggt), int(teiler/ggt)
+        return zaehler,teiler
+    ggt = groeßter_teiler(zaehler,teiler)
+    return int(zaehler/ggt), int(teiler/ggt)
 
 class Funktion():
 
@@ -103,11 +105,11 @@ class Funktion():
     exponenten_array = []
     nur_exponenten = []
     nur_basen = []
-    funktion_polynom_aufgefüllt_x_ersetzbar = ""
-    funktion_polynom_aufgefüllt_computer_readable = ""
-    exponenten_aufgefüllt_array = []
-    nur_exponenten_aufgefüllt = []
-    nur_basen_aufgefüllt = []
+    funktion_polynom_aufgefuellt_x_ersetzbar = ""
+    funktion_polynom_aufgefuellt_computer_readable = ""
+    exponenten_aufgefuellt_array = []
+    nur_exponenten_aufgefuellt = []
+    nur_basen_aufgefuellt = []
     is_polynomfunktion = False
 
     def __init__(self,funktion=None):
@@ -120,7 +122,7 @@ class Funktion():
         else:
             return "Funktion: "+self.funktion_user_kurz
 
-    def funktion_verschönern(self,funktion):
+    def funktion_verschoenern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
         funktion = funktion.replace("^", "'")
         funktion = funktion.replace("asin", "arcsin")
@@ -169,28 +171,26 @@ class Funktion():
         return "".join(i for i in funktion_array)
 
     def funktion_to_computer_readable(self,funktion):
+        funktion = funktion.replace("e","math.e")
+        funktion = funktion.replace("pi", "math.pi")
         funktion_array = []
         funktion_array.extend(funktion)
         for count,letter in enumerate(funktion_array):
             if letter == "'" or letter == "":
                 funktion_array[count] = "**"
+        letter_num = 0
+        while letter_num < len(funktion_array):
+            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num<=3 or (letter_num>3 and funktion_array[letter_num-3:letter_num] != ["a","r","c"])):
+                funktion_array.insert(letter_num,"math.")
+                letter_num += 1
+            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num>3 and funktion_array[letter_num-3:letter_num] == ["a","r","c"]):
+                funktion_array[letter_num - 1] = "a"
+                funktion_array[letter_num - 2] = "."
+                funktion_array[letter_num - 3] = "math"
+            letter_num += 1
         funktion = "".join(i for i in funktion_array)
-        funktion = funktion.replace("e","math.e")
-        funktion = funktion.replace("pi", "math.pi")
-        if "asin" in funktion or "atan" in funktion or "acos" in funktion or "arcsin" in funktion or "arccos" in funktion or "arctan" in funktion:
-            funktion = funktion.replace("asin", "math.asin")
-            funktion = funktion.replace("acos", "math.acos")
-            funktion = funktion.replace("atan", "math.atan")
-            funktion = funktion.replace("arcsin", "math.asin")
-            funktion = funktion.replace("arccos", "math.acos")
-            funktion = funktion.replace("arctan", "math.atan")
-        else:
-            funktion = funktion.replace("sin", "math.sin")
-            funktion = funktion.replace("cos", "math.cos")
-            funktion = funktion.replace("tan", "math.tan")
-        funktion = funktion.replace("ln", "math.log1p")
         funktion = funktion.replace("log", "math.log")
-        funktion = funktion.replace("log10", "math.log10")
+        funktion = funktion.replace("ln", "math.log1p")
         return funktion
 
     def funktion_to_user_kurz(self,funktion):
@@ -213,37 +213,37 @@ class Funktion():
             count+= 1
         return "".join(i for i in funktion_array)
 
-    def exponenten_zusammenführen_und_sortieren(self,exponenten_mit_basis):
-        gekürzte_exponenten = []
-        gekürzte_basen = []
+    def exponenten_zusammenfuehren_und_sortieren(self,exponenten_mit_basis):
+        gekuerzte_exponenten = []
+        gekuerzte_basen = []
         # ausrechnen
         for count,exponent_mis_basis in enumerate(exponenten_mit_basis):
-            gekürzte_exponenten.append(str(eval(self.funktion_to_computer_readable(self.funktion_verschönern(exponent_mis_basis[1])))))
-            wert = eval(self.funktion_to_computer_readable(self.funktion_verschönern(exponent_mis_basis[0])))
+            gekuerzte_exponenten.append(str(eval(self.funktion_to_computer_readable(self.funktion_verschoenern(exponent_mis_basis[1])))))
+            wert = eval(self.funktion_to_computer_readable(self.funktion_verschoenern(exponent_mis_basis[0])))
             if wert > 0:
-                gekürzte_basen.append("+"+str(wert))
+                gekuerzte_basen.append("+"+str(wert))
             else:
-                gekürzte_basen.append(str(wert))
-        # zusammenführen
+                gekuerzte_basen.append(str(wert))
+        # zusammenfuehren
         count1=0
         count2=0
-        while count1 < len(gekürzte_exponenten):
-            expo1 = gekürzte_exponenten[count1]
-            while count2 < len(gekürzte_exponenten):
-                expo2 = gekürzte_exponenten[count2]
+        while count1 < len(gekuerzte_exponenten):
+            expo1 = gekuerzte_exponenten[count1]
+            while count2 < len(gekuerzte_exponenten):
+                expo2 = gekuerzte_exponenten[count2]
                 if count1 != count2 and expo1 == expo2:
-                    wert = int(gekürzte_basen[count1])+int(gekürzte_basen[count2])
+                    wert = int(gekuerzte_basen[count1])+int(gekuerzte_basen[count2])
                     if wert > 0:
-                        gekürzte_basen[count1] = "+" + str(wert)
+                        gekuerzte_basen[count1] = "+" + str(wert)
                     else:
-                        gekürzte_basen[count1] = str(wert)
-                    del gekürzte_exponenten[count2]
-                    del gekürzte_basen[count2]
+                        gekuerzte_basen[count1] = str(wert)
+                    del gekuerzte_exponenten[count2]
+                    del gekuerzte_basen[count2]
                 count2 += 1
             count1 += 1
         exponenten_mit_basis = []
-        for x in range(len(gekürzte_exponenten)):
-            exponenten_mit_basis.append([gekürzte_basen[x],gekürzte_exponenten[x]])
+        for x in range(len(gekuerzte_exponenten)):
+            exponenten_mit_basis.append([gekuerzte_basen[x],gekuerzte_exponenten[x]])
         # sortieren
         switched_something = True
         while switched_something:
@@ -254,7 +254,7 @@ class Funktion():
                     exponenten_mit_basis[j], exponenten_mit_basis[j + 1] = exponenten_mit_basis[j + 1], exponenten_mit_basis[j]
         return exponenten_mit_basis
 
-    def sortierte_exponenten_auffüllen(self,exponenten_sortiert_mit_basis):
+    def sortierte_exponenten_auffuellen(self,exponenten_sortiert_mit_basis):
         return_array = []
         for expo_num in range(len(exponenten_sortiert_mit_basis)-1):
             expo = int(eval(exponenten_sortiert_mit_basis[expo_num][1]))
@@ -312,15 +312,15 @@ class Funktion():
                 if char == "x":
                     im_bruch = False
                     basis_gedreht = []
-                    geöffnete_klammern = 0
+                    geoeffnete_klammern = 0
                     char_vor_x_count = count-1
-                    while char_vor_x_count >= 0 and geöffnete_klammern >= 0:
+                    while char_vor_x_count >= 0 and geoeffnete_klammern >= 0:
                         char_vor_x = funktion[char_vor_x_count]
                         if char_vor_x == ")":
-                            geöffnete_klammern += 1
+                            geoeffnete_klammern += 1
                         if char_vor_x == "(":
-                            geöffnete_klammern -= 1
-                            if geöffnete_klammern < 0 and char_vor_x_count > 0:
+                            geoeffnete_klammern -= 1
+                            if geoeffnete_klammern < 0 and char_vor_x_count > 0:
                                 if funktion[char_vor_x_count - 1] == "+":
                                     basis_gedreht.append("+")
                                     break
@@ -332,7 +332,7 @@ class Funktion():
                             elif char_vor_x_count == 0:
                                 basis_gedreht.append("+")
                                 break
-                        if (char_vor_x == "+" or char_vor_x == "-") and geöffnete_klammern == 0:
+                        if (char_vor_x == "+" or char_vor_x == "-") and geoeffnete_klammern == 0:
                             basis_gedreht.append(char_vor_x)
                             break
                         basis_gedreht.append(char_vor_x)
@@ -358,26 +358,26 @@ class Funktion():
                     for i in range(len(basis_gedreht)-1,-1,-1):
                         basis.append(basis_gedreht[i])
                     exponent = []
-                    geöffnete_klammern = 0
+                    geoeffnete_klammern = 0
                     is_basis_hinten_dran = False
                     char_nach_x_count = count+1
                     char_nach_x = ""
-                    while char_nach_x_count < len(funktion) and geöffnete_klammern >= 0:
+                    while char_nach_x_count < len(funktion) and geoeffnete_klammern >= 0:
                         char_nach_x = funktion[char_nach_x_count]
                         if char_nach_x == "(":
-                            geöffnete_klammern += 1
+                            geoeffnete_klammern += 1
                         if char_nach_x == ")":
-                            geöffnete_klammern -= 1
-                            if geöffnete_klammern < 0 and char_vor_x_count == len(char_vor_x)-2:
+                            geoeffnete_klammern -= 1
+                            if geoeffnete_klammern < 0 and char_vor_x_count == len(char_vor_x)-2:
                                 if funktion[char_vor_x_count + 1] == "+":
                                     break
                                 elif funktion[char_vor_x_count + 1] == "-":
                                     break
                                 else:
                                     return False, "ausklammern"
-                        if (char_nach_x == "+" or char_nach_x == "-") and geöffnete_klammern == 0:
+                        if (char_nach_x == "+" or char_nach_x == "-") and geoeffnete_klammern == 0:
                             break
-                        if (char_nach_x == "*" or char_nach_x == "/") and geöffnete_klammern == 0:
+                        if (char_nach_x == "*" or char_nach_x == "/") and geoeffnete_klammern == 0:
                             is_basis_hinten_dran = True
                         if is_basis_hinten_dran:
                             basis.append(char_nach_x)
@@ -403,7 +403,7 @@ class Funktion():
                     num_plus_or_minus_since_last_expo = 0
                     klammern_offen = 0
                     try:
-                        wert = eval(self.funktion_to_computer_readable(self.funktion_verschönern("".join(i for i in basis))))
+                        wert = eval(self.funktion_to_computer_readable(self.funktion_verschoenern("".join(i for i in basis))))
                         if isinstance(wert, int):
                             if wert >= 0:
                                 basis_vereinfacht = "+" + str(wert)
@@ -414,7 +414,7 @@ class Funktion():
                     except:
                         return False, "Funktion nicht ausfühbar"
                     try:
-                        wert = eval(self.funktion_to_computer_readable(self.funktion_verschönern("".join(i for i in exponent))))
+                        wert = eval(self.funktion_to_computer_readable(self.funktion_verschoenern("".join(i for i in exponent))))
                         if isinstance(wert,int):
                             if wert >= 0:
                                 exponent_vereinfacht = str(wert)
@@ -428,10 +428,13 @@ class Funktion():
                 count += 1
             if exponenten == []:
                 return False,"kein Exponent gefunden"
-            exponenten = self.exponenten_zusammenführen_und_sortieren(exponenten)
+            exponenten = self.exponenten_zusammenfuehren_und_sortieren(exponenten)
             expos_zu_funktion = ""
             for exponent in exponenten:
-                expos_zu_funktion += exponent[0] + "*x'" + exponent[1]
+                if int(eval(exponent[1])) < 0:
+                    expos_zu_funktion += exponent[0] + "*x'(" + exponent[1] + ")"
+                else:
+                    expos_zu_funktion += exponent[0] + "*x'" + exponent[1]
             # Checken
             x = -30
             while x < 30:
@@ -498,59 +501,59 @@ class Funktion():
                 funktion = funktion[1:]
             else:
                 break
-        funktion = self.funktion_verschönern(self.funktion_verschönern(self.funktion_verschönern(funktion)))
+        funktion = self.funktion_verschoenern(self.funktion_verschoenern(self.funktion_verschoenern(funktion)))
         computer_funktion = self.funktion_to_computer_readable(funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:
             versuchs_x = [-10,-5,-2,-1-0.5,0,1,2,5,10,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
-            working = True
             for x in versuchs_x:
                 working = True
                 try:
                     eval(computer_funktion)
-                except Exception:
+                except Exception as e:
                     working = False
                 if working:
                     break
-            if working:
-                #Funktion fehlerfrei
+            if working: #Funktion fehlerfrei
                 self.funktion_user_x_ersetztbar = funktion
                 self.funktion_user_kurz = self.funktion_to_user_kurz(funktion)
                 self.funktion_computer_readable = computer_funktion
                 self.exponenten_array = []
                 self.nur_exponenten = []
                 self.nur_basen = []
-                self.exponenten_aufgefüllt_array = []
-                self.nur_exponenten_aufgefüllt = []
-                self.nur_basen_aufgefüllt = []
+                self.exponenten_aufgefuellt_array = []
+                self.nur_exponenten_aufgefuellt = []
+                self.nur_basen_aufgefuellt = []
                 exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
                 if exponenten == False or exponenten == None:
+                    #print(funktion,"##",self.funktion_user_kurz,"##",self.funktion_computer_readable)
                     self.is_polynomfunktion = False
                     self.funktion_polynom_x_ersetzbar = ""
                     self.funktion_polynom_computer_readable = ""
-                    self.funktion_polynom_aufgefüllt_x_ersetzbar = ""
-                    self.funktion_polynom_aufgefüllt_computer_readable = ""
+                    self.funktion_polynom_aufgefuellt_x_ersetzbar = ""
+                    self.funktion_polynom_aufgefuellt_computer_readable = ""
                 else:
                     self.is_polynomfunktion = True
                     self.exponenten_array = exponenten
                     for exponent in self.exponenten_array:
                         self.nur_exponenten.append(exponent[1])
                         self.nur_basen.append(exponent[0])
-                    self.funktion_polynom_x_ersetzbar = self.funktion_verschönern(expo_funktion)
+                    self.funktion_polynom_x_ersetzbar = self.funktion_verschoenern(expo_funktion)
                     self.funktion_polynom_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
-                    self.exponenten_aufgefüllt_array = self.sortierte_exponenten_auffüllen(exponenten)
+                    self.exponenten_aufgefuellt_array = self.sortierte_exponenten_auffuellen(exponenten)
                     funktion = ""
-                    for exponent in self.exponenten_aufgefüllt_array:
-                        self.nur_exponenten_aufgefüllt.append(exponent[1])
-                        self.nur_basen_aufgefüllt.append(exponent[0])
+                    for exponent in self.exponenten_aufgefuellt_array:
+                        self.nur_exponenten_aufgefuellt.append(exponent[1])
+                        self.nur_basen_aufgefuellt.append(exponent[0])
                         if eval(exponent[1])<0:
                             funktion += exponent[0] + "*x'(" + exponent[1]+")"
                         else:
                             funktion += exponent[0] + "*x'" + exponent[1]
-                    self.funktion_polynom_aufgefüllt_x_ersetzbar = self.funktion_verschönern(funktion)
-                    self.funktion_polynom_aufgefüllt_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
+                    self.funktion_polynom_aufgefuellt_x_ersetzbar = self.funktion_verschoenern(funktion)
+                    self.funktion_polynom_aufgefuellt_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
                 return True
             else:
                 # Fehler in Funktion
+                print("Funktion nicht erkannt:",funktion,computer_funktion)
                 return False
         else:
             return "unverändert"

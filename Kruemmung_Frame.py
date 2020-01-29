@@ -5,7 +5,7 @@ from Nullstellen_Frame import nullstellen_berechnen
 import tkinter as tk
 import math
 
-class Krümmung_Frame(tk.Frame):
+class Kruemmung_Frame(tk.Frame):
 
     __funktion = None
 

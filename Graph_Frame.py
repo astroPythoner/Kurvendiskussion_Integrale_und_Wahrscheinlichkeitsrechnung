@@ -24,8 +24,8 @@ class Graph_Frame(tk.Frame):
     punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo"}
     funktion_frames = [abl,tanNor,stamfunk]
     funktion_frames_aktiv = []
-    flächen_frames = [integr]
-    flächen_frames_aktiv = []
+    flaechen_frames = [integr]
+    flaechen_frames_aktiv = []
 
     graph = Graph("0","blue","blau","f(x)")
 
@@ -60,12 +60,12 @@ class Graph_Frame(tk.Frame):
                     self.funktion_frames_aktiv.append(tk.BooleanVar())
             except:
                 pass
-        self.flächen_frames = [self.integr]
-        self.flächen_frames_aktiv = []
+        self.flaechen_frames = [self.integr]
+        self.flaechen_frames_aktiv = []
         for frame in self.funktion_frames:
             try:
-                for fläche in frame.flächen:
-                    self.flächen_frames_aktiv.append(tk.BooleanVar())
+                for flaeche in frame.flaechen:
+                    self.flaechen_frames_aktiv.append(tk.BooleanVar())
             except:
                 pass
 
@@ -80,12 +80,12 @@ class Graph_Frame(tk.Frame):
                     self.funktion_frames_aktiv.append(tk.BooleanVar())
             except:
                 pass
-        self.flächen_frames = [self.integr]
-        self.flächen_frames_aktiv = []
-        for frame in self.flächen_frames:
+        self.flaechen_frames = [self.integr]
+        self.flaechen_frames_aktiv = []
+        for frame in self.flaechen_frames:
             try:
-                for fläche in frame.flächen:
-                    self.flächen_frames_aktiv.append(tk.BooleanVar())
+                for flaeche in frame.flaechen:
+                    self.flaechen_frames_aktiv.append(tk.BooleanVar())
             except:
                 pass
         self.createWidgets()
@@ -99,7 +99,7 @@ class Graph_Frame(tk.Frame):
             self.last_end_value = value
             self.createWidgets()
 
-    def funktion_ausgewählt(self):
+    def funktion_ausgewaehlt(self):
         self.createWidgets()
 
     def createWidgets(self):
@@ -112,22 +112,22 @@ class Graph_Frame(tk.Frame):
             self.start_x_regler.grid(row=0,column=0, sticky=tk.NSEW)
             self.end_x_regler = tk.Scale(self, from_=1, to=self.graph.max_x, orient=tk.HORIZONTAL, variable = self.end_x, command=self.bereich_update)
             self.end_x_regler.grid(row=0, column=1, sticky=tk.NSEW)
-            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=self.funktion_ausgewählt).grid(row=1, column=2, sticky=tk.NW)
+            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=self.funktion_ausgewaehlt).grid(row=1, column=2, sticky=tk.NW)
 
             num_funktion = 0
             for frame in self.funktion_frames:
                 try:
                     for funktion in frame.funktionen:
                         num_funktion += 1
-                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=self.funktion_ausgewählt).grid(row=num_funktion+1,column=2,sticky=tk.NW)
+                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=self.funktion_ausgewaehlt).grid(row=num_funktion+1,column=2,sticky=tk.NW)
                 except:
                     pass
-            num_fläche = 0
-            for frame in self.flächen_frames:
+            num_flaeche = 0
+            for frame in self.flaechen_frames:
                 try:
-                    for fläche in frame.flächen:
-                        num_fläche += 1
-                        self.checkbox_fläche_auswahl = tk.Checkbutton(self, text=fläche.name + " (" + fläche.color_name + ")", variable=self.flächen_frames_aktiv[num_fläche - 1],command=self.funktion_ausgewählt).grid(row=num_funktion + 1 + num_fläche + 1, column=2, sticky=tk.NW)
+                    for flaeche in frame.flaechen:
+                        num_flaeche += 1
+                        self.checkbox_flaeche_auswahl = tk.Checkbutton(self, text=flaeche.name + " (" + flaeche.color_name + ")", variable=self.flaechen_frames_aktiv[num_flaeche - 1],command=self.funktion_ausgewaehlt).grid(row=num_funktion + 1 + num_flaeche + 1, column=2, sticky=tk.NW)
                 except:
                     pass
             self.punkt_text = tk.Label(self, text="Punkte:").grid(row=1, column=3, sticky=tk.N)
@@ -139,7 +139,7 @@ class Graph_Frame(tk.Frame):
                         self.punkt_label = tk.Label(self, text=punkt.name+": "+str(punkt)).grid(row=num_punkt+1, column=3, sticky=tk.N)
                 except:
                     pass
-            self.draw_graph(rows=num_funktion+1+num_fläche+1)
+            self.draw_graph(rows=num_funktion+1+num_flaeche+1)
         else:
             self.funktion_text = tk.Label(self, text="Für Graph zeichnen Funktion oben eingeben")
             self.funktion_text.grid(row=0, column=0, sticky=tk.W)
@@ -159,7 +159,7 @@ class Graph_Frame(tk.Frame):
             plt.plot(self.graph.x_werte[x_start:x_end], self.graph.y_werte[x_start:x_end],lineWidth=2,color=self.graph.color)
 
         # Achsen zeichnen
-        höchster_y_wert = max(self.graph.y_werte[x_start:x_end])
+        hoechster_y_wert = max(self.graph.y_werte[x_start:x_end])
         tiefster_y_wert = min(self.graph.y_werte[x_start:x_end])
         num_funktion = 0
         for frame in self.funktion_frames:
@@ -167,18 +167,18 @@ class Graph_Frame(tk.Frame):
                 for funktion in frame.funktionen:
                     num_funktion += 1
                     if self.funktion_frames_aktiv[num_funktion-1].get():
-                       if max(funktion.y_werte[x_start:x_end]) > höchster_y_wert:
-                           höchster_y_wert = max(funktion.y_werte[x_start:x_end])
+                       if max(funktion.y_werte[x_start:x_end]) > hoechster_y_wert:
+                           hoechster_y_wert = max(funktion.y_werte[x_start:x_end])
                        if min(funktion.y_werte[x_start:x_end]) < tiefster_y_wert:
                            tiefster_y_wert = min(funktion.y_werte[x_start:x_end])
             except:
                 pass
-        if höchster_y_wert<0:
+        if hoechster_y_wert<0:
             plt.plot([0,0], [0,min(self.graph.y_werte[x_start:x_end])],"black")
         elif tiefster_y_wert>0:
             plt.plot([0, 0], [max(self.graph.y_werte[x_start:x_end]),0], "black")
         else:
-            plt.plot([0,0], [höchster_y_wert,tiefster_y_wert],"black")
+            plt.plot([0,0], [hoechster_y_wert,tiefster_y_wert],"black")
         plt.text(0,max(self.graph.y_werte[x_start:x_end]), 'Y', ha='center', va='bottom')
         plt.plot([max(self.graph.x_werte[x_start:x_end]),min(self.graph.x_werte[x_start:x_end])], [0,0],"black")
         plt.text(max(self.graph.x_werte[x_start:x_end]), 0, 'X', ha='center', va='bottom')
@@ -205,16 +205,16 @@ class Graph_Frame(tk.Frame):
             except:
                 pass
 
-        # Flächen
-        num_fläche = 0
-        for frame in self.flächen_frames:
+        # Flaechen
+        num_flaeche = 0
+        for frame in self.flaechen_frames:
             try:
-                for fläche in frame.flächen:
-                    num_fläche += 1
-                    if self.flächen_frames_aktiv[num_fläche-1].get():
-                        von_x = fläche.von_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit
-                        bis_x = fläche.bis_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit + 1
-                        verts = [(fläche.von_x, 0), *zip(self.graph.x_werte[von_x:bis_x], self.graph.y_werte[von_x:bis_x]), (fläche.bis_x, 0)]
+                for flaeche in frame.flaechen:
+                    num_flaeche += 1
+                    if self.flaechen_frames_aktiv[num_flaeche-1].get():
+                        von_x = flaeche.von_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit
+                        bis_x = flaeche.bis_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit + 1
+                        verts = [(flaeche.von_x, 0), *zip(self.graph.x_werte[von_x:bis_x], self.graph.y_werte[von_x:bis_x]), (flaeche.bis_x, 0)]
                         poly = Polygon(verts, facecolor='0.9', edgecolor='0.6')
                         plt.axes().add_patch(poly)
             except:

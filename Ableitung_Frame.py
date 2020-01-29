@@ -64,8 +64,8 @@ class Ableitung_Frame(tk.Frame):
             neue_exponenten_kurz = []
             for exponent in exponenten:
                 neue_exponenten.append(["(" + exponent[0] + "*" + exponent[1] + ")", "(" + exponent[1] + "-1)"])
-                basis_wert = eval(davor_abgeleitete_funktion.funktion_to_computer_readable(self.__funktion.funktion_verschönern("((" + exponent[0] + ")*" + exponent[1] + ")")))
-                expo_wert = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_verschönern("((" + exponent[1] + ")-1)")))
+                basis_wert = eval(davor_abgeleitete_funktion.funktion_to_computer_readable(self.__funktion.funktion_verschoenern("((" + exponent[0] + ")*" + exponent[1] + ")")))
+                expo_wert = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_verschoenern("((" + exponent[1] + ")-1)")))
                 neue_exponenten_kurz.append([basis_wert, expo_wert])
             poly_funktion = ""
             poly_funktion_kurz = ""

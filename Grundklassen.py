@@ -65,7 +65,7 @@ class Graph():
             self.y_werte.append(funktionswert_an_i)
 
 
-class Fläche():
+class Flaeche():
     face_color = "red"
     edge_color = "red"
     color_name = "rot"
