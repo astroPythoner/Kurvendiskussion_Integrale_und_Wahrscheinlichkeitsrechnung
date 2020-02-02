@@ -48,6 +48,10 @@ class Random_Funtkionen:
     logar_with_y_versch = True
     logar_spiegelung = "negativ a" # "negativ a" (Spiegeln durch negative Zahl vor log), "0 < basis < 1" (Spiegeln durch basis zwischen 1 und 0), "None" (keine Spiegelung)
 
+    wurzel_with_streck = True
+    wurzel_with_x_versch = True
+    wurzel_with_y_versch = True
+
     def get_random_polynomfunktion(self):
         ### Funtion vom Typ ax'3+bx'2+cx+d mit unterschiedlich hohen Exponenten ###
         if self.poly_min_expo == self.poly_max_expo:
@@ -74,7 +78,28 @@ class Random_Funtkionen:
 
     def get_random_wurzelfunktion(self):
         ### Funtion vom Typ a(x−b)'(1/2)+c ###
-        return Funktion("3*x'(1/3)")
+        if self.wurzel_with_streck:
+            a = round(uniform(-10, 10),1)
+        else:
+            a = 1
+        if self.wurzel_with_x_versch:
+            b = round(uniform(-10,10),1)
+        else:
+            b = 0
+        if self.wurzel_with_y_versch:
+            c = round(uniform(-10,10),1)
+        else:
+            c = 0
+        funktion = ""
+        if a != 1:
+            funktion += str(a)+"*"
+        if b != 0:
+            funktion += "(x"+vorzeichen_str(b)+")'(1/2)"
+        else:
+            funktion += "x'(1/2)"
+        if c != 0:
+            funktion += vorzeichen_str(c)
+        return Funktion(funktion)
 
     def get_random_exponentialfunktion(self):
         return Funktion("5'x")
@@ -225,6 +250,15 @@ class Remote_Settings(tk.Toplevel):
         self.with_wurz = tk.BooleanVar()
         self.with_wurz.set(self.ran_fun.with_wurzelfunktion)
         tk.Checkbutton(master, text="Wurzelfunktion", variable=self.with_wurz, onvalue=True, offvalue=False).grid(row=5, column=0, sticky=tk.W)
+        self.wurzel_streck = tk.BooleanVar()
+        self.wurzel_streck.set(self.ran_fun.wurzel_with_streck)
+        tk.Checkbutton(master, text="Streckung", variable=self.wurzel_streck, onvalue=True, offvalue=False).grid(row=7, column=1, sticky=tk.W, columnspan=2)
+        self.wurzel_x_versch = tk.BooleanVar()
+        self.wurzel_x_versch.set(self.ran_fun.wurzel_with_x_versch)
+        tk.Checkbutton(master, text="X-Verschiebung", variable=self.wurzel_x_versch, onvalue=True, offvalue=False).grid(row=8, column=1, sticky=tk.W, columnspan=2)
+        self.wurzel_y_versch = tk.BooleanVar()
+        self.wurzel_y_versch.set(self.ran_fun.wurzel_with_y_versch)
+        tk.Checkbutton(master, text="Y-Verschiebung", variable=self.wurzel_y_versch, onvalue=True, offvalue=False).grid(row=8, column=3, sticky=tk.W, columnspan=2)
         self.with_expon = tk.BooleanVar()
         self.with_expon.set(self.ran_fun.with_exponentialfunktion)
         tk.Checkbutton(master, text="Exponentialfunktion", variable=self.with_expon, onvalue=True, offvalue=False).grid(row=10, column=0, sticky=tk.W)
@@ -294,9 +328,10 @@ class Remote_Settings(tk.Toplevel):
         self.ran_fun.poly_max_nst = self.max_nst.get()
         self.ran_fun.poly_min_expo = self.min_expo.get()
         self.ran_fun.poly_max_expo = self.max_expo.get()
-        self.ran_fun.with_polynomfunktion = self.with_poly.get()
-        self.ran_fun.with_polynomfunktion = self.with_poly.get()
         self.ran_fun.with_wurzelfunktion = self.with_wurz.get()
+        self.ran_fun.wurzel_with_streck = self.wurzel_streck.get()
+        self.ran_fun.wurzel_with_x_versch = self.wurzel_x_versch.get()
+        self.ran_fun.wurzel_with_y_versch = self.wurzel_y_versch.get()
         self.ran_fun.with_exponentialfunktion = self.with_expon.get()
         self.ran_fun.with_logarithmischefunktion = self.with_log.get()
         self.ran_fun.logar_vorgeg_log = self.vorgeg_log.get()

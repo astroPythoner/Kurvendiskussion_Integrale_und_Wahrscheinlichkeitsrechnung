@@ -444,14 +444,14 @@ class Funktion():
                     x_str = str(x)
                 wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",x_str))
                 wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",x_str))
-                if not ((isinstance(wert_eigen, complex) or "e" in str(wert_eigen))):
+                if not (isinstance(wert_eigen, complex) or "e" in str(wert_eigen) or isinstance(wert_orig, complex) or "e" in str(wert_orig)):
                     if round(wert_eigen,6) != round(wert_orig,6):
                         return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
                 x += 0.1
             for x in [math.pi,math.pi/2,math.pi/3]:
                 wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",str(x)))
                 wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",str(x)))
-                if not ((isinstance(wert_eigen, complex) or "e" in str(wert_eigen))):
+                if not (isinstance(wert_eigen, complex) or "e" in str(wert_eigen) or isinstance(wert_orig, complex) or "e" in str(wert_orig)):
                     if round(wert_eigen,6) != round(wert_orig,6):
                         return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
             return exponenten,expos_zu_funktion

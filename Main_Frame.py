@@ -129,7 +129,7 @@ class MainWindow(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v1.2.0")
+    root.title("Kurvendiskussion - v1.2.1")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()
