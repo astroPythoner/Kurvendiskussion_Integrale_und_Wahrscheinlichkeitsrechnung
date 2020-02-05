@@ -3,6 +3,10 @@ from Funktion import Funktion, polynom_array_to_str, vorzeichen_str
 
 import tkinter as tk
 import math
+try:
+    import sympy
+except Exception:
+    pass
 
 class Ableitung_Frame(tk.Frame):
 
@@ -78,8 +82,19 @@ class Ableitung_Frame(tk.Frame):
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=0,sticky=tk.W)
             row = row+3
         else:
-            tk.Label(self, text="Ableitung von nicht Polynomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2,sticky=tk.W)
-            row = row+1
+            could_be_solved = True
+            try:
+                ableitung = sympy.diff(davor_abgeleitete_funktion.funktion_computer_readable, sympy.Symbol('x'), 1)
+            except Exception:
+                could_be_solved = False
+            if could_be_solved:
+                ableitungsfunktion = Funktion(sympy.printing.sstr(ableitung).replace("**","'"))
+                tk.Label(self, text=funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 1, column=1)
+                tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=0, sticky=tk.W)
+                row = row + 2
+            else:
+                tk.Label(self, text="Ableitung konnte nicht erstellt werden").grid(row=row+1, column=0,columnspan=2,sticky=tk.W)
+                row = row+1
 
         if ableitungsfunktion != None:
             return ableitungsfunktion,row

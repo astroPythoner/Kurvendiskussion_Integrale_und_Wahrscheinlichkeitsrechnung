@@ -10,7 +10,7 @@ class Steigung_Frame(tk.Frame):
     __funktion = None
     punkte=[]
 
-    def __init__(self, ableitung, master=None):
+    def __init__(self, master=None, ableitung=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.ableitung = ableitung

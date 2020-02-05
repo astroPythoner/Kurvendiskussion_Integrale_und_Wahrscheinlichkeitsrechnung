@@ -82,7 +82,7 @@ def polynom_to_str(basis,expo):
 def polynom_array_to_str(array):
     return polynom_to_str(array[0],array[1])
 
-def groeßter_teiler(a,b):
+def groesster_teiler(a,b):
     while b != 0:
         c = a % b
         a = b
@@ -92,14 +92,84 @@ def groeßter_teiler(a,b):
 def bruch_kuerzen(zaehler,teiler):
     if teiler == 0:
         return zaehler,teiler
-    ggt = groeßter_teiler(zaehler,teiler)
+    ggt = groesster_teiler(zaehler,teiler)
     return int(zaehler/ggt), int(teiler/ggt)
+
+def get_n_m_from_n_mal_x_plus_m(funktion):
+    # checks through n(x+m) and return n,m
+    if "x" in funktion.funktion_user_x_ersetztbar:
+        funktion_array = []
+        funktion_array.extend(funktion.funktion_user_x_ersetztbar)
+        offene_klammern = 0
+        index = funktion_array.index("x") + 1
+        m = ""
+        while index < len(funktion_array):
+            letter = funktion_array[index]
+            m += letter
+            if letter == "(":
+                offene_klammern += 1
+            elif letter == ")":
+                offene_klammern -= 1
+                if offene_klammern < 0:
+                    m = m[:-1]
+                    break
+                if offene_klammern == 0:
+                    break
+            index += 1
+        if m == "":
+            m = "0"
+        offene_klammern = 0
+        index = funktion_array.index("x") - 1
+        geklammert = False
+        if funktion_array[index] == "(":
+            index -= 1
+            geklammert = True
+        n = ""
+        while index >= 0:
+            letter = funktion_array[index]
+            n += letter
+            if letter == ")":
+                offene_klammern += 1
+            elif letter == "(":
+                offene_klammern -= 1
+                if offene_klammern < 0:
+                    n = n[:-1]
+                    break
+            index -= 1
+        n = n[::-1]
+        if n == "":
+            n = "1"
+        if n == "-":
+            n = "-1"
+        if n == "+":
+            n = "+1"
+        if n.endswith("*"):
+            n = n[:-1]
+        if not geklammert:
+            m = "("+m+")/("+n+")"
+        # check if n and m are correct
+        #print("found n and m",n,m)
+        if "x" in n or "x" in m:
+            return False,False
+        try:
+            fkt_n = Funktion(n)
+            fkt_m = Funktion(m)
+            gesamt_fkt = Funktion(n+"*(x"+vorzeichen_str(m)+")")
+            for x in range(-15,15):
+                if gesamt_fkt.x_einsetzen(x) != funktion.x_einsetzen(x):
+                    return False,False
+        except Exception as e:
+            return False,False
+        return n,m
+    return False,False
 
 class Funktion():
 
     funktion_user_kurz = ""
     funktion_user_x_ersetztbar = ""
     funktion_computer_readable = ""
+
+    is_polynomfunktion = False             # Typ: ax'3 + bx'2 + cx + d + ...
     funktion_polynom_x_ersetzbar = ""
     funktion_polynom_computer_readable = ""
     exponenten_array = []
@@ -110,7 +180,32 @@ class Funktion():
     exponenten_aufgefuellt_array = []
     nur_exponenten_aufgefuellt = []
     nur_basen_aufgefuellt = []
-    is_polynomfunktion = False
+
+    is_wurzel = False                      # Typ: a(x-b)'(1/2) + d
+    funktion_wurzel_x_ersetzbar = ""
+    funktion_wurzel_computer_readable = ""
+    wurzel_a = 0
+    wurzel_b = 0
+    wurzel_c = 0
+
+    is_logarithmus = False                 # Typ: a * log(b(x-c), d) + e
+    funktion_logarithmus_x_ersetzbar = ""
+    funktion_logarithmus_computer_readable = ""
+    logarithmus_a = 0
+    logarithmus_b = 0
+    logarithmus_c = 0
+    logarithmus_d = 0
+    logarithmus_e = 0
+
+    is_trigonometrisch = False             # Typ: a * sin(b(x-c)) + d
+    funktion_trigonometrisch_x_ersetzbar = ""
+    funktion_trigonometrisch_computer_readable = ""
+    trigonometrisch_a = 0
+    trigonometrisch_b = 0
+    trigonometrisch_c = 0
+    trigonometrisch_d = 0
+
+    is_exponential = False                # Typ: a'x+b'x+c'x
 
     def __init__(self,funktion=None):
         if funktion != None:
@@ -119,6 +214,14 @@ class Funktion():
     def __str__(self):
         if self.is_polynomfunktion:
             return "Polynomfunktion: " + self.funktion_user_kurz
+        elif self.is_wurzel:
+            return "Wurzelfunktion: " + self.funktion_user_kurz
+        elif self.is_logarithmus:
+            return "Logarithmusfunktion: " + self.funktion_user_kurz
+        elif self.is_trigonometrisch:
+            return "Trigonometrische Funktion: " + self.funktion_user_kurz
+        elif self.is_exponential:
+            return "Exponentialfunktion: " + self.funktion_user_kurz
         else:
             return "Funktion: "+self.funktion_user_kurz
 
@@ -274,7 +377,41 @@ class Funktion():
                     return_array[j], return_array[j + 1] = return_array[j + 1], return_array[j]
         return return_array
 
-    def check_funktion_exponential_funktion_and_convert(self,funktion):
+    def __set_values_after_set_funktion_polynom(self,funktion):
+        exponenten, expo_funktion = self.__check_funktion_polynom_funktion_and_convert(funktion)
+        if exponenten == False or exponenten == None:
+            self.is_polynomfunktion = False
+            self.funktion_polynom_x_ersetzbar = ""
+            self.funktion_polynom_computer_readable = ""
+            self.exponenten_array = []
+            self.nur_exponenten = []
+            self.nur_basen = []
+            self.funktion_polynom_aufgefuellt_x_ersetzbar = ""
+            self.funktion_polynom_aufgefuellt_computer_readable = ""
+            self.exponenten_aufgefuellt_array = []
+            self.nur_exponenten_aufgefuellt = []
+            self.nur_basen_aufgefuellt = []
+        else:
+            self.is_polynomfunktion = True
+            self.exponenten_array = exponenten
+            for exponent in self.exponenten_array:
+                self.nur_exponenten.append(exponent[1])
+                self.nur_basen.append(exponent[0])
+            self.funktion_polynom_x_ersetzbar = self.funktion_verschoenern(expo_funktion)
+            self.funktion_polynom_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
+            self.exponenten_aufgefuellt_array = self.sortierte_exponenten_auffuellen(exponenten)
+            funktion = ""
+            for exponent in self.exponenten_aufgefuellt_array:
+                self.nur_exponenten_aufgefuellt.append(exponent[1])
+                self.nur_basen_aufgefuellt.append(exponent[0])
+                if eval(exponent[1]) < 0:
+                    funktion += exponent[0] + "*x'(" + exponent[1] + ")"
+                else:
+                    funktion += exponent[0] + "*x'" + exponent[1]
+            self.funktion_polynom_aufgefuellt_x_ersetzbar = self.funktion_verschoenern(funktion)
+            self.funktion_polynom_aufgefuellt_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
+
+    def __check_funktion_polynom_funktion_and_convert(self,funktion):
         funktion = funktion.replace(" ","")
         if funktion[0] != "+" and funktion[0] != "-":
             funktion = "+"+funktion
@@ -458,6 +595,52 @@ class Funktion():
         else:
             return False,"kein x in Funktion"
 
+    def __set_values_after_set_funktion_wurzel(self, funktion):
+        self.__check_funktion_wurzel_funktion_and_convert(funktion)
+        self.is_wurzel = False
+        self.funktion_wurzel_x_ersetzbar = ""
+        self.funktion_wurzel_computer_readable = ""
+        self.wurzel_a = 0
+        self.wurzel_b = 0
+        self.wurzel_c = 0
+
+    def __check_funktion_wurzel_funktion_and_convert(self,funktion):
+        return False,"comming soon"
+
+    def __set_values_after_set_funktion_exponential(self, funktion):
+        self.__check_funktion_exponential_funktion_and_convert(funktion)
+        self.is_ = False
+
+    def __check_funktion_exponential_funktion_and_convert(self,funktion):
+        return False,"comming soon"
+
+    def __set_values_after_set_funktion_logarithmus(self, funktion):
+        self.__check_funktion_logarithmus_funktion_and_convert(funktion)
+        self.is_logarithmus = False
+        self.funktion_logarithmus_x_ersetzbar = ""
+        self.funktion_logarithmus_computer_readable = ""
+        self.logarithmus_a = 0
+        self.logarithmus_b = 0
+        self.logarithmus_c = 0
+        self.logarithmus_d = 0
+        self.logarithmus_e = 0
+
+    def __check_funktion_logarithmus_funktion_and_convert(self,funktion):
+        return False,"comming soon"
+
+    def __set_values_after_set_funktion_trigonometrische(self, funktion):
+        self.__check_funktion_trigonometrische_funktion_and_convert(funktion)
+        self.is_trigonometrisch = False
+        self.funktion_trigonometrisch_x_ersetzbar = ""
+        self.funktion_trigonometrisch_computer_readable = ""
+        self.trigonometrisch_a = 0
+        self.trigonometrisch_b = 0
+        self.trigonometrisch_c = 0
+        self.trigonometrisch_d = 0
+
+    def __check_funktion_trigonometrische_funktion_and_convert(self,funktion):
+        return False,"comming soon"
+
     def string_an_zeichen_teilen(self,string,zeichen1,zeichen2):
         output = []
         for splitet1 in string.split(zeichen1):
@@ -505,6 +688,7 @@ class Funktion():
         computer_funktion = self.funktion_to_computer_readable(funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:
             versuchs_x = [-10,-5,-2,-1-0.5,0,1,2,5,10,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
+            working = True
             for x in versuchs_x:
                 working = True
                 try:
@@ -513,7 +697,7 @@ class Funktion():
                     working = False
                 if working:
                     break
-            if working: #Funktion fehlerfrei
+            if working: # Funktion fehlerfrei
                 self.funktion_user_x_ersetztbar = funktion
                 self.funktion_user_kurz = self.funktion_to_user_kurz(funktion)
                 self.funktion_computer_readable = computer_funktion
@@ -523,33 +707,11 @@ class Funktion():
                 self.exponenten_aufgefuellt_array = []
                 self.nur_exponenten_aufgefuellt = []
                 self.nur_basen_aufgefuellt = []
-                exponenten,expo_funktion = self.check_funktion_exponential_funktion_and_convert(funktion)
-                if exponenten == False or exponenten == None:
-                    #print(funktion,"##",self.funktion_user_kurz,"##",self.funktion_computer_readable)
-                    self.is_polynomfunktion = False
-                    self.funktion_polynom_x_ersetzbar = ""
-                    self.funktion_polynom_computer_readable = ""
-                    self.funktion_polynom_aufgefuellt_x_ersetzbar = ""
-                    self.funktion_polynom_aufgefuellt_computer_readable = ""
-                else:
-                    self.is_polynomfunktion = True
-                    self.exponenten_array = exponenten
-                    for exponent in self.exponenten_array:
-                        self.nur_exponenten.append(exponent[1])
-                        self.nur_basen.append(exponent[0])
-                    self.funktion_polynom_x_ersetzbar = self.funktion_verschoenern(expo_funktion)
-                    self.funktion_polynom_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
-                    self.exponenten_aufgefuellt_array = self.sortierte_exponenten_auffuellen(exponenten)
-                    funktion = ""
-                    for exponent in self.exponenten_aufgefuellt_array:
-                        self.nur_exponenten_aufgefuellt.append(exponent[1])
-                        self.nur_basen_aufgefuellt.append(exponent[0])
-                        if eval(exponent[1])<0:
-                            funktion += exponent[0] + "*x'(" + exponent[1]+")"
-                        else:
-                            funktion += exponent[0] + "*x'" + exponent[1]
-                    self.funktion_polynom_aufgefuellt_x_ersetzbar = self.funktion_verschoenern(funktion)
-                    self.funktion_polynom_aufgefuellt_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
+                self.__set_values_after_set_funktion_exponential(funktion)
+                self.__set_values_after_set_funktion_logarithmus(funktion)
+                self.__set_values_after_set_funktion_polynom(funktion)
+                self.__set_values_after_set_funktion_trigonometrische(funktion)
+                self.__set_values_after_set_funktion_wurzel(funktion)
                 return True
             else:
                 # Fehler in Funktion

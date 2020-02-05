@@ -30,7 +30,7 @@ class Graph_Frame(tk.Frame):
     graph = Graph("0","blue","blau","f(x)")
 
     def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
+        tk.Frame.__init__(self,master)
         self.grid(sticky=tk.NSEW)
         self.start_x = tk.IntVar()
         self.start_x.set(-10)

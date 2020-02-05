@@ -272,7 +272,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                     for punkt in weitere_punkte:
                         punkte.append(punkt)
     else:
-        tk.Label(frame, text="Nullstellen von nicht Polynomfunktionen comming soon").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
+        tk.Label(frame, text="Nullstellen konnten nicht gefunden werden").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
         row = row + 1
     return punkte,row
 

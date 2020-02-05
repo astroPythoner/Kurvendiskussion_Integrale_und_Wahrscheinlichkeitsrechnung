@@ -1,8 +1,12 @@
-import math
-import tkinter as tk
-from Funktion import Funktion, vorzeichen_str, polynom_to_str, bruch_kuerzen
 from Grundklassen import Graph
+from Funktion import Funktion, vorzeichen_str, bruch_kuerzen, polynom_to_str
 
+import tkinter as tk
+import math
+try:
+    import sympy
+except Exception:
+    pass
 
 class Stammfunktion_Frame(tk.Frame):
 
@@ -43,13 +47,20 @@ class Stammfunktion_Frame(tk.Frame):
                     else:
                         stammfunktion_kurz += polynom_to_str("("+str(zaehler)+"/"+str(nenner)+")",eval(polynom[1])+1)
             stammfunk.set_funktion(stammfunktion_kurz)
-            print(stammfunktion_kurz)
-            print(stammfunk)
             tk.Label(self, text="F(x) = "+stammfunktion_lang).grid(row=2, column=1)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=3, column=1)
         else:
-            tk.Label(self, text="Stammfunktion von nicht Polynomfunktionen comming soon ...").grid(row=1, column=0,sticky=tk.W,columnspan=2)
-            return
+            could_be_solved = True
+            try:
+                stammfunk = sympy.integrate(self.__funktion.funktion_computer_readable, sympy.Symbol('x'))
+            except Exception:
+                could_be_solved = False
+            if could_be_solved:
+                stammfunk = Funktion(sympy.printing.sstr(stammfunk).replace("**", "'"))
+                tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)
+            else:
+                tk.Label(self, text="Stammfunktion konnte nicht erstellt werden").grid(row=1, column=0, columnspan=2, sticky=tk.W)
+                return
         tk.Label(self, text="Stammfunktion: F(x) = " + stammfunk.funktion_user_kurz).grid(row=4, column=0, sticky=tk.W, columnspan=2)
         self.funktionen = [Graph(stammfunk, "#443344", "grau", "F(x)")]
 

@@ -1,4 +1,5 @@
 import tkinter as tk
+import math
 
 class GlobalesVerhalten_Frame(tk.Frame):
 
@@ -87,6 +88,6 @@ class GlobalesVerhalten_Frame(tk.Frame):
                     else:
                         tk.Label(self, text="lim x->-∞ = " + str(eval(geht_gegen_funktion_minus_unendlich))).grid(row=4,column=0)
             else:
-                tk.Label(self, text="Globales Verhalten für nicht polynomfunktionen comming soon..." + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
+                tk.Label(self, text="Globales Verhalten konnte nicht ermittelt werden" + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
         else:
             tk.Label(self, text="Für Berechnung des globalen Verhaltens Funktion oben eingeben").grid(row=0, column=0)

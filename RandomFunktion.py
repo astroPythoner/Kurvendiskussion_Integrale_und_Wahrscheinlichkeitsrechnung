@@ -147,7 +147,7 @@ class Random_Funtkionen:
         return Funktion(funktion)
 
     def get_random_trigonometrischefunktion(self):
-        ### Funtion vom Typ a*sin((x-b)*c)+d mit sin cos oder tan ###
+        ### Funtion vom Typ a*sin(b*(x-c))+d mit sin cos oder tan ###
         trigonometrie = choice(["sin","cos","tan"])
         if self.trigo_vorgeg_trigo in ["sin","cos","tan"]:
             trigonometrie = self.trigo_vorgeg_trigo

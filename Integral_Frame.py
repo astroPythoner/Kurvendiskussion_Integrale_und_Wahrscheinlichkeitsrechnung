@@ -1,8 +1,8 @@
-import math
-import tkinter as tk
-from Funktion import vorzeichen_str
-
 from Grundklassen import Flaeche
+from Funktion import Funktion, polynom_array_to_str, vorzeichen_str
+
+import tkinter as tk
+import math
 
 class Integral_Frame(tk.Frame):
 
@@ -11,7 +11,7 @@ class Integral_Frame(tk.Frame):
     nullstellen = None
     einstellungsframe = None
 
-    def __init__(self, stammfunktion, nullstellen, master=None):
+    def __init__(self, master=None, stammfunktion=None, nullstellen=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.flaechen = [Flaeche(0.9,0.6,"blaugrau","Integral")]
