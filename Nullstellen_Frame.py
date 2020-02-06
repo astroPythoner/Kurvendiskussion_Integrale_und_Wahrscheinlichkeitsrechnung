@@ -3,6 +3,10 @@ from Funktion import Funktion, polynom_to_str, vorzeichen_str
 
 import tkinter as tk
 import math
+try:
+    import sympy
+except Exception:
+    pass
 
 def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
     tk.Label(frame, text="0 = " + funktion.funktion_user_kurz).grid(row=row, column=1)
@@ -20,15 +24,19 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
         needs_polynomdivision = False
         # x=0 (0=mx'b -> x=0)
         if len(exponenten) == 1:
-            if funktion.funktion_user_kurz[0] != "x":
+            if eval(funktion.nur_basen[0]) != 1:
                 tk.Label(frame, text="| /(" + nur_basen[0] + ")").grid(row=row, column=2, sticky=tk.W)
                 tk.Label(frame, text="0 = x'" + nur_expos[0]).grid(row=row + 1, column=1)
                 row += 1
-            tk.Label(frame, text="| √").grid(row=row, column=2)
-            tk.Label(frame, text=nur_expos[0] + "√0 = x").grid(row=row + 1, column=1)
-            if eval(funktion.funktion_to_computer_readable(nur_expos[0])) <= 0:
-                tk.Label(frame, text="nicht definiert = x").grid(row=row + 2, column=1)
-                tk.Label(frame, text="Keine Nullstelle").grid(row=row + 3, column=0, sticky=tk.W)
+            if eval(funktion.nur_exponenten[0]) != 1:
+                tk.Label(frame, text="| √").grid(row=row, column=2)
+                tk.Label(frame, text=nur_expos[0] + "√0 = x").grid(row=row + 1, column=1)
+                if eval(funktion.funktion_to_computer_readable(nur_expos[0])) <= 0:
+                    tk.Label(frame, text="nicht definiert = x").grid(row=row + 2, column=1)
+                    tk.Label(frame, text="Keine Nullstelle").grid(row=row + 3, column=0, sticky=tk.W)
+                else:
+                    punkte.append(Punkt(0, 0, "Nst"))
+                    tk.Label(frame, text="Nst = " + str(punkte[0])).grid(row=row + 2, column=0, sticky=tk.W)
             else:
                 punkte.append(Punkt(0, 0, "Nst"))
                 tk.Label(frame, text="Nst = " + str(punkte[0])).grid(row=row + 2, column=0, sticky=tk.W)
@@ -272,7 +280,32 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                     for punkt in weitere_punkte:
                         punkte.append(punkt)
     else:
-        tk.Label(frame, text="Nullstellen konnten nicht gefunden werden").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
+        could_be_solved = True
+        try:
+            solution = sympy.solveset(funktion.funktion_computer_readable,sympy.Symbol('x'))
+            ergebnisse = []
+            for loesung in list(solution):
+                loesung = sympy.sstr(loesung)
+                if isinstance(loesung,str):
+                    try:
+                        loesung = float(loesung)
+                        if int(loesung) == loesung:
+                            loesung = int(loesung)
+                    except Exception:
+                        pass
+                print(loesung,isinstance(loesung,int),isinstance(loesung,str),type(loesung))
+                if isinstance(loesung,int) or isinstance(loesung,float):
+                    ergebnisse.append(loesung)
+                else:
+                    could_be_solved = False
+            if could_be_solved:
+                for count,erg in enumerate(ergebnisse):
+                    punkte.append(Punkt(erg, 0, "Nst" + str(num_nullstellen_bisher + 1 + count)))
+                    tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 1 + count) + " = " + str(punkte[-1])).grid(row=row + 1 + count, column=0, sticky=tk.W)
+        except Exception as e:
+            could_be_solved = False
+        if not could_be_solved:
+            tk.Label(frame, text="Nullstellen konnten nicht gefunden werden").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)
         row = row + 1
     return punkte,row
 

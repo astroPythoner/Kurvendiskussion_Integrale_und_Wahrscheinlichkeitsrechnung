@@ -52,13 +52,17 @@ class Stammfunktion_Frame(tk.Frame):
         else:
             could_be_solved = True
             try:
-                stammfunk = sympy.integrate(self.__funktion.funktion_computer_readable, sympy.Symbol('x'))
+                loesung = sympy.integrate(self.__funktion.funktion_computer_readable, sympy.Symbol('x'))
+                stammfunk = Funktion()
+                funktion_erkannt = stammfunk.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
+                if funktion_erkannt:
+                    tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)
+                else:
+                    could_be_solved = False
+                    tk.Label(self, text="Vielleicht hilft das: "+sympy.printing.sstr(loesung).replace("**", "'")).grid(row=2, column=0, columnspan=2, sticky=tk.W)
             except Exception:
                 could_be_solved = False
-            if could_be_solved:
-                stammfunk = Funktion(sympy.printing.sstr(stammfunk).replace("**", "'"))
-                tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)
-            else:
+            if not could_be_solved:
                 tk.Label(self, text="Stammfunktion konnte nicht erstellt werden").grid(row=1, column=0, columnspan=2, sticky=tk.W)
                 return
         tk.Label(self, text="Stammfunktion: F(x) = " + stammfunk.funktion_user_kurz).grid(row=4, column=0, sticky=tk.W, columnspan=2)

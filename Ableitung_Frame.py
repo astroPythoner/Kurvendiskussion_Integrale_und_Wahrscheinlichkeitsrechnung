@@ -82,20 +82,24 @@ class Ableitung_Frame(tk.Frame):
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=0,sticky=tk.W)
             row = row+3
         else:
+
             could_be_solved = True
             try:
-                ableitung = sympy.diff(davor_abgeleitete_funktion.funktion_computer_readable, sympy.Symbol('x'), 1)
+                loesung = sympy.diff(davor_abgeleitete_funktion.funktion_computer_readable, sympy.Symbol('x'), 1)
+                ableitungsfunktion = Funktion()
+                funktion_erkannt = ableitungsfunktion.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
+                if funktion_erkannt:
+                    tk.Label(self, text=funktionsname+"= " + ableitungsfunktion.funktion_user_kurz).grid(row=row+1, column=1)
+                    tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=0, sticky=tk.W)
+                    row = row+2
+                else:
+                    could_be_solved = False
+                    tk.Label(self, text="Vielleicht hilft das: " + sympy.printing.sstr(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
             except Exception:
                 could_be_solved = False
-            if could_be_solved:
-                ableitungsfunktion = Funktion(sympy.printing.sstr(ableitung).replace("**","'"))
-                tk.Label(self, text=funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 1, column=1)
-                tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=0, sticky=tk.W)
+            if not could_be_solved:
+                tk.Label(self, text="Ableitung konnte nicht erstellt werden").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
                 row = row + 2
-            else:
-                tk.Label(self, text="Ableitung konnte nicht erstellt werden").grid(row=row+1, column=0,columnspan=2,sticky=tk.W)
-                row = row+1
-
         if ableitungsfunktion != None:
             return ableitungsfunktion,row
         else:
