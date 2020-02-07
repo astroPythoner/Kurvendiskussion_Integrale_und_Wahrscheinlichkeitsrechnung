@@ -23,7 +23,7 @@ import Funktion
 
 root = None
 
-DEBUG = True
+DEBUG = False
 
 class MainWindow(tk.Frame):
 
@@ -163,6 +163,7 @@ class MainWindow(tk.Frame):
         self.head_frames.append(self.sonstiges_head_frame)
         self.pane.add(self.sonstiges_head_frame.head_frame, text="Sonstiges", padding=0)
 
+        self.funktion.add_debug_sonstiges_frame(self.Sonstige_Frame)
         self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame, self.Nullstellen_Frame, self.Ableitung_Frame, self.TangenteNormale_Frame, self.Steigung_Frame, self.Kruemmung_Frame, self.Stammfunktion_Frame, self.Integrale_Frame)
 
 
@@ -198,7 +199,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.0.2")
+    root.title("Kurvendiskussion - v2.0.3")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

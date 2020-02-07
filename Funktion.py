@@ -95,7 +95,34 @@ def bruch_kuerzen(zaehler,teiler):
     ggt = groesster_teiler(zaehler,teiler)
     return int(zaehler/ggt), int(teiler/ggt)
 
+def check_funktionen_gleich(funktion1,funktion2):
+    if isinstance(funktion1,Funktion):
+        funktion1 = funktion1.funktion_computer_readable
+    else:
+        funktion1 = Funktion.funktion_to_computer_readable(1,funktion1)
+    if isinstance(funktion2,Funktion):
+        funktion2 = funktion2.funktion_computer_readable
+    else:
+        funktion2 = Funktion.funktion_to_computer_readable(1,funktion2)
+    if funktion1 == funktion2:
+        return True
+    for x in range(-30, 30):
+        try:
+            if eval(funktion1.replace("x","("+str(x)+")")) != eval(funktion2.replace("x","("+str(x)+")")):
+                return False
+        except Exception:
+            return False
+    for x in [math.pi, math.pi / 2, math.pi / 3, math.e, math.e/2]:
+        try:
+            if eval(funktion1.replace("x",str(x))) != eval(funktion2.replace("x",str(x))):
+                return False
+        except Exception:
+            return False
+    return True
+
 def get_n_m_from_n_mal_x_plus_m(funktion):
+    if isinstance(funktion,str):
+        funktion = Funktion(funktion)
     # checks through n(x+m) and return n,m
     if "x" in funktion.funktion_user_x_ersetztbar:
         funktion_array = []
@@ -148,17 +175,9 @@ def get_n_m_from_n_mal_x_plus_m(funktion):
         if not geklammert:
             m = "("+m+")/("+n+")"
         # check if n and m are correct
-        #print("found n and m",n,m)
         if "x" in n or "x" in m:
             return False,False
-        try:
-            fkt_n = Funktion(n)
-            fkt_m = Funktion(m)
-            gesamt_fkt = Funktion(n+"*(x"+vorzeichen_str(m)+")")
-            for x in range(-15,15):
-                if gesamt_fkt.x_einsetzen(x) != funktion.x_einsetzen(x):
-                    return False,False
-        except Exception as e:
+        if not check_funktionen_gleich(funktion,str(eval(n))+"*(x"+vorzeichen_str(eval(m))+")"):
             return False,False
         return n,m
     return False,False
@@ -201,6 +220,7 @@ class Funktion():
     is_trigonometrisch = False             # Typ: a * sin(b(x-c)) + d
     funktion_trigonometrisch_x_ersetzbar = ""
     funktion_trigonometrisch_computer_readable = ""
+    trigonometrische_funktion = "" #sin,cos or tan
     trigonometrisch_a = 0
     trigonometrisch_b = 0
     trigonometrisch_c = 0
@@ -209,6 +229,9 @@ class Funktion():
     is_exponential = False                # Typ: a'x+b'x+c'x
     funktion_exponential_x_ersetzbar = ""
     funktion_exponential_computer_readable = ""
+
+    # Um zu sehen warum Funktionstyp nicht erkannt wurde
+    debug_sonstiges = False
 
     def __init__(self,funktion=None):
         if funktion != None:
@@ -227,6 +250,9 @@ class Funktion():
             return "Exponentialfunktion: " + self.funktion_user_kurz
         else:
             return "Funktion: "+self.funktion_user_kurz
+
+    def add_debug_sonstiges_frame(self,sonstiges_frame):
+        self.debug_sonstiges = sonstiges_frame
 
     def funktion_verschoenern(self,funktion):
         # ganz ausschreiben  (3x -> 3*x)
@@ -332,7 +358,7 @@ class Funktion():
             count+= 1
         return "".join(i for i in funktion_array)
 
-    def exponenten_zusammenfuehren_und_sortieren(self,exponenten_mit_basis):
+    def __exponenten_zusammenfuehren_und_sortieren(self,exponenten_mit_basis):
         gekuerzte_exponenten = []
         gekuerzte_basen = []
         # ausrechnen
@@ -373,7 +399,7 @@ class Funktion():
                     exponenten_mit_basis[j], exponenten_mit_basis[j + 1] = exponenten_mit_basis[j + 1], exponenten_mit_basis[j]
         return exponenten_mit_basis
 
-    def sortierte_exponenten_auffuellen(self,exponenten_sortiert_mit_basis):
+    def __sortierte_exponenten_auffuellen(self, exponenten_sortiert_mit_basis):
         return_array = []
         for expo_num in range(len(exponenten_sortiert_mit_basis)-1):
             expo = int(eval(exponenten_sortiert_mit_basis[expo_num][1]))
@@ -397,6 +423,8 @@ class Funktion():
         exponenten, expo_funktion = self.__check_funktion_polynom_funktion_and_convert(funktion)
         if exponenten == False or exponenten == None:
             self.is_polynomfunktion = False
+            if self.debug_sonstiges != False:
+                self.debug_sonstiges.add_funktion_not_erkannt_reason("Polynomfunktion",expo_funktion)
             self.funktion_polynom_x_ersetzbar = ""
             self.funktion_polynom_computer_readable = ""
             self.exponenten_array = []
@@ -415,7 +443,7 @@ class Funktion():
                 self.nur_basen.append(exponent[0])
             self.funktion_polynom_x_ersetzbar = self.funktion_verschoenern(expo_funktion)
             self.funktion_polynom_computer_readable = self.funktion_to_computer_readable(self.funktion_polynom_x_ersetzbar)
-            self.exponenten_aufgefuellt_array = self.sortierte_exponenten_auffuellen(exponenten)
+            self.exponenten_aufgefuellt_array = self.__sortierte_exponenten_auffuellen(exponenten)
             funktion = ""
             for exponent in self.exponenten_aufgefuellt_array:
                 self.nur_exponenten_aufgefuellt.append(exponent[1])
@@ -581,7 +609,7 @@ class Funktion():
                 count += 1
             if exponenten == []:
                 return False,"kein Exponent gefunden"
-            exponenten = self.exponenten_zusammenfuehren_und_sortieren(exponenten)
+            exponenten = self.__exponenten_zusammenfuehren_und_sortieren(exponenten)
             expos_zu_funktion = ""
             for exponent in exponenten:
                 if int(eval(exponent[1])) < 0:
@@ -590,29 +618,16 @@ class Funktion():
                     expos_zu_funktion += exponent[0] + "*x'" + exponent[1]
             # Checken
             x = -30
-            while x < 30:
-                if x < 0:
-                    x_str = "("+str(x)+")"
-                else:
-                    x_str = str(x)
-                wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",x_str))
-                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",x_str))
-                if not (isinstance(wert_eigen, complex) or "e" in str(wert_eigen) or isinstance(wert_orig, complex) or "e" in str(wert_orig)):
-                    if round(wert_eigen,6) != round(wert_orig,6):
-                        return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
-                x += 0.1
-            for x in [math.pi,math.pi/2,math.pi/3]:
-                wert_orig = eval(self.funktion_to_computer_readable(funktion).replace("x",str(x)))
-                wert_eigen = eval(self.funktion_to_computer_readable(expos_zu_funktion).replace("x",str(x)))
-                if not (isinstance(wert_eigen, complex) or "e" in str(wert_eigen) or isinstance(wert_orig, complex) or "e" in str(wert_orig)):
-                    if round(wert_eigen,6) != round(wert_orig,6):
-                        return False,"Funktion am Ende passt nicht "+str(exponenten)+"  "+self.funktion_to_computer_readable(expos_zu_funktion)+" <-> "+self.funktion_to_computer_readable(funktion)+"   x="+x_str + "  " + str(wert_orig) + " <-> "+str(wert_eigen)
+            if not check_funktionen_gleich(funktion,expos_zu_funktion):
+                return False, "Funktion am Ende passt nicht"
             return exponenten,expos_zu_funktion
         else:
             return False,"kein x in Funktion"
 
     def __set_values_after_set_funktion_wurzel(self, funktion):
         self.__check_funktion_wurzel_funktion_and_convert(funktion)
+        if self.debug_sonstiges != False:
+            self.debug_sonstiges.add_funktion_not_erkannt_reason("Wurzelfunktion", "comming soon")
         self.is_wurzel = False
         self.funktion_wurzel_x_ersetzbar = ""
         self.funktion_wurzel_computer_readable = ""
@@ -625,6 +640,8 @@ class Funktion():
 
     def __set_values_after_set_funktion_exponential(self, funktion):
         self.__check_funktion_exponential_funktion_and_convert(funktion)
+        if self.debug_sonstiges != False:
+            self.debug_sonstiges.add_funktion_not_erkannt_reason("Exponentialfunktion", "comming soon")
         self.is_ = False
 
     def __check_funktion_exponential_funktion_and_convert(self,funktion):
@@ -633,6 +650,8 @@ class Funktion():
     def __set_values_after_set_funktion_logarithmus(self, funktion):
         self.__check_funktion_logarithmus_funktion_and_convert(funktion)
         self.is_logarithmus = False
+        if self.debug_sonstiges != False:
+            self.debug_sonstiges.add_funktion_not_erkannt_reason("Logarithmusfunktion", "comming soon")
         self.funktion_logarithmus_x_ersetzbar = ""
         self.funktion_logarithmus_computer_readable = ""
         self.logarithmus_a = 0
@@ -645,7 +664,6 @@ class Funktion():
         return False,"comming soon"
 
     def __set_values_after_set_funktion_trigonometrische(self, funktion):
-        self.__check_funktion_trigonometrische_funktion_and_convert(funktion)
         self.is_trigonometrisch = False
         self.funktion_trigonometrisch_x_ersetzbar = ""
         self.funktion_trigonometrisch_computer_readable = ""
@@ -653,9 +671,87 @@ class Funktion():
         self.trigonometrisch_b = 0
         self.trigonometrisch_c = 0
         self.trigonometrisch_d = 0
+        for trigonometrische_funktion in ["sin","cos","tan"]:
+            a,b,c,d = self.__check_funktion_trigonometrische_funktion_and_convert(funktion,trigonometrische_funktion)
+            if not False in [a,b,c,d]:
+                a,b,c,d = eval(a),eval(b),eval(c),eval(d)
+                self.is_trigonometrisch = True
+                self.trigonometrische_funktion = trigonometrische_funktion
+                self.funktion_trigonometrisch_x_ersetzbar = ""
+                if a != 1:
+                    self.funktion_trigonometrisch_x_ersetzbar += str(a)+" * "
+                self.funktion_trigonometrisch_x_ersetzbar += "sin("
+                if b != 1:
+                    self.funktion_trigonometrisch_x_ersetzbar += str(b)
+                if c != 0:
+                    self.funktion_trigonometrisch_x_ersetzbar += "*(x"+vorzeichen_str(c)+"))"
+                else:
+                    self.funktion_trigonometrisch_x_ersetzbar += "x)"
+                if d != 0:
+                    self.funktion_trigonometrisch_x_ersetzbar += vorzeichen_str(d)
+                self.funktion_trigonometrisch_computer_readable = self.funktion_to_computer_readable(self.funktion_trigonometrisch_x_ersetzbar)
+                self.trigonometrisch_a = a
+                self.trigonometrisch_b = b
+                self.trigonometrisch_c = c
+                self.trigonometrisch_d = d
+            else:
+                if self.debug_sonstiges != False:
+                    self.debug_sonstiges.add_funktion_not_erkannt_reason("Trigonometrisch "+trigonometrische_funktion, d)
 
-    def __check_funktion_trigonometrische_funktion_and_convert(self,funktion):
-        return False,"comming soon"
+    def __check_funktion_trigonometrische_funktion_and_convert(self,funktion,trigonometrische_funktion):
+        funktion_array = []
+        funktion_array.extend(funktion)
+        a = ""
+        b = ""
+        c = ""
+        d = ""
+        if trigonometrische_funktion in funktion:
+            pos = funktion.index(trigonometrische_funktion)
+            if pos > 0:
+                for index in range(pos):
+                    a += funktion[index]
+                if a[-1] != "*":
+                    return False, False, False, "Vorfaktor nicht mal genommen"
+                else:
+                    a = a[:-1]
+            else:
+                a = "1"
+            if funktion_array[pos + 3] == "(":
+                offenen_klammern = 0
+                klammer_ende = 0
+                index = pos + 3
+                while index < len(funktion_array):
+                    if funktion_array[index] == "(":
+                        offenen_klammern += 1
+                    elif funktion_array[index] == ")":
+                        offenen_klammern -= 1
+                        if offenen_klammern == 0:
+                            klammer_ende = index
+                            index = len(funktion_array)
+                    index += 1
+                b, c = get_n_m_from_n_mal_x_plus_m(Funktion(funktion[pos + 4:klammer_ende]))
+                if b == False or c == False:
+                    return False, False, False, "innerer Term nicht erkannt"
+                else:
+                    for index in range(klammer_ende + 1, len(funktion)):
+                        d += funktion_array[index]
+            else:
+                return False, False, False, "Keine Klammer nach Sinus"
+            if "x" in a or "x" in b or "x" in c or "x" in d:
+                return False, False, False, "x in a,b,c or d"
+            for value in [a, b, c, d]:
+                try:
+                    wert = eval(value)
+                    if not (isinstance(wert, int) or isinstance(wert, float)):
+                        return False, False, False, "nicht definierter Wert in a,b,c or d"
+                except Exception:
+                    return False, False, False, "unsolvable value in a,b,c or d"
+            result_funktion = str(eval(a))+"*sin("+str(eval(b))+"*(x"+vorzeichen_str(eval(c))+"))"+vorzeichen_str(eval(d))
+            if not check_funktionen_gleich(funktion,result_funktion):
+                return False,False,False,"Funktion am Ende passt nicht"
+            return a, b, c, d
+        else:
+            return False,False,False,"Kein "+trigonometrische_funktion+" in Funktion"
 
     def string_an_zeichen_teilen(self,string,zeichen1,zeichen2):
         output = []
@@ -691,7 +787,7 @@ class Funktion():
             else:
                 return self.funktion_user_x_ersetztbar.replace("x", "(" + x + ")")
         else:
-            print(x)
+            #print(Fehler beim einsetzen in Funktion",x)
             return ""
 
     def set_funktion(self,funktion):
@@ -732,7 +828,7 @@ class Funktion():
                 return True
             else:
                 # Fehler in Funktion
-                print("Funktion nicht erkannt:",funktion,computer_funktion)
+                print("Funktion nicht erkannt:",funktion," (für computer",computer_funktion+")")
                 return False
         else:
             return "unverändert"

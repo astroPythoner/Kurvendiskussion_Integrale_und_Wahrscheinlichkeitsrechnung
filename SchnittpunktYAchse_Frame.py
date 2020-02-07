@@ -37,4 +37,4 @@ class SchnittpunktYAchse_Frame(tk.Frame):
                 tk.Label(self, text="f(0) = nicht definiert").grid(row=3, column=1)
                 tk.Label(self, text="Kein Schnittpunkt mit Y-Achse").grid(row=4, column=0, sticky=tk.W)
         else:
-            tk.Label(self, text="Für Schnittpunktberechnung Funktion oben eingeben").grid(row=0, column=0)
+            tk.Label(self, text="Für Berechnung des Schnittpunktes mit der y-Achse Funktion oben eingeben").grid(row=0, column=0)
