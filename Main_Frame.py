@@ -23,7 +23,7 @@ import Funktion
 
 root = None
 
-DEBUG = False
+DEBUG = True
 
 class MainWindow(tk.Frame):
 
@@ -51,27 +51,18 @@ class MainWindow(tk.Frame):
 
             self.Graph_Frame.update(self.funktion)
             self.eingabe_passt.config(text="Funktion passt")
-            if DEBUG:
-                text = "Debug: "+self.eingabe.get()+"\n = "+self.funktion.funktion_user_x_ersetztbar+"\n = "+self.funktion.funktion_user_kurz+"\n = "+self.funktion.funktion_computer_readable
-                if self.funktion.is_polynomfunktion:
-                    text += "\n Exponenten: "+str(self.funktion.exponenten_array)
-                    text += "\n = " + str(self.funktion.funktion_polynom_x_ersetzbar)
-                    text += "\n = " + str(self.funktion.funktion_polynom_computer_readable)
-                else:
-                    text += "\n keine Exponentialgleichung"
+            if self.funktion.is_polynomfunktion:
+                text = "Polynomfunktion: " + self.funktion.funktion_polynom_x_ersetzbar
+            elif self.funktion.is_wurzel:
+                text = "Wurzelfunktion: " + self.funktion.funktion_wurzel_x_ersetzbar
+            elif self.funktion.is_logarithmus:
+                text = "Logarithmusfunktion: " + self.funktion.funktion_logarithmus_x_ersetzbar
+            elif self.funktion.is_trigonometrisch:
+                text = "Trigonometrische Funktion: " + self.funktion.funktion_trigonometrisch_x_ersetzbar
+            elif self.funktion.is_exponential:
+                text = "Exponentialfunktion: " + self.funktion.funktion_exponential_x_ersetzbar
             else:
-                if self.funktion.is_polynomfunktion:
-                    text = "Polynomfunktion: " + self.funktion.funktion_user_kurz
-                elif self.funktion.is_wurzel:
-                    text = "Wurzelfunktion: " + self.funktion.funktion_user_kurz
-                elif self.funktion.is_logarithmus:
-                    text = "Logarithmusfunktion: " + self.funktion.funktion_user_kurz
-                elif self.funktion.is_trigonometrisch:
-                    text = "Trigonometrische Funktion: " + self.funktion.funktion_user_kurz
-                elif self.funktion.is_exponential:
-                    text = "Exponentialfunktion: " + self.funktion.funktion_user_kurz
-                else:
-                    text = "Funktionstyp nicht bekannt"
+                text = "Funktionstyp nicht bekannt"
             self.funktion_info_text.config(text=text)
         elif passt == "unverändert":
             self.eingabe_passt.config(text="Funktion nicht verändert")
@@ -166,7 +157,7 @@ class MainWindow(tk.Frame):
         self.head_frames.append(self.integrale_head_frame)
         self.pane.add(self.integrale_head_frame.head_frame, text="Integral", padding=0)
 
-        self.sonstiges_head_frame = ScrollableFrame(self,Sonstiges_Frame.Sonstiges_Frame)
+        self.sonstiges_head_frame = ScrollableFrame(self,Sonstiges_Frame.Sonstiges_Frame,DEBUG)
         self.Sonstige_Frame = self.sonstiges_head_frame.frame
         self.frames.append(self.Sonstige_Frame)
         self.head_frames.append(self.sonstiges_head_frame)
@@ -207,7 +198,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.0.1")
+    root.title("Kurvendiskussion - v2.0.2")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

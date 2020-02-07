@@ -282,18 +282,19 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
     else:
         could_be_solved = True
         try:
-            solution = sympy.solveset(funktion.funktion_computer_readable,sympy.Symbol('x'))
+            solution = sympy.solveset(funktion.funktion_sympy_readable,sympy.Symbol('x'))
             ergebnisse = []
+            if solution.is_empty:
+                tk.Label(frame, text="Keine Nullstellen gefunden").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
             for loesung in list(solution):
-                loesung = sympy.sstr(loesung)
+                loesung = sympy.pretty(loesung)
                 if isinstance(loesung,str):
                     try:
-                        loesung = float(loesung)
+                        loesung = float(eval(loesung))
                         if int(loesung) == loesung:
                             loesung = int(loesung)
                     except Exception:
                         pass
-                print(loesung,isinstance(loesung,int),isinstance(loesung,str),type(loesung))
                 if isinstance(loesung,int) or isinstance(loesung,float):
                     ergebnisse.append(loesung)
                 else:
@@ -303,6 +304,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                     punkte.append(Punkt(erg, 0, "Nst" + str(num_nullstellen_bisher + 1 + count)))
                     tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 1 + count) + " = " + str(punkte[-1])).grid(row=row + 1 + count, column=0, sticky=tk.W)
         except Exception as e:
+            print(e)
             could_be_solved = False
         if not could_be_solved:
             tk.Label(frame, text="Nullstellen konnten nicht gefunden werden").grid(row=row+1, column=0,columnspan=2, sticky=tk.W)

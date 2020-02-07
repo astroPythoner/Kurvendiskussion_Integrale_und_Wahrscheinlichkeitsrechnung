@@ -168,6 +168,7 @@ class Funktion():
     funktion_user_kurz = ""
     funktion_user_x_ersetztbar = ""
     funktion_computer_readable = ""
+    funktion_sympy_readable = ""
 
     is_polynomfunktion = False             # Typ: ax'3 + bx'2 + cx + d + ...
     funktion_polynom_x_ersetzbar = ""
@@ -206,6 +207,8 @@ class Funktion():
     trigonometrisch_d = 0
 
     is_exponential = False                # Typ: a'x+b'x+c'x
+    funktion_exponential_x_ersetzbar = ""
+    funktion_exponential_computer_readable = ""
 
     def __init__(self,funktion=None):
         if funktion != None:
@@ -294,6 +297,19 @@ class Funktion():
         funktion = "".join(i for i in funktion_array)
         funktion = funktion.replace("log", "math.log")
         funktion = funktion.replace("ln", "math.log1p")
+        return funktion
+
+    def funktion_to_sympy_readable(self,funktion):
+        funktion = funktion.replace("e","e")
+        funktion = funktion.replace("pi", "pi")
+        funktion_array = []
+        funktion_array.extend(funktion)
+        for count,letter in enumerate(funktion_array):
+            if letter == "'" or letter == "":
+                funktion_array[count] = "**"
+        funktion = "".join(i for i in funktion_array)
+        funktion = funktion.replace("log", "log")
+        funktion = funktion.replace("ln", "ln")
         return funktion
 
     def funktion_to_user_kurz(self,funktion):
@@ -701,6 +717,7 @@ class Funktion():
                 self.funktion_user_x_ersetztbar = funktion
                 self.funktion_user_kurz = self.funktion_to_user_kurz(funktion)
                 self.funktion_computer_readable = computer_funktion
+                self.funktion_sympy_readable = self.funktion_to_sympy_readable(funktion)
                 self.exponenten_array = []
                 self.nur_exponenten = []
                 self.nur_basen = []

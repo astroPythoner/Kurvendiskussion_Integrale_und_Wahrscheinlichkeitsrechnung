@@ -85,7 +85,7 @@ class Ableitung_Frame(tk.Frame):
 
             could_be_solved = True
             try:
-                loesung = sympy.diff(davor_abgeleitete_funktion.funktion_computer_readable, sympy.Symbol('x'), 1)
+                loesung = sympy.diff(davor_abgeleitete_funktion.funktion_sympy_readable, sympy.Symbol('x'), 1)
                 ableitungsfunktion = Funktion()
                 funktion_erkannt = ableitungsfunktion.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
                 if funktion_erkannt:
@@ -94,7 +94,7 @@ class Ableitung_Frame(tk.Frame):
                     row = row+2
                 else:
                     could_be_solved = False
-                    tk.Label(self, text="Vielleicht hilft das: " + sympy.printing.sstr(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
+                    tk.Label(self, text="Vielleicht hilft das: " + sympy.pretty(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
             except Exception:
                 could_be_solved = False
             if not could_be_solved:
