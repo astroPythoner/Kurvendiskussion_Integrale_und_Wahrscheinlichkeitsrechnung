@@ -43,7 +43,9 @@ class Sonstiges_Frame(tk.Frame):
             elif self.__funktion.is_wurzel:
                 tk.Label(self, text="Wurzelfunktion").grid(row=0, column=0)
             elif self.__funktion.is_trigonometrisch:
-                tk.Label(self, text="trigonometrische Funktion").grid(row=0, column=0)
+                tk.Label(self, text="trigonometrische Funktion ("+self.__funktion.trigonometrische_funktion+")").grid(row=0, column=0)
+                tk.Label(self, text="f(x) = " + self.__funktion.funktion_trigonometrisch_x_ersetzbar).grid(row=1, column=0)
+                tk.Label(self, text="a * "+self.__funktion.trigonometrische_funktion+"(b(x-c)) + d:   a = "+str(self.__funktion.trigonometrisch_a)+", b = "+str(self.__funktion.trigonometrisch_b)+", c = "+str(self.__funktion.trigonometrisch_c)+", d = "+str(self.__funktion.trigonometrisch_d)).grid(row=2, column=0)
             elif self.__funktion.is_exponential:
                 tk.Label(self, text="Exponentialfunktion").grid(row=0, column=0)
             else:

@@ -124,6 +124,8 @@ def get_n_m_from_n_mal_x_plus_m(funktion):
     if isinstance(funktion,str):
         funktion = Funktion(funktion)
     # checks through n(x+m) and return n,m
+    if funktion == "x":
+        return 1,0
     if "x" in funktion.funktion_user_x_ersetztbar:
         funktion_array = []
         funktion_array.extend(funktion.funktion_user_x_ersetztbar)
@@ -177,6 +179,12 @@ def get_n_m_from_n_mal_x_plus_m(funktion):
         # check if n and m are correct
         if "x" in n or "x" in m:
             return False,False
+        # wenn möglich ganzzahl (int) daraus machen
+        if eval(n) == int(eval(n)):
+            n = str(int(eval(n)))
+        if eval(m) == int(eval(m)):
+            m = str(int(eval(m)))
+        # prüfen ob Funktion passt
         if not check_funktionen_gleich(funktion,str(eval(n))+"*(x"+vorzeichen_str(eval(m))+")"):
             return False,False
         return n,m
@@ -680,19 +688,23 @@ class Funktion():
                 self.funktion_trigonometrisch_x_ersetzbar = ""
                 if a != 1:
                     self.funktion_trigonometrisch_x_ersetzbar += str(a)+" * "
-                self.funktion_trigonometrisch_x_ersetzbar += "sin("
+                self.funktion_trigonometrisch_x_ersetzbar += trigonometrische_funktion+"("
                 if b != 1:
-                    self.funktion_trigonometrisch_x_ersetzbar += str(b)
+                    self.funktion_trigonometrisch_x_ersetzbar += str(b)+"*"
                 if c != 0:
-                    self.funktion_trigonometrisch_x_ersetzbar += "*(x"+vorzeichen_str(c)+"))"
+                    if b != 1:
+                        self.funktion_trigonometrisch_x_ersetzbar += "(x"+vorzeichen_str(c)+")"
+                    else:
+                        self.funktion_trigonometrisch_x_ersetzbar += "x"+vorzeichen_str(c)
                 else:
-                    self.funktion_trigonometrisch_x_ersetzbar += "x)"
+                    self.funktion_trigonometrisch_x_ersetzbar += "x"
+                self.funktion_trigonometrisch_x_ersetzbar += ")"
                 if d != 0:
                     self.funktion_trigonometrisch_x_ersetzbar += vorzeichen_str(d)
                 self.funktion_trigonometrisch_computer_readable = self.funktion_to_computer_readable(self.funktion_trigonometrisch_x_ersetzbar)
                 self.trigonometrisch_a = a
                 self.trigonometrisch_b = b
-                self.trigonometrisch_c = c
+                self.trigonometrisch_c = -c
                 self.trigonometrisch_d = d
             else:
                 if self.debug_sonstiges != False:
@@ -733,8 +745,11 @@ class Funktion():
                 if b == False or c == False:
                     return False, False, False, "innerer Term nicht erkannt"
                 else:
-                    for index in range(klammer_ende + 1, len(funktion)):
-                        d += funktion_array[index]
+                    if klammer_ende + 1 < len(funktion)-1:
+                        for index in range(klammer_ende + 1, len(funktion)):
+                            d += funktion_array[index]
+                    else:
+                        d = "0"
             else:
                 return False, False, False, "Keine Klammer nach Sinus"
             if "x" in a or "x" in b or "x" in c or "x" in d:
@@ -746,7 +761,7 @@ class Funktion():
                         return False, False, False, "nicht definierter Wert in a,b,c or d"
                 except Exception:
                     return False, False, False, "unsolvable value in a,b,c or d"
-            result_funktion = str(eval(a))+"*sin("+str(eval(b))+"*(x"+vorzeichen_str(eval(c))+"))"+vorzeichen_str(eval(d))
+            result_funktion = str(eval(a))+"*"+trigonometrische_funktion+"("+str(eval(b))+"*(x"+vorzeichen_str(eval(c))+"))"+vorzeichen_str(eval(d))
             if not check_funktionen_gleich(funktion,result_funktion):
                 return False,False,False,"Funktion am Ende passt nicht"
             return a, b, c, d
@@ -828,7 +843,7 @@ class Funktion():
                 return True
             else:
                 # Fehler in Funktion
-                print("Funktion nicht erkannt:",funktion," (für computer",computer_funktion+")")
+                print("Funktion fehlerhaft:",funktion," (für computer",computer_funktion+")")
                 return False
         else:
             return "unverändert"
