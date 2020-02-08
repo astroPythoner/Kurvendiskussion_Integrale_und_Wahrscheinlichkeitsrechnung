@@ -23,7 +23,7 @@ import Funktion
 
 root = None
 
-DEBUG = False
+DEBUG = True
 
 class MainWindow(tk.Frame):
 
@@ -199,7 +199,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.0.4")
+    root.title("Kurvendiskussion - v2.0.5")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

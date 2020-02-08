@@ -1,5 +1,5 @@
-from Grundklassen import Punkt
-from Funktion import Funktion, polynom_to_str, vorzeichen_str
+from Grundklassen import Punkt, Wiederholender_Punkt
+from Funktion import Funktion, polynom_to_str, n_mal_x_plus_m_to_string, vorzeichen_str
 
 import tkinter as tk
 import math
@@ -279,6 +279,66 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                     row=row2
                     for punkt in weitere_punkte:
                         punkte.append(punkt)
+    elif funktion.is_trigonometrisch:
+        links = 0
+        if funktion.trigonometrisch_d != 0:
+            links = -funktion.trigonometrisch_d
+            tk.Label(frame, text="| "+vorzeichen_str(links)).grid(row=row, column=2)
+            tk.Label(frame, text=str(links)+" = " + str(funktion.trigonometrisch_a) + " * "+ funktion.trigonometrische_funktion + "(" + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c) + ")").grid(row=row+1, column=1)
+            row = row+1
+        if funktion.trigonometrisch_a != 1:
+            links = links/funktion.trigonometrisch_a
+            tk.Label(frame, text="| /"+str(funktion.trigonometrisch_a)).grid(row=row, column=2)
+            tk.Label(frame, text=str(links)+" = " +funktion.trigonometrische_funktion + "(" + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c) + ")").grid(row=row+1, column=1)
+            row = row+1
+        try:
+            links = eval("math.a" + funktion.trigonometrische_funktion + "(" + str(links) + ")")
+        except Exception:
+            tk.Label(frame, text="keine Nullstelle").grid(row=row+1, column=1)
+            return punkte,row+1
+        links_merken1 = -links
+        tk.Label(frame, text="| a"+funktion.trigonometrische_funktion).grid(row=row, column=2)
+        tk.Label(frame, text=str(links) + " = "+n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c)).grid(row=row+1, column=1)
+        row = row+1
+        links_merken2 = links
+        if funktion.trigonometrisch_b != 1:
+            links = links/funktion.trigonometrisch_b
+            links_merken2 = links
+            tk.Label(frame, text="| /"+str(funktion.trigonometrisch_b)).grid(row=row, column=2)
+            tk.Label(frame, text=str(links)+" = "+"x"+vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row+1, column=1)
+            row = row+1
+        if funktion.trigonometrisch_c != 0:
+            links = links+funktion.trigonometrisch_c
+            tk.Label(frame, text="| "+vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row, column=2)
+            tk.Label(frame, text=str(links)+" = x").grid(row=row+1, column=1)
+            row = row+1
+        teiler = funktion.trigonometrisch_b/2
+        punkte.append(Wiederholender_Punkt(Funktion(str(links)+"+(x*pi)/"+str(teiler)),0,"Nst1"))
+        tk.Label(frame, text="Nst1 = " + str(punkte[0])).grid(row=row + 1, column=0, sticky=tk.W)
+        if funktion.trigonometrische_funktion == "cos":
+            tk.Label(frame, text=str(-links_merken2) + " = " + "x" + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row + 2, column=1)
+            row = row + 2
+            if funktion.trigonometrisch_c != 0:
+                tk.Label(frame, text="| " + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row, column=2)
+                tk.Label(frame, text=str(-links_merken2+funktion.trigonometrisch_c) + " = x").grid(row=row + 1, column=1)
+                row = row + 1
+            punkte.append(Wiederholender_Punkt(Funktion(str(-links_merken2+funktion.trigonometrisch_c)+"+pi/"+str(teiler)+"+(x*pi)/"+str(teiler)),0,"Nst2"))
+        else:
+            tk.Label(frame, text=str(links_merken1) + " + pi = " + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c)).grid(row=row + 2, column=1)
+            links_merken1 = links_merken1 + math.pi
+            row = row+2
+            if funktion.trigonometrisch_b != 1:
+                links_merken1 = links_merken1/ funktion.trigonometrisch_b
+                tk.Label(frame, text="| /" + str(funktion.trigonometrisch_b)).grid(row=row, column=2)
+                tk.Label(frame, text=str(links_merken1) + " = " + "x" + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row + 1, column=1)
+                row = row + 1
+            if funktion.trigonometrisch_c != 0:
+                links_merken1 = links_merken1 + funktion.trigonometrisch_c
+                tk.Label(frame, text="| " + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row, column=2)
+                tk.Label(frame, text=str(links_merken1) + " = x").grid(row=row + 1, column=1)
+                row = row + 1
+            punkte.append(Wiederholender_Punkt(Funktion(str(links_merken1) + "+(x*pi)/" + str(teiler)), 0, "Nst2"))
+        tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 1, column=0, sticky=tk.W)
     else:
         if not ("sin" in funktion.funktion_user_x_ersetztbar or "cos" in funktion.funktion_user_x_ersetztbar or "tan" in funktion.funktion_user_x_ersetztbar):
             could_be_solved = True
@@ -340,10 +400,11 @@ class Nullstellen_Frame(tk.Frame):
             punkte,row = nullstellen_berechnen(self.__funktion,1,self)
             unterschiedliche_x_werte = []
             for count,punkt in enumerate(punkte):
-                if punkt.x not in unterschiedliche_x_werte:
-                    unterschiedliche_x_werte.append(punkt.x)
-                else:
-                    del punkte[count]
+                if isinstance(punkt,Punkt):
+                    if punkt.x not in unterschiedliche_x_werte:
+                        unterschiedliche_x_werte.append(punkt.x)
+                    else:
+                        del punkte[count]
             self.punkte = sorted(punkte)
         else:
             tk.Label(self, text="Fuer Nullstellenberechnung Funktion oben eingeben").grid(row=0, column=0)

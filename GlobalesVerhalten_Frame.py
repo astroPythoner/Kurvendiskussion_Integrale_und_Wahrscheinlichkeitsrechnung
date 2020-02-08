@@ -87,6 +87,18 @@ class GlobalesVerhalten_Frame(tk.Frame):
                         tk.Label(self, text="lim x->-∞ = " + geht_gegen_funktion_minus_unendlich[:2]).grid(row=4,column=0)
                     else:
                         tk.Label(self, text="lim x->-∞ = " + str(eval(geht_gegen_funktion_minus_unendlich))).grid(row=4,column=0)
+            elif self.__funktion.is_trigonometrisch:
+                tk.Label(self, text="Trigonometrische Funktion konvegiert nicht").grid(row=1, column=1,sticky = tk.W)
+                tk.Label(self, text="Wertemenge:").grid(row=2, column=1,sticky = tk.W)
+                if self.__funktion.trigonometrische_funktion == "tan":
+                    tk.Label(self, text="W = {-∞;∞}").grid(row=3, column=1)
+                else:
+                    tk.Label(self, text="W = {−a + d;a + d}").grid(row=3, column=1)
+                    wert1 = self.__funktion.trigonometrisch_a + self.__funktion.trigonometrisch_d
+                    wert2 = -self.__funktion.trigonometrisch_a + self.__funktion.trigonometrisch_d
+                    min_wert = min([wert1,wert2])
+                    max_wert = max([wert1,wert2])
+                    tk.Label(self, text="W = {"+str(min_wert)+";"+str(max_wert)+"}").grid(row=4, column=1)
             else:
                 tk.Label(self, text="Globales Verhalten konnte nicht ermittelt werden" + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
         else:

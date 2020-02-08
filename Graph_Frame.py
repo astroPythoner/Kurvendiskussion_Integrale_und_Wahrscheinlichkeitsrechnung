@@ -1,4 +1,4 @@
-from Grundklassen import Graph
+from Grundklassen import Graph, Punkt, Wiederholender_Punkt
 
 import tkinter as tk
 
@@ -188,9 +188,13 @@ class Graph_Frame(tk.Frame):
             for frame in list(self.punkt_frames.keys()):
                 try:
                     for punkt in frame.punkte:
-                        if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
-                            plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
-                            plt.scatter(punkt.x,punkt.y, c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
+                        plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
+                        if isinstance(punkt,Punkt):
+                            if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
+                                plt.scatter(punkt.x,punkt.y, c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
+                        else:
+                            for p in punkt.get_koordinaten_from_to(self.start_x.get(),self.end_x.get()):
+                                plt.scatter(p[0], p[1], c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
                 except:
                     pass
 

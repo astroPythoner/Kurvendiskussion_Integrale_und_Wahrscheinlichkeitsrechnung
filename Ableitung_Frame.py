@@ -98,6 +98,7 @@ class Ableitung_Frame(tk.Frame):
             except Exception:
                 could_be_solved = False
             if not could_be_solved:
+                ableitungsfunktion = None
                 tk.Label(self, text="Ableitung konnte nicht erstellt werden").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
                 row = row + 2
         if ableitungsfunktion != None:

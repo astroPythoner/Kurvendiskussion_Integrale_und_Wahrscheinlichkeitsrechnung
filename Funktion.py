@@ -190,6 +190,19 @@ def get_n_m_from_n_mal_x_plus_m(funktion):
         return n,m
     return False,False
 
+def n_mal_x_plus_m_to_string(n,m):
+    string = ""
+    if n != 1:
+        string += str(n) + "*"
+    if m != 0:
+        if n != 1:
+            string += "(x" + vorzeichen_str(m) + ")"
+        else:
+            string += "x" + vorzeichen_str(m)
+    else:
+        string += "x"
+    return string
+
 class Funktion():
 
     funktion_user_kurz = ""
@@ -318,12 +331,15 @@ class Funktion():
         for count,letter in enumerate(funktion_array):
             if letter == "'" or letter == "":
                 funktion_array[count] = "**"
+        funktion = "".join(i for i in funktion_array)
+        funktion_array = []
+        funktion_array.extend(funktion)
         letter_num = 0
         while letter_num < len(funktion_array):
-            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num<=3 or (letter_num>3 and funktion_array[letter_num-3:letter_num] != ["a","r","c"])):
+            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num<3 or (letter_num>=3 and funktion_array[letter_num-3:letter_num] != ["a","r","c"])):
                 funktion_array.insert(letter_num,"math.")
                 letter_num += 1
-            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num>3 and funktion_array[letter_num-3:letter_num] == ["a","r","c"]):
+            if (funktion_array[letter_num:letter_num+3] == ["s","i","n"] or funktion_array[letter_num:letter_num+3] == ["c","o","s"] or funktion_array[letter_num:letter_num+3] == ["t","a","n"]) and (letter_num>=3 and funktion_array[letter_num-3:letter_num] == ["a","r","c"]):
                 funktion_array[letter_num - 1] = "a"
                 funktion_array[letter_num - 2] = "."
                 funktion_array[letter_num - 3] = "math"
@@ -688,17 +704,7 @@ class Funktion():
                 self.funktion_trigonometrisch_x_ersetzbar = ""
                 if a != 1:
                     self.funktion_trigonometrisch_x_ersetzbar += str(a)+" * "
-                self.funktion_trigonometrisch_x_ersetzbar += trigonometrische_funktion+"("
-                if b != 1:
-                    self.funktion_trigonometrisch_x_ersetzbar += str(b)+"*"
-                if c != 0:
-                    if b != 1:
-                        self.funktion_trigonometrisch_x_ersetzbar += "(x"+vorzeichen_str(c)+")"
-                    else:
-                        self.funktion_trigonometrisch_x_ersetzbar += "x"+vorzeichen_str(c)
-                else:
-                    self.funktion_trigonometrisch_x_ersetzbar += "x"
-                self.funktion_trigonometrisch_x_ersetzbar += ")"
+                self.funktion_trigonometrisch_x_ersetzbar += trigonometrische_funktion+"("+n_mal_x_plus_m_to_string(b,c)+")"
                 if d != 0:
                     self.funktion_trigonometrisch_x_ersetzbar += vorzeichen_str(d)
                 self.funktion_trigonometrisch_computer_readable = self.funktion_to_computer_readable(self.funktion_trigonometrisch_x_ersetzbar)
@@ -813,6 +819,7 @@ class Funktion():
                 break
         funktion = self.funktion_verschoenern(self.funktion_verschoenern(self.funktion_verschoenern(funktion)))
         computer_funktion = self.funktion_to_computer_readable(funktion)
+        #print("Funktion",funktion,computer_funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:
             versuchs_x = [-10,-5,-2,-1-0.5,0,1,2,5,10,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
             working = True
