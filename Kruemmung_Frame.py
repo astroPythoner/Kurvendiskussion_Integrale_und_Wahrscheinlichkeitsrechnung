@@ -1,5 +1,5 @@
 from Funktion import Funktion
-from Grundklassen import Punkt
+from Grundklassen import Punkt, Wiederholender_Punkt
 from Nullstellen_Frame import nullstellen_berechnen
 
 import tkinter as tk
@@ -50,7 +50,10 @@ class Kruemmung_Frame(tk.Frame):
                             else:
                                 num_wendepunkt += 1
                                 tk.Label(self, text="Wendepunkt, da f''' ≠ 0").grid(row=row + 5, column=0, sticky=tk.W)
-                                wp = Punkt(nst.x, self.__funktion.x_einsetzen(nst.x), "WP" + str(num_wendepunkt))
+                                if isinstance(nst,Wiederholender_Punkt):
+                                    wp = Wiederholender_Punkt(nst.funktion, self.__funktion.x_einsetzen(nst.x), "WP" + str(num_wendepunkt))
+                                else:
+                                    wp = Punkt(nst.x, self.__funktion.x_einsetzen(nst.x), "WP" + str(num_wendepunkt))
                                 tk.Label(self, text="WP" + str(num_wendepunkt) + " = (" + str(round(nst.x, 5)) + "|f(" + str(round(nst.x, 5)) + ")) = " + str(wp)).grid(row=row + 6, column=0,sticky=tk.W)
                                 self.punkte.append(wp)
                         else:

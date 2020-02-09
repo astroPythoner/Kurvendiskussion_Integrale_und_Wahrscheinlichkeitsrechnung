@@ -339,6 +339,7 @@ class Remote_Settings(tk.Toplevel):
         self.ran_fun.logar_with_y_versch = self.log_y_versch.get()
         self.ran_fun.logar_spiegelung = self.log_spiegelung.get()
         self.ran_fun.with_trigonometrischefunktion = self.with_trig.get()
+        self.ran_fun.trigo_vorgeg_trigo = self.vorgeg_trigo.get()
         self.ran_fun.trigo_with_x_streck = self.x_streck.get()
         self.ran_fun.trigo_with_y_streck = self.y_streck.get()
         self.ran_fun.trigo_with_x_versch = self.x_versch.get()

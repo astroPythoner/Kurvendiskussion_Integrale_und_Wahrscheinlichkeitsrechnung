@@ -1,5 +1,5 @@
 from Grundklassen import Graph
-from Funktion import Funktion, polynom_array_to_str, vorzeichen_str
+from Funktion import Funktion, n_mal_x_plus_m_to_string, polynom_array_to_str, vorzeichen_str
 
 import tkinter as tk
 import math
@@ -81,8 +81,26 @@ class Ableitung_Frame(tk.Frame):
             tk.Label(self, text=funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=1)
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=0,sticky=tk.W)
             row = row+3
+        elif davor_abgeleitete_funktion.is_trigonometrisch:
+            if davor_abgeleitete_funktion.trigonometrisch_d != 0:
+                tk.Label(self, text=" konstante Zahl fällt weg, da kein x enthalten").grid(row=row, column=2,sticky = tk.W)
+                tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.trigonometrisch_a) + " * " + davor_abgeleitete_funktion.trigonometrische_funktion + "(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")").grid(row=row+1, column=1)
+                row = row + 1
+            if davor_abgeleitete_funktion.trigonometrische_funktion == "cos":
+                tk.Label(self, text="Nach Kettenregel "+davor_abgeleitete_funktion.trigonometrische_funktion+"(u(x)) -> -sin(u(x)) * u'(x), Vorfaktor bleibt erhalten").grid(row=row+1, column=1)
+                tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.trigonometrisch_a)+" * -sin(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ") * " + str(davor_abgeleitete_funktion.trigonometrisch_b)).grid(row=row+2, column=1)
+                ableitungsfunktion = Funktion(str(-1*davor_abgeleitete_funktion.trigonometrisch_a*davor_abgeleitete_funktion.trigonometrisch_b)+" * sin(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
+            elif davor_abgeleitete_funktion.trigonometrische_funktion == "sin":
+                tk.Label(self,text="Nach Kettenregel " + davor_abgeleitete_funktion.trigonometrische_funktion + "(u(x)) -> cos(u(x)) * u'(x), Vorfaktor bleibt erhalten").grid(row=row + 1, column=1)
+                tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.trigonometrisch_a) + " * cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ") * " + str(davor_abgeleitete_funktion.trigonometrisch_b)).grid(row=row + 2, column=1)
+                ableitungsfunktion = Funktion(str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " * cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
+            elif davor_abgeleitete_funktion.trigonometrische_funktion == "tan":
+                tk.Label(self, text=" tan() -> 1/cos()² mit Kettenregel tan(v(x)) -> v'(x)/(cos(x)²").grid(row=row, column=2, sticky=tk.W)
+                tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * " + str(self.__funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b,-self.__funktion.trigonometrisch_c) + ")'2").grid(row=row + 1, column=1)
+                ableitungsfunktion = Funktion(str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")'2")
+            tk.Label(self, text=funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=1)
+            row = row+3
         else:
-
             could_be_solved = True
             try:
                 loesung = sympy.diff(davor_abgeleitete_funktion.funktion_sympy_readable, sympy.Symbol('x'), 1)

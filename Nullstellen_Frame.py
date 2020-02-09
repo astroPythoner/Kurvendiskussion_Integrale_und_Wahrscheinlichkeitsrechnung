@@ -339,6 +339,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                 row = row + 1
             punkte.append(Wiederholender_Punkt(Funktion(str(links_merken1) + "+(x*pi)/" + str(teiler)), 0, "Nst2"))
         tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 1, column=0, sticky=tk.W)
+        row = row + 1
     else:
         if not ("sin" in funktion.funktion_user_x_ersetztbar or "cos" in funktion.funktion_user_x_ersetztbar or "tan" in funktion.funktion_user_x_ersetztbar):
             could_be_solved = True

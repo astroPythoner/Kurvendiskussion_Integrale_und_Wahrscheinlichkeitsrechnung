@@ -1,5 +1,5 @@
 from Grundklassen import Graph
-from Funktion import Funktion, vorzeichen_str, bruch_kuerzen, polynom_to_str
+from Funktion import Funktion, vorzeichen_str, bruch_kuerzen, n_mal_x_plus_m_to_string, polynom_to_str
 
 import tkinter as tk
 import math
@@ -49,6 +49,23 @@ class Stammfunktion_Frame(tk.Frame):
             stammfunk.set_funktion(stammfunktion_kurz)
             tk.Label(self, text="F(x) = "+stammfunktion_lang).grid(row=2, column=1)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=3, column=1)
+        elif self.__funktion.is_trigonometrisch and self.__funktion.trigonometrische_funktion != "tan":
+            stammfunktion_ende = ""
+            row = 0
+            if self.__funktion.trigonometrisch_d != 0:
+                tk.Label(self, text=" konstante Zahl mit x erweitern").grid(row=0, column=2,sticky = tk.W)
+                tk.Label(self, text="F(x) = " +self.__funktion.funktion_trigonometrisch_x_ersetzbar+"x").grid(row=1, column=1)
+                stammfunktion_ende = vorzeichen_str(self.__funktion.trigonometrisch_d,mitleerzeichen=True)+"x"
+                row = 1
+            if self.__funktion.trigonometrische_funktion == "sin":
+                tk.Label(self, text=" Kettenregel sin(v(x)) -> -cos(v(x)) / v'(x)").grid(row=row, column=2, sticky=tk.W)
+                tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * -cos(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c) + ") / "+str(self.__funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+1, column=1)
+                stammfunk = Funktion(str(-self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * cos("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
+            elif self.__funktion.trigonometrische_funktion == "cos":
+                tk.Label(self, text=" Kettenregel cos(v(x)) -> sin(v(x)) / v'(x)").grid(row=row, column=2, sticky=tk.W)
+                tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * sin(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c) + ") / "+str(self.__funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+1, column=1)
+                stammfunk = Funktion(str(self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * sin("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
+            tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=row+2, column=1)
         else:
             could_be_solved = True
             try:

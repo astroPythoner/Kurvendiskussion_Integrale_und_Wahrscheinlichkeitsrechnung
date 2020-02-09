@@ -1,4 +1,4 @@
-from Grundklassen import Punkt
+from Grundklassen import Punkt, Wiederholender_Punkt
 from Funktion import Funktion
 from Nullstellen_Frame import nullstellen_berechnen
 
@@ -51,7 +51,10 @@ class Steigung_Frame(tk.Frame):
                             if self.erg < 0:
                                 num_hochpunkt += 1
                                 tk.Label(self, text="Hochpunkt, da f'' < 0").grid(row=row+5, column=0, sticky=tk.W)
-                                hp = Punkt(nst.x,self.__funktion.x_einsetzen(nst.x),"HP"+str(num_hochpunkt))
+                                if isinstance(nst,Wiederholender_Punkt):
+                                    hp = Wiederholender_Punkt(nst.funktion,self.__funktion.x_einsetzen(nst.x),"HP"+str(num_hochpunkt))
+                                else:
+                                    hp = Punkt(nst.x,self.__funktion.x_einsetzen(nst.x),"HP"+str(num_hochpunkt))
                                 tk.Label(self, text="HP"+str(num_hochpunkt)+" = ("+str(round(nst.x,3))+"|f("+str(round(nst.x,3))+")) = "+str(hp)).grid(row=row + 6, column=0, sticky=tk.W)
                                 self.punkte.append(hp)
                             elif self.erg == 0:
@@ -59,7 +62,10 @@ class Steigung_Frame(tk.Frame):
                             else:
                                 num_tiefpunkte += 1
                                 tk.Label(self, text="Tiefpunkt, da f'' > 0").grid(row=row+5, column=0, sticky=tk.W)
-                                tp = Punkt(nst.x,self.__funktion.x_einsetzen(nst.x),"TP"+str(num_tiefpunkte))
+                                if isinstance(nst,Wiederholender_Punkt):
+                                    tp = Wiederholender_Punkt(nst.funktion,self.__funktion.x_einsetzen(nst.x),"TP"+str(num_tiefpunkte))
+                                else:
+                                    tp = Punkt(nst.x,self.__funktion.x_einsetzen(nst.x),"TP"+str(num_tiefpunkte))
                                 tk.Label(self, text="TP"+str(num_tiefpunkte)+" = ("+str(round(nst.x,3))+"|f("+str(round(nst.x,3))+")) = "+str(tp)).grid(row=row + 6, column=0, sticky=tk.W)
                                 self.punkte.append(tp)
                         else:
