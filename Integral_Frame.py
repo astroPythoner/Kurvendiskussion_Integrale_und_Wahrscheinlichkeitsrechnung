@@ -10,6 +10,7 @@ class Integral_Frame(tk.Frame):
     stammfunktion = None
     nullstellen = None
     einstellungsframe = None
+    achte_auf_nullstellen = None
 
     def __init__(self, master=None, stammfunktion=None, nullstellen=None):
         tk.Frame.__init__(self, master)
@@ -24,6 +25,7 @@ class Integral_Frame(tk.Frame):
         self.update()
         self.stammfunktion = stammfunktion
         self.nullstellen = nullstellen
+        self.achte_auf_nullstellen = False
 
     def update(self, neu_funktion = None):
         if neu_funktion is not None:
@@ -46,6 +48,10 @@ class Integral_Frame(tk.Frame):
             if self.x_ende.get() <= self.x_start.get():
                 self.x_start.set(self.x_ende.get()-1)
 
+    def achte_nst_changed(self):
+        self.achte_auf_nullstellen = not self.achte_auf_nullstellen
+        self.createWidgets()
+
     def integral_berechnen(self):
         stammfunktion = self.stammfunktion.funktionen[0].funktion
         tk.Label(self, text="Stammfunktion: "+stammfunktion.funktion_user_kurz).grid(row=2, column=1)
@@ -54,16 +60,16 @@ class Integral_Frame(tk.Frame):
         zweiter_wert = stammfunktion.x_einsetzen(self.x_ende.get())
         tk.Label(self, text="F("+str(self.x_start.get())+") = "+str(erster_wert)).grid(row=4, column=1, sticky=tk.W)
         tk.Label(self, text="F("+str(self.x_ende.get())+") = "+str(zweiter_wert)).grid(row=5, column=1, sticky=tk.W)
-        tk.Label(self, text="!! ACHTUNG Wenn nicht gefundene Nullstellen zwischen den Punkten liegen werden die Flächen unter dem Graph negativ gesehen und im Ergebnis abgezogen").grid(row=6, column=0, sticky=tk.W, columnspan=2)
         if erster_wert == "nicht definiert" or zweiter_wert == "nicht definiert":
-            tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen").grid(row=7, column=0, sticky=tk.W, columnspan=2)
+            tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen").grid(row=6, column=0, sticky=tk.W, columnspan=2)
         elif self.nullstellen != None:
             # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
             for punkt in self.nullstellen.punkte:
                 if self.x_start.get() < punkt.x < self.x_ende.get():
                     nullstellen_dazwischen.append(punkt)
-            if len(nullstellen_dazwischen) >= 1:
+            if len(nullstellen_dazwischen) >= 1 and self.achte_auf_nullstellen:
+                tk.Label(self, text="!! ACHTUNG Wenn nicht gefundene Nullstellen zwischen den Punkten liegen werden die Flächen unter dem Graph negativ gesehen und im Ergebnis abgezogen").grid(row=6,column=0,sticky=tk.W,columnspan=2)
                 tk.Label(self, text="2. Nullstellen zwischen Werten finden").grid(row=7,column=0,sticky=tk.W,columnspan=2)
                 nst_text = "Nulstellen: "
                 for punkt in nullstellen_dazwischen:
@@ -95,8 +101,8 @@ class Integral_Frame(tk.Frame):
             else:
                 # Differenz berechnen
                 tk.Label(self, text="2. Differenz der beiden Werte finden:").grid(row=7, column=0, sticky=tk.W, columnspan=2)
-                erg = abs(erster_wert-zweiter_wert)
-                tk.Label(self, text="| "+str(erster_wert)+" "+vorzeichen_str(erg)+" | = "+str(erg)).grid(row=7, column=1, sticky=tk.W)
+                erg = abs(erster_wert - zweiter_wert)
+                tk.Label(self, text="| " + str(erster_wert) + " " + vorzeichen_str(zweiter_wert) + " | = " + str(erg)).grid(row=7, column=1, sticky=tk.W)
 
     def createWidgets(self):
         for widget in self.winfo_children():
@@ -117,6 +123,8 @@ class Integral_Frame(tk.Frame):
             self.x_ende_spinbox = tk.Spinbox(self.einstellungsframe, from_=-99, to=100, textvariable=self.x_ende)
             self.x_ende_spinbox.config(command=self.end_x_changed)
             self.x_ende_spinbox.grid(row=1, column=1, sticky=tk.S+tk.W)
+            self.achte_nst_button = tk.Checkbutton(self.einstellungsframe, text="Nullstellen beachten und Fläche unter x-Achse positiv sehen", command=self.achte_nst_changed)
+            self.achte_nst_button.grid(row=2, column=0)
             self.einstellungsframe.columnconfigure(0,minsize=400)
             self.einstellungsframe.grid(row=0, column=0, sticky=tk.W)
 

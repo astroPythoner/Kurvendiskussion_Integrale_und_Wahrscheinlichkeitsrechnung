@@ -199,7 +199,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.1.0")
+    root.title("Kurvendiskussion - v2.1.1")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()
