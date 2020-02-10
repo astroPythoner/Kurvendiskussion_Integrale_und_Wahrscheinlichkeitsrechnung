@@ -112,7 +112,7 @@ class Ableitung_Frame(tk.Frame):
                     row = row+2
                 else:
                     could_be_solved = False
-                    tk.Label(self, text="Vielleicht hilft das: " + sympy.pretty(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
+                    tk.Label(self, text="Vielleicht hilft das: " + sympy.sstr(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
             except Exception:
                 could_be_solved = False
             if not could_be_solved:

@@ -1,10 +1,11 @@
-# Programm das nach Eingabe eines Funktionsterms alle Punkte zur Kurvendiskussion automatisch berechnet
+# Kurvendiskussion in tkinter:
+# Programm das nach Eingabe eines Funktionsterms eine vollständige Kurvendiskussion erstellt
+# mit weiteren Features wie Funktionszufallsgenerator oder Flächen/Integral Rechnung
 
-# Copyright 2019
+# Copyright 2019-2020
 
 import tkinter as tk
 from tkinter import ttk
-from random import randint
 
 import SchnittpunktYAchse_Frame
 import Ableitung_Frame
@@ -199,7 +200,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.1.1")
+    root.title("Kurvendiskussion - v2.1.2")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

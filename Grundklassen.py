@@ -147,11 +147,11 @@ class Graph():
                         x_str = str(x)
                     funktionswert_an_i = eval(funktion.funktion_computer_readable.replace("x", x_str))
                     if isinstance(funktionswert_an_i, complex):
-                        funktionswert_an_i = 0
+                        funktionswert_an_i = None
                 except Exception:
-                    funktionswert_an_i = 0
+                    funktionswert_an_i = None
             else:
-                funktionswert_an_i = 0
+                funktionswert_an_i = None
             self.y_werte.append(funktionswert_an_i)
 
 

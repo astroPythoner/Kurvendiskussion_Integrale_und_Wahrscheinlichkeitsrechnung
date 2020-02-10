@@ -76,7 +76,7 @@ class Stammfunktion_Frame(tk.Frame):
                     tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)
                 else:
                     could_be_solved = False
-                    tk.Label(self, text="Vielleicht hilft das: "+sympy.pretty(loesung).replace("**", "'")).grid(row=2, column=0, columnspan=2, sticky=tk.W)
+                    tk.Label(self, text="Vielleicht hilft das: "+sympy.sstr(loesung).replace("**", "'")).grid(row=2, column=0, columnspan=2, sticky=tk.W)
             except Exception:
                 could_be_solved = False
             if not could_be_solved:

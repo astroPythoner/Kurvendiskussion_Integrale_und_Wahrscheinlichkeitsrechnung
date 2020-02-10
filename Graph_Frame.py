@@ -10,6 +10,32 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import math
 
+def smallest_in_array(array):
+    smallest = None
+    for i in array:
+        if i is not None:
+            smallest = i
+            break
+    if smallest == None:
+        return None #no value in arrray
+    for i in array:
+        if i is not None and i < smallest:
+            smallest = i
+    return smallest
+
+def biggest_in_array(array):
+    biggest = None
+    for i in array:
+        if i is not None:
+            biggest = i
+            break
+    if biggest == None:
+        return None  # no value in arrray
+    for i in array:
+        if i is not None and i > biggest:
+            biggest = i
+    return biggest
+
 class Graph_Frame(tk.Frame):
 
     __funktion = None
@@ -156,32 +182,50 @@ class Graph_Frame(tk.Frame):
 
         # Funktion zeichnen
         if self.graph_aktiv.get():
-            plt.plot(self.graph.x_werte[x_start:x_end], self.graph.y_werte[x_start:x_end],lineWidth=2,color=self.graph.color)
+            x_werte = []
+            y_werte = []
+            for count in range(x_end-x_start):
+                wert = self.graph.y_werte[count+x_start]
+                if wert is not None:
+                    y_werte.append(wert)
+                    x_werte.append(self.graph.x_werte[count+x_start])
+                elif x_werte != [] and y_werte != []:
+                    plt.plot(x_werte, y_werte,lineWidth=2,color=self.graph.color)
+                    x_werte = []
+                    y_werte = []
+            if x_werte != [] and y_werte != []:
+                plt.plot(x_werte, y_werte, lineWidth=2, color=self.graph.color)
 
         # Achsen zeichnen
-        hoechster_y_wert = max(self.graph.y_werte[x_start:x_end])
-        tiefster_y_wert = min(self.graph.y_werte[x_start:x_end])
+        hoechster_y_wert = biggest_in_array(self.graph.y_werte[x_start:x_end])
+        tiefster_y_wert = smallest_in_array(self.graph.y_werte[x_start:x_end])
         num_funktion = 0
         for frame in self.funktion_frames:
             try:
                 for funktion in frame.funktionen:
                     num_funktion += 1
                     if self.funktion_frames_aktiv[num_funktion-1].get():
-                       if max(funktion.y_werte[x_start:x_end]) > hoechster_y_wert:
-                           hoechster_y_wert = max(funktion.y_werte[x_start:x_end])
-                       if min(funktion.y_werte[x_start:x_end]) < tiefster_y_wert:
-                           tiefster_y_wert = min(funktion.y_werte[x_start:x_end])
+                       if biggest_in_array(funktion.y_werte[x_start:x_end]) > hoechster_y_wert:
+                           hoechster_y_wert = biggest_in_array(funktion.y_werte[x_start:x_end])
+                       if smallest_in_array(funktion.y_werte[x_start:x_end]) < tiefster_y_wert:
+                           tiefster_y_wert = smallest_in_array(funktion.y_werte[x_start:x_end])
             except:
                 pass
-        if hoechster_y_wert<0:
-            plt.plot([0,0], [0,min(self.graph.y_werte[x_start:x_end])],"black")
-        elif tiefster_y_wert>0:
-            plt.plot([0, 0], [max(self.graph.y_werte[x_start:x_end]),0], "black")
+        # y-Achse
+        if hoechster_y_wert == None or tiefster_y_wert == None:
+            plt.plot([0,0], [-1,1], "black")
+            plt.text(0, 1, 'Y', ha='center', va='bottom')
         else:
-            plt.plot([0,0], [hoechster_y_wert,tiefster_y_wert],"black")
-        plt.text(0,max(self.graph.y_werte[x_start:x_end]), 'Y', ha='center', va='bottom')
-        plt.plot([max(self.graph.x_werte[x_start:x_end]),min(self.graph.x_werte[x_start:x_end])], [0,0],"black")
-        plt.text(max(self.graph.x_werte[x_start:x_end]), 0, 'X', ha='center', va='bottom')
+            if hoechster_y_wert<0:
+                plt.plot([0,0], [0,smallest_in_array(self.graph.y_werte[x_start:x_end])],"black")
+            elif tiefster_y_wert>0:
+                plt.plot([0, 0], [biggest_in_array(self.graph.y_werte[x_start:x_end]),0], "black")
+            else:
+                plt.plot([0,0], [hoechster_y_wert,tiefster_y_wert],"black")
+            plt.text(0,hoechster_y_wert, 'Y', ha='center', va='bottom')
+        # x-Achse
+        plt.plot([biggest_in_array(self.graph.x_werte[x_start:x_end]),smallest_in_array(self.graph.x_werte[x_start:x_end])], [0,0],"black")
+        plt.text(biggest_in_array(self.graph.x_werte[x_start:x_end]), 0, 'X', ha='center', va='bottom')
 
         # Punkte
         if self.graph_aktiv.get():
@@ -204,8 +248,20 @@ class Graph_Frame(tk.Frame):
             try:
                 for funktion in frame.funktionen:
                     num_funktion += 1
-                    if self.funktion_frames_aktiv[num_funktion-1].get():
-                        plt.plot(funktion.x_werte[x_start:x_end], funktion.y_werte[x_start:x_end], color = funktion.color)
+                    if self.funktion_frames_aktiv[num_funktion - 1].get():
+                        x_werte = []
+                        y_werte = []
+                        for count in range(x_end - x_start):
+                            wert = funktion.y_werte[count + x_start]
+                            if wert is not None:
+                                y_werte.append(wert)
+                                x_werte.append(funktion.x_werte[count + x_start])
+                            elif x_werte != [] and y_werte != []:
+                                plt.plot(x_werte, y_werte, lineWidth=2, color=funktion.color)
+                                x_werte = []
+                                y_werte = []
+                        if x_werte != [] and y_werte != []:
+                            plt.plot(x_werte, y_werte, lineWidth=2, color=funktion.color)
             except:
                 pass
 
