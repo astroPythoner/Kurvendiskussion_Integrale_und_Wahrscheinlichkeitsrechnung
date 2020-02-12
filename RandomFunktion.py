@@ -23,7 +23,7 @@ def alle_kombis_addieren(zahlen,laenge_kombis):
             erg += zahlen[i]*j
     return erg
 
-class Random_Funtkionen:
+class Random_Funktionen:
 
     with_polynomfunktion = True
     with_wurzelfunktion = False
@@ -52,6 +52,10 @@ class Random_Funtkionen:
     wurzel_with_x_versch = True
     wurzel_with_y_versch = True
 
+    parameter = None
+    def __init__(self,parameter):
+        self.parameter = parameter
+
     def get_random_polynomfunktion(self):
         ### Funtion vom Typ ax'3+bx'2+cx+d mit unterschiedlich hohen Exponenten ###
         if self.poly_min_expo == self.poly_max_expo:
@@ -74,7 +78,7 @@ class Random_Funtkionen:
             return_funktion = ""
             for expo in range(hoechster_expo,-1,-1):
                 return_funktion += polynom_to_str(randint(-50,50), expo)
-        return Funktion(return_funktion)
+        return Funktion(self.parameter,return_funktion)
 
     def get_random_wurzelfunktion(self):
         ### Funtion vom Typ a(x−b)'(1/2)+c ###
@@ -99,10 +103,10 @@ class Random_Funtkionen:
             funktion += "x'(1/2)"
         if c != 0:
             funktion += vorzeichen_str(c)
-        return Funktion(funktion)
+        return Funktion(self.parameter,funktion)
 
     def get_random_exponentialfunktion(self):
-        return Funktion("5'x")
+        return Funktion(self.parameter,"5'x")
 
     def get_random_logarithmischefunktion(self):
         ### Funtion vom Typ a*log(x+b,c)+d auch als ln oder 10log ###
@@ -144,7 +148,7 @@ class Random_Funtkionen:
         funktion += ")"
         if d != 0:
             funktion += vorzeichen_str(d)
-        return Funktion(funktion)
+        return Funktion(self.parameter,funktion)
 
     def get_random_trigonometrischefunktion(self):
         ### Funtion vom Typ a*sin(b*(x-c))+d mit sin cos oder tan ###
@@ -185,7 +189,7 @@ class Random_Funtkionen:
         return_funktion += ")"
         if d != 0:
             return_funktion += vorzeichen_str(d)
-        return Funktion(return_funktion)
+        return Funktion(self.parameter,return_funktion)
 
     def get_random_funktion(self):
         moegliche_funktionstypen = []

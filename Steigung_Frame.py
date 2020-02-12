@@ -10,10 +10,13 @@ class Steigung_Frame(tk.Frame):
     __funktion = None
     punkte=[]
 
-    def __init__(self, master=None, ableitung=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None, ableitung=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.ableitung = ableitung
+        self.parameter = parameter
         self.update()
 
     def update(self, neu_funktion = None):
@@ -36,7 +39,7 @@ class Steigung_Frame(tk.Frame):
                 num_tiefpunkte = 0
                 tk.Label(self, text="f'(x) = " + ableitung.funktion_user_kurz).grid(row=1, column=1)
                 tk.Label(self, text="Eventuelle Extrempunkte durch f'(x) = 0:").grid(row=2, column=0, sticky=tk.W)
-                nullstellen,row = nullstellen_berechnen(ableitung,3,self)
+                nullstellen,row = nullstellen_berechnen(self.parameter,ableitung,3,self)
                 if len(nullstellen) >= 1:
                     tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f''(nst) ≠ 0:").grid(row=row+1, column=0, sticky=tk.W)
                 for nst in nullstellen:

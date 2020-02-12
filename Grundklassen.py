@@ -1,6 +1,6 @@
 import math
 
-class Punkt():
+class Punkt:
     __slots__ = ('x','y','name')
 
     def __init__(self,x,y,name):
@@ -25,7 +25,7 @@ class Punkt():
         return self.x > other.x
 
 
-class Wiederholender_Punkt():
+class Wiederholender_Punkt:
     # Punkte vom Aufbau {a*k+b, k ∈ Z}
     # nur ganz Zahlen und nur lineare Funktionen
 
@@ -114,7 +114,7 @@ class Wiederholender_Punkt():
         return self.x > other.x
 
 
-class Graph():
+class Graph:
     funktion = ""
     color = "red"
     color_name = "rot"
@@ -140,22 +140,15 @@ class Graph():
         self.y_werte = []
         for x in self.x_werte:
             if funktion is not None:
-                try:
-                    if x < 0:
-                        x_str = "(" + str(x) + ")"
-                    else:
-                        x_str = str(x)
-                    funktionswert_an_i = eval(funktion.funktion_computer_readable.replace("x", x_str))
-                    if isinstance(funktionswert_an_i, complex):
-                        funktionswert_an_i = None
-                except Exception:
+                funktionswert_an_i = funktion.x_einsetzen(x)
+                if funktionswert_an_i == "nicht definiert":
                     funktionswert_an_i = None
             else:
                 funktionswert_an_i = None
             self.y_werte.append(funktionswert_an_i)
 
 
-class Flaeche():
+class Flaeche:
     face_color = "red"
     edge_color = "red"
     color_name = "rot"
@@ -169,8 +162,8 @@ class Flaeche():
         self.color_name = color_name
         self.name = name
 
+class Parameter:
+    wert = 0
 
-if __name__ == '__main__':
-    from Funktion import Funktion
-    punkt = Wiederholender_Punkt(Funktion("2*x"),0,"Nst")
-    print(punkt.get_koordinaten_from_to(-10,10))
+    def set_wert(self,wert):
+        self.wert = wert

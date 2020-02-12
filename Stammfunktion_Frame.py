@@ -13,9 +13,12 @@ class Stammfunktion_Frame(tk.Frame):
     __funktion = None
     funktionen = []
 
-    def __init__(self, master=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
+        self.parameter = parameter
         self.update()
 
     def update(self, neu_funktion = None):
@@ -24,11 +27,10 @@ class Stammfunktion_Frame(tk.Frame):
             self.funktionen = []
         self.createWidgets()
 
-
     def stammfunktion_bestimmen(self):
-        stammfunk = Funktion()
+        stammfunk = Funktion(self.parameter)
         if not "x" in self.__funktion.funktion_user_kurz:
-            stammfunk.set_funktion(str(eval(self.__funktion.funktion_user_kurz))+"*x")
+            stammfunk.set_funktion(str(self.__funktion.x_einsetzen(0))+"*x")
             tk.Label(self, text="Kein x enthalten: f(x) = a -> F(x) = a*x").grid(row=1, column=1)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=2, column=1)
         elif self.__funktion.is_polynomfunktion:
@@ -60,17 +62,17 @@ class Stammfunktion_Frame(tk.Frame):
             if self.__funktion.trigonometrische_funktion == "sin":
                 tk.Label(self, text=" Kettenregel sin(v(x)) -> -cos(v(x)) / v'(x)").grid(row=row, column=2, sticky=tk.W)
                 tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * -cos(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c) + ") / "+str(self.__funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+1, column=1)
-                stammfunk = Funktion(str(-self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * cos("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
+                stammfunk = Funktion(self.parameter,str(-self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * cos("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
             elif self.__funktion.trigonometrische_funktion == "cos":
                 tk.Label(self, text=" Kettenregel cos(v(x)) -> sin(v(x)) / v'(x)").grid(row=row, column=2, sticky=tk.W)
                 tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * sin(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c) + ") / "+str(self.__funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+1, column=1)
-                stammfunk = Funktion(str(self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * sin("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
+                stammfunk = Funktion(self.parameter,str(self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * sin("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=row+2, column=1)
         else:
             could_be_solved = True
             try:
                 loesung = sympy.integrate(self.__funktion.funktion_sympy_readable, sympy.Symbol('x'))
-                stammfunk = Funktion()
+                stammfunk = Funktion(self.parameter)
                 funktion_erkannt = stammfunk.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
                 if funktion_erkannt:
                     tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)

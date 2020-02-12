@@ -13,9 +13,12 @@ class Ableitung_Frame(tk.Frame):
     __funktion = None
     funktionen = []
 
-    def __init__(self, master=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
+        self.parameter = parameter
         self.update()
 
     def update(self, neu_funktion = None):
@@ -53,7 +56,7 @@ class Ableitung_Frame(tk.Frame):
         tk.Label(self, text=funktionsname_davor+" = " + davor_abgeleitete_funktion.funktion_user_x_ersetztbar).grid(row=row+2, column=1)
         row = row+2
         if not "x" in davor_abgeleitete_funktion.funktion_user_x_ersetztbar:
-            ableitungsfunktion = Funktion("0")
+            ableitungsfunktion = Funktion(self.parameter,"0")
             tk.Label(self, text="Kein x enthalten:").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
             tk.Label(self, text=funktionsname+" = 0").grid(row=row + 2, column=1)
             tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = 0").grid(row=row + 3, column=0, sticky=tk.W)
@@ -68,6 +71,7 @@ class Ableitung_Frame(tk.Frame):
             neue_exponenten_kurz = []
             for exponent in exponenten:
                 neue_exponenten.append(["(" + exponent[0] + "*" + exponent[1] + ")", "(" + exponent[1] + "-1)"])
+                p = self.parameter.wert
                 basis_wert = eval(davor_abgeleitete_funktion.funktion_to_computer_readable(self.__funktion.funktion_verschoenern("((" + exponent[0] + ")*" + exponent[1] + ")")))
                 expo_wert = eval(self.__funktion.funktion_to_computer_readable(self.__funktion.funktion_verschoenern("((" + exponent[1] + ")-1)")))
                 neue_exponenten_kurz.append([basis_wert, expo_wert])
@@ -76,7 +80,7 @@ class Ableitung_Frame(tk.Frame):
             for poly_num in range(0,len(neue_exponenten)):
                 poly_funktion += vorzeichen_str(neue_exponenten[poly_num][0] + "*x'" + neue_exponenten[poly_num][1],True)
                 poly_funktion_kurz += polynom_array_to_str(neue_exponenten_kurz[poly_num])
-            ableitungsfunktion = Funktion(poly_funktion_kurz)
+            ableitungsfunktion = Funktion(self.parameter,poly_funktion_kurz)
             tk.Label(self, text=funktionsname+" = " + poly_funktion).grid(row=row + 1, column=1)
             tk.Label(self, text=funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=1)
             tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=0,sticky=tk.W)
@@ -89,22 +93,22 @@ class Ableitung_Frame(tk.Frame):
             if davor_abgeleitete_funktion.trigonometrische_funktion == "cos":
                 tk.Label(self, text="Nach Kettenregel "+davor_abgeleitete_funktion.trigonometrische_funktion+"(u(x)) -> -sin(u(x)) * u'(x), Vorfaktor bleibt erhalten").grid(row=row+1, column=1)
                 tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.trigonometrisch_a)+" * -sin(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ") * " + str(davor_abgeleitete_funktion.trigonometrisch_b)).grid(row=row+2, column=1)
-                ableitungsfunktion = Funktion(str(-1*davor_abgeleitete_funktion.trigonometrisch_a*davor_abgeleitete_funktion.trigonometrisch_b)+" * sin(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
+                ableitungsfunktion = Funktion(self.parameter,str(-1*davor_abgeleitete_funktion.trigonometrisch_a*davor_abgeleitete_funktion.trigonometrisch_b)+" * sin(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
             elif davor_abgeleitete_funktion.trigonometrische_funktion == "sin":
                 tk.Label(self,text="Nach Kettenregel " + davor_abgeleitete_funktion.trigonometrische_funktion + "(u(x)) -> cos(u(x)) * u'(x), Vorfaktor bleibt erhalten").grid(row=row + 1, column=1)
                 tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.trigonometrisch_a) + " * cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ") * " + str(davor_abgeleitete_funktion.trigonometrisch_b)).grid(row=row + 2, column=1)
-                ableitungsfunktion = Funktion(str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " * cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
+                ableitungsfunktion = Funktion(self.parameter,str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " * cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")")
             elif davor_abgeleitete_funktion.trigonometrische_funktion == "tan":
                 tk.Label(self, text=" tan() -> 1/cos()² mit Kettenregel tan(v(x)) -> v'(x)/(cos(x)²").grid(row=row, column=2, sticky=tk.W)
                 tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * " + str(self.__funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b,-self.__funktion.trigonometrisch_c) + ")'2").grid(row=row + 1, column=1)
-                ableitungsfunktion = Funktion(str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")'2")
+                ableitungsfunktion = Funktion(self.parameter,str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")'2")
             tk.Label(self, text=funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=1)
             row = row+3
         else:
             could_be_solved = True
             try:
                 loesung = sympy.diff(davor_abgeleitete_funktion.funktion_sympy_readable, sympy.Symbol('x'), 1)
-                ableitungsfunktion = Funktion()
+                ableitungsfunktion = Funktion(self.parameter)
                 funktion_erkannt = ableitungsfunktion.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
                 if funktion_erkannt:
                     tk.Label(self, text=funktionsname+"= " + ableitungsfunktion.funktion_user_kurz).grid(row=row+1, column=1)

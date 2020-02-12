@@ -1,4 +1,5 @@
 from Grundklassen import Graph, Punkt, Wiederholender_Punkt
+import Funktion
 
 import tkinter as tk
 
@@ -53,9 +54,10 @@ class Graph_Frame(tk.Frame):
     flaechen_frames = [integr]
     flaechen_frames_aktiv = []
 
-    graph = Graph("0","blue","blau","f(x)")
+    graph = None
+    parameter = None
 
-    def __init__(self, master=None):
+    def __init__(self, master=None,parameter=None):
         tk.Frame.__init__(self,master)
         self.grid(sticky=tk.NSEW)
         self.start_x = tk.IntVar()
@@ -66,6 +68,8 @@ class Graph_Frame(tk.Frame):
         self.last_end_value = 10
         self.graph_aktiv = tk.BooleanVar()
         self.graph_aktiv.set(True)
+        self.parameter = parameter
+        self.graph = Graph(Funktion.Funktion(self.parameter,"0"),"blue","blau","f(x)")
         self.update()
 
     def add_frames(self,sy,nst,abl,tanNor,steig,kruem,stamfunk,integr):

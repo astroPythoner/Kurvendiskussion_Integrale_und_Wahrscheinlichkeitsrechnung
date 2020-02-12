@@ -1,4 +1,3 @@
-from Funktion import Funktion
 from Grundklassen import Punkt, Wiederholender_Punkt
 from Nullstellen_Frame import nullstellen_berechnen
 
@@ -9,11 +8,14 @@ class Kruemmung_Frame(tk.Frame):
 
     __funktion = None
 
-    def __init__(self, master=None, ableitung=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None, ableitung=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
-        self.update()
         self.ableitung = ableitung
+        self.parameter = parameter
+        self.update()
 
     def update(self, neu_funktion = None):
         if neu_funktion is not None:
@@ -34,7 +36,7 @@ class Kruemmung_Frame(tk.Frame):
                 num_wendepunkt = 0
                 tk.Label(self, text="f''(x) = " + zweite_ableitung.funktion_user_kurz).grid(row=1, column=1)
                 tk.Label(self, text="Eventuelle Wendepunkte durch f''(x) = 0:").grid(row=2, column=0, sticky=tk.W)
-                nullstellen, row = nullstellen_berechnen(zweite_ableitung, 3, self)
+                nullstellen, row = nullstellen_berechnen(self.parameter,zweite_ableitung, 3, self)
                 tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f'''(nst) ≠ 0:").grid(row=row + 1, column=0, sticky=tk.W)
                 for nst in nullstellen:
                     if len(self.ableitung.funktionen) > 2 and self.ableitung.funktionen[2].funktion != None:

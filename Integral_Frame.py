@@ -1,5 +1,5 @@
 from Grundklassen import Flaeche
-from Funktion import Funktion, polynom_array_to_str, vorzeichen_str
+from Funktion import vorzeichen_str
 
 import tkinter as tk
 import math

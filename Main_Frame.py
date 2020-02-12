@@ -19,6 +19,7 @@ import Stammfunktion_Frame
 import Integral_Frame
 import Sonstiges_Frame
 
+import Grundklassen
 import RandomFunktion
 import Funktion
 
@@ -28,11 +29,12 @@ DEBUG = True
 
 class MainWindow(tk.Frame):
 
-    funktion = Funktion.Funktion()
+    parameter = Grundklassen.Parameter()
+    funktion = Funktion.Funktion(parameter,"0")
     frames = []
     head_frames = []
 
-    funktionsrandom = RandomFunktion.Random_Funtkionen()
+    funktionsrandom = RandomFunktion.Random_Funktionen(parameter)
 
     def __init__(self,master=None):
         tk.Frame.__init__(self, master)
@@ -42,7 +44,14 @@ class MainWindow(tk.Frame):
 
     def funktion_uebernehmen_button_pressed(self):
         passt = self.funktion.set_funktion(self.eingabe.get())
+
         if passt==True:
+            self.parameter.set_wert(0)
+            if self.funktion.has_parameter:
+                self.parameter_scale.configure(state=tk.NORMAL)
+            else:
+                self.parameter_scale.configure(state=tk.DISABLED)
+
             for frame in self.frames:
                 frame.update(self.funktion)
             for head_frame in self.head_frames:
@@ -62,9 +71,12 @@ class MainWindow(tk.Frame):
                 text = "Trigonometrische Funktion: " + self.funktion.funktion_trigonometrisch_x_ersetzbar
             elif self.funktion.is_exponential:
                 text = "Exponentialfunktion: " + self.funktion.funktion_exponential_x_ersetzbar
+            elif self.funktion.has_parameter:
+                text = "Paramterfunktion"
             else:
                 text = "Funktionstyp nicht bekannt"
             self.funktion_info_text.config(text=text)
+
         elif passt == "unverändert":
             self.eingabe_passt.config(text="Funktion nicht verändert")
         else:
@@ -76,6 +88,10 @@ class MainWindow(tk.Frame):
         if isinstance(random_funktion, Funktion.Funktion):
             self.eingabe.insert(0, random_funktion.funktion_user_x_ersetztbar)
             self.eingabe_passt.config(text="Zufallsfunktion hinzugefügt")
+
+    def change_parameter_value(self,cause):
+        self.parameter.set_wert(self.parameter_scale.get())
+        self.funktion_uebernehmen_button_pressed()
 
     def createWidgets(self):
 
@@ -96,12 +112,17 @@ class MainWindow(tk.Frame):
         self.eingabe_passt.grid(row=0, column=4, sticky=tk.W)
         self.funktion_info_text = tk.Label(self, text="")
         self.funktion_info_text.grid(row=1, column=1, columnspan=2)
+        self.parameter_text = tk.Label(self, text="Parameter k:")
+        self.parameter_text.grid(row=2, column=0, sticky=tk.E)
+        self.parameter_scale = tk.Scale(self, from_=-10, to=10, orient=tk.HORIZONTAL, resolution=0.1, command=self.change_parameter_value)
+        self.parameter_scale.grid(row=2, column=1, columnspan=3,sticky=tk.EW)
+
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
-        self.pane.grid(row=2,column=0,columnspan=5,sticky=tk.NSEW)
+        self.pane.grid(row=3,column=0,columnspan=5,sticky=tk.NSEW)
 
-        self.Graph_Frame = Graph_Frame.Graph_Frame()
+        self.Graph_Frame = Graph_Frame.Graph_Frame(parameter=self.parameter)
         self.pane.add(self.Graph_Frame, text="Graph", padding=0)
 
         self.schnittpunktYAchse_head_frame = ScrollableFrame(self,SchnittpunktYAchse_Frame.SchnittpunktYAchse_Frame)
@@ -110,7 +131,7 @@ class MainWindow(tk.Frame):
         self.head_frames.append(self.schnittpunktYAchse_head_frame)
         self.pane.add(self.schnittpunktYAchse_head_frame.head_frame, text="Schnittpunkt Y Achse", padding=0)
 
-        self.nullstellen_head_frame = ScrollableFrame(self,Nullstellen_Frame.Nullstellen_Frame)
+        self.nullstellen_head_frame = ScrollableFrame(self,Nullstellen_Frame.Nullstellen_Frame,self.parameter)
         self.Nullstellen_Frame = self.nullstellen_head_frame.frame
         self.frames.append(self.Nullstellen_Frame)
         self.head_frames.append(self.nullstellen_head_frame)
@@ -122,31 +143,31 @@ class MainWindow(tk.Frame):
         self.head_frames.append(self.globalsverhalten_head_frame)
         self.pane.add(self.globalsverhalten_head_frame.head_frame, text="Globales Verhalten", padding=0)
 
-        self.ablteitung_head_frame = ScrollableFrame(self,Ableitung_Frame.Ableitung_Frame)
+        self.ablteitung_head_frame = ScrollableFrame(self,Ableitung_Frame.Ableitung_Frame,self.parameter)
         self.Ableitung_Frame = self.ablteitung_head_frame.frame
         self.frames.append(self.Ableitung_Frame)
         self.head_frames.append(self.ablteitung_head_frame)
         self.pane.add(self.ablteitung_head_frame.head_frame, text="Ableitung", padding=0)
 
-        self.tangentenormale_head_frame = ScrollableFrame(self,TangenteNormale_Frame.TangenteNormale_Frame,self.Ableitung_Frame)
+        self.tangentenormale_head_frame = ScrollableFrame(self,TangenteNormale_Frame.TangenteNormale_Frame,self.parameter,self.Ableitung_Frame)
         self.TangenteNormale_Frame = self.tangentenormale_head_frame.frame
         self.frames.append(self.TangenteNormale_Frame)
         self.head_frames.append(self.tangentenormale_head_frame)
         self.pane.add(self.tangentenormale_head_frame.head_frame, text="Normale/Tangente", padding=0)
 
-        self.steigung_head_frame = ScrollableFrame(self,Steigung_Frame.Steigung_Frame,self.Ableitung_Frame)
+        self.steigung_head_frame = ScrollableFrame(self,Steigung_Frame.Steigung_Frame,self.parameter,self.Ableitung_Frame)
         self.Steigung_Frame = self.steigung_head_frame.frame
         self.frames.append(self.Steigung_Frame)
         self.head_frames.append(self.steigung_head_frame)
         self.pane.add(self.steigung_head_frame.head_frame, text="Steigung", padding=0)
 
-        self.kruemmung_head_frame = ScrollableFrame(self,Kruemmung_Frame.Kruemmung_Frame,self.Ableitung_Frame)
+        self.kruemmung_head_frame = ScrollableFrame(self,Kruemmung_Frame.Kruemmung_Frame,self.parameter,self.Ableitung_Frame)
         self.Kruemmung_Frame = self.kruemmung_head_frame.frame
         self.frames.append(self.Kruemmung_Frame)
         self.head_frames.append(self.kruemmung_head_frame)
         self.pane.add(self.kruemmung_head_frame.head_frame, text="Krümmung", padding=0)
 
-        self.stammfunktion_head_frame = ScrollableFrame(self,Stammfunktion_Frame.Stammfunktion_Frame)
+        self.stammfunktion_head_frame = ScrollableFrame(self,Stammfunktion_Frame.Stammfunktion_Frame,self.parameter)
         self.Stammfunktion_Frame = self.stammfunktion_head_frame.frame
         self.frames.append(self.Stammfunktion_Frame)
         self.head_frames.append(self.stammfunktion_head_frame)
@@ -200,7 +221,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.1.2")
+    root.title("Kurvendiskussion - v2.2.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

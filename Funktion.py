@@ -120,9 +120,9 @@ def check_funktionen_gleich(funktion1,funktion2):
             return False
     return True
 
-def get_n_m_from_n_mal_x_plus_m(funktion):
+def get_n_m_from_n_mal_x_plus_m(funktion,parameter=None):
     if isinstance(funktion,str):
-        funktion = Funktion(funktion)
+        funktion = Funktion(parameter,funktion)
     # checks through n(x+m) and return n,m
     if funktion == "x":
         return 1,0
@@ -209,6 +209,8 @@ class Funktion():
     funktion_user_x_ersetztbar = ""
     funktion_computer_readable = ""
     funktion_sympy_readable = ""
+    has_parameter = False
+    parameter = None
 
     is_polynomfunktion = False             # Typ: ax'3 + bx'2 + cx + d + ...
     funktion_polynom_x_ersetzbar = ""
@@ -254,7 +256,8 @@ class Funktion():
     # Um zu sehen warum Funktionstyp nicht erkannt wurde
     debug_sonstiges = False
 
-    def __init__(self,funktion=None):
+    def __init__(self,parameter,funktion=None):
+        self.parameter = parameter
         if funktion != None:
             self.set_funktion(funktion)
 
@@ -666,7 +669,7 @@ class Funktion():
         self.__check_funktion_exponential_funktion_and_convert(funktion)
         if self.debug_sonstiges != False:
             self.debug_sonstiges.add_funktion_not_erkannt_reason("Exponentialfunktion", "comming soon")
-        self.is_ = False
+        self.is_exponential = False
 
     def __check_funktion_exponential_funktion_and_convert(self,funktion):
         return False,"comming soon"
@@ -747,7 +750,7 @@ class Funktion():
                             klammer_ende = index
                             index = len(funktion_array)
                     index += 1
-                b, c = get_n_m_from_n_mal_x_plus_m(Funktion(funktion[pos + 4:klammer_ende]))
+                b, c = get_n_m_from_n_mal_x_plus_m(Funktion(self.parameter,funktion[pos + 4:klammer_ende]))
                 if b == False or c == False:
                     return False, False, False, "innerer Term nicht erkannt"
                 else:
@@ -811,26 +814,33 @@ class Funktion():
             #print(Fehler beim einsetzen in Funktion",x)
             return ""
 
-    def set_funktion(self,funktion):
+    def set_funktion(self,funktion=None):
+        if funktion == None:
+            funktion = self.funktion_user_x_ersetztbar
         for letter in funktion:
             if letter == " " or letter == "+":
                 funktion = funktion[1:]
             else:
                 break
+        if "k" in funktion:
+            self.has_parameter = True
+            funktion = funktion.replace("k",str(self.parameter.wert))
+        else:
+            self.has_parameter = False
         funktion = self.funktion_verschoenern(self.funktion_verschoenern(self.funktion_verschoenern(funktion)))
         computer_funktion = self.funktion_to_computer_readable(funktion)
         #print("Funktion",funktion,computer_funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:
             versuchs_x = [-10,-5,-2,-1-0.5,0,1,2,5,10,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
-            working = True
+            working = False
             for x in versuchs_x:
-                working = True
+                test = True
                 try:
                     eval(computer_funktion)
                 except Exception as e:
-                    working = False
-                if working:
-                    break
+                    test = False
+                if test:
+                    working = True
             if working: # Funktion fehlerfrei
                 self.funktion_user_x_ersetztbar = funktion
                 self.funktion_user_kurz = self.funktion_to_user_kurz(funktion)

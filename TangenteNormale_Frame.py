@@ -9,13 +9,16 @@ class TangenteNormale_Frame(tk.Frame):
     __funktion = None
     funktionen = []
 
-    def __init__(self, master=None, ableitung=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None, ableitung=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
-        self.update()
         self.ableitung = ableitung
         self.x_wert = tk.IntVar()
         self.last_wert = 0
+        self.parameter = parameter
+        self.update()
 
     def update(self, neu_funktion = None):
         if neu_funktion is not None:
@@ -66,7 +69,7 @@ class TangenteNormale_Frame(tk.Frame):
                     funktionsterm += vorzeichen_str(erg_normale_funktion)
                 if funktionsterm == "":
                     funktionsterm = "0"
-                t = Funktion(funktionsterm)
+                t = Funktion(self.parameter,funktionsterm)
                 graph_t = Graph(t,"#FFBB00","dunkelgelb","t(x)")
                 self.funktionen.append(graph_t)
                 tk.Label(self, text="t(x) = "+t.funktion_user_kurz).grid(row=7, column=1)
@@ -87,7 +90,7 @@ class TangenteNormale_Frame(tk.Frame):
                         funktionsterm += vorzeichen_str(erg_normale_funktion)
                     if funktionsterm == "":
                         funktionsterm = "0"
-                    n = Funktion(funktionsterm)
+                    n = Funktion(self.parameter,funktionsterm)
                     graph_n = Graph(n,"#FFCC33","hellgelb","n(x)")
                     self.funktionen.append(graph_n)
                     tk.Label(self, text="n(x) = " + n.funktion_user_kurz).grid(row=9, column=1)

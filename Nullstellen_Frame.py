@@ -8,11 +8,11 @@ try:
 except Exception:
     pass
 
-def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
+def nullstellen_berechnen(parameter, funktion, row, frame, num_nullstellen_bisher=0):
     tk.Label(frame, text="0 = " + funktion.funktion_user_kurz).grid(row=row, column=1)
     punkte = []
     if not "x" in funktion.funktion_user_x_ersetztbar:
-        if eval(funktion.funktion_computer_readable) == 0:
+        if funktion.x_einsetzen(0) == 0:
             tk.Label(frame, text="Ist immer null -> unendlich viele Nullstellen").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
         else:
             tk.Label(frame, text="Ist nie null -> keine Nullstelle").grid(row=row + 1, column=0, columnspan=2, sticky=tk.W)
@@ -55,36 +55,42 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
             tk.Label(frame, text="| " + str(minus_n)).grid(row=row, column=2, sticky=tk.W)
             tk.Label(frame, text=str(minus_n) + " = " + m + "x'" + str(b)).grid(row=row + 1, column=1)
             n_durch_m = eval(funktion.funktion_to_computer_readable("-(" + n + ")"))
-            if funktion.funktion_user_kurz[0] != "x":
-                tk.Label(frame, text="| /(" + m + ")").grid(row=row + 1, column=2, sticky=tk.W)
-                n_durch_m = eval(funktion.funktion_to_computer_readable("-(" + n + ")/(" + (m) + ")"))
-            tk.Label(frame, text=str(n_durch_m) + " = x'" + str(b)).grid(row=row + 2, column=1)
-            doppel_erg_durch_wurzel = False
-            if b != 1:
-                tk.Label(frame, text="| √").grid(row=row + 2, column=2)
-                tk.Label(frame, text=str(b) + "√(" + str(n_durch_m) + ") = x").grid(row=row + 3, column=1)
-                if n_durch_m < 0 and b % 2 == 0:
-                    erg = None
+            if eval(m) != 0:
+                if funktion.funktion_user_kurz[0] != "x":
+                    tk.Label(frame, text="| /(" + m + ")").grid(row=row + 1, column=2, sticky=tk.W)
+                    n_durch_m = eval(funktion.funktion_to_computer_readable("-(" + n + ")/(" + m + ")"))
+                tk.Label(frame, text=str(n_durch_m) + " = x'" + str(b)).grid(row=row + 2, column=1)
+                doppel_erg_durch_wurzel = False
+                if b != 1:
+                    tk.Label(frame, text="| √").grid(row=row + 2, column=2)
+                    tk.Label(frame, text=str(b) + "√(" + str(n_durch_m) + ") = x").grid(row=row + 3, column=1)
+                    if n_durch_m < 0 and b % 2 == 0:
+                        erg = None
+                    else:
+                        if b % 2 == 0:
+                            doppel_erg_durch_wurzel = True
+                        b = b / 1.0
+                        erg = n_durch_m ** (1 / b)
                 else:
-                    if b%2 == 0:
-                        doppel_erg_durch_wurzel = True
-                    b = b / 1.0
-                    erg = n_durch_m ** (1 / b)
-            else:
-                erg = n_durch_m
-            if erg != None and not isinstance(erg, complex):
-                if doppel_erg_durch_wurzel:
-                    punkte.append(Punkt(erg, 0, "Nst"+str(num_nullstellen_bisher+1)))
-                    punkte.append(Punkt(-erg, 0, "Nst"+str(num_nullstellen_bisher+2)))
-                    tk.Label(frame, text="Nst"+str(num_nullstellen_bisher+1)+" = " + str(punkte[0])).grid(row=row + 4, column=0, sticky=tk.W)
-                    tk.Label(frame, text="Nst"+str(num_nullstellen_bisher+2)+" = " + str(punkte[1])).grid(row=row + 5, column=0, sticky=tk.W)
+                    erg = n_durch_m
+                if erg != None and not isinstance(erg, complex):
+                    if doppel_erg_durch_wurzel:
+                        punkte.append(Punkt(erg, 0, "Nst" + str(num_nullstellen_bisher + 1)))
+                        punkte.append(Punkt(-erg, 0, "Nst" + str(num_nullstellen_bisher + 2)))
+                        tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 1) + " = " + str(punkte[0])).grid(
+                            row=row + 4, column=0, sticky=tk.W)
+                        tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 2) + " = " + str(punkte[1])).grid(
+                            row=row + 5, column=0, sticky=tk.W)
+                    else:
+                        punkte.append(Punkt(erg, 0, "Nst" + str(num_nullstellen_bisher + 1)))
+                        tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 1) + " = " + str(punkte[0])).grid(
+                            row=row + 4, column=0, sticky=tk.W)
                 else:
-                    punkte.append(Punkt(erg, 0, "Nst"+str(num_nullstellen_bisher+1)))
-                    tk.Label(frame, text="Nst"+str(num_nullstellen_bisher+1)+" = " + str(punkte[0])).grid(row=row + 4, column=0, sticky=tk.W)
+                    tk.Label(frame, text="nicht definiert = x").grid(row=row + 4, column=1)
+                    tk.Label(frame, text="Keine Nullstelle").grid(row=row + 5, column=0)
+                row = row + 5
             else:
-                tk.Label(frame, text="nicht definiert = x").grid(row=row + 4, column=1)
-                tk.Label(frame, text="Keine Nullstelle").grid(row=row + 5, column=0)
-            row = row + 5
+                tk.Label(frame, text="Keine Nullstelle").grid(row=row + 1, column=0)
         # x ausklammern (0=mx'b+nx'c -> 0=x'c*(mx'(b-c)+n) -> SVN)
         elif len(exponenten) == 2:
             b = max(nur_expos)
@@ -172,12 +178,12 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                 funktion_ausgeklammert = ""
                 for exponent in exponenten:
                     funktion_ausgeklammert += polynom_to_str(exponent[0],eval(exponent[1])-smallest_expo_fuer_ausklammern)
-                restliche_funktion = Funktion(funktion_ausgeklammert)
+                restliche_funktion = Funktion(parameter, funktion_ausgeklammert)
                 tk.Label(frame, text=polynom_to_str(1,smallest_expo_fuer_ausklammern)+" * ("+funktion_ausgeklammert+")").grid(row=row + 2, column=1)
                 tk.Label(frame, text="Satz vom Nullprodukt x = 0, restliche Funktion: "+restliche_funktion.funktion_user_kurz).grid(row=row + 3, column=1)
                 punkte.append(Punkt(0, 0, "Nst" + str(num_nullstellen_bisher + 1)))
                 tk.Label(frame, text="Nst" + str(num_nullstellen_bisher + 1) + " = (0|0)").grid(row=row + 4, column=0, sticky=tk.W)
-                weitere_punkte, row2 = nullstellen_berechnen(restliche_funktion, row+5, frame, num_nullstellen_bisher + 1)
+                weitere_punkte, row2 = nullstellen_berechnen(parameter, restliche_funktion, row + 5, frame, num_nullstellen_bisher + 1)
                 row = row2
                 for punkt in weitere_punkte:
                     punkte.append(punkt)
@@ -273,9 +279,9 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                     row = row+(len(funktion.exponenten_aufgefuellt_array))*2+4
                     punkte.append(Punkt(geratene_nullstelle,0,"Nst"+str(num_nullstellen_bisher+1)))
                     tk.Label(frame, text="geratene Nullstelle passt: Nst"+str(num_nullstellen_bisher+1)+" = "+str(punkte[0])).grid(row=row, column=0,sticky=tk.W)
-                    uebrige_funktion = Funktion(uebriger_funktionsterm)
+                    uebrige_funktion = Funktion(parameter, uebriger_funktionsterm)
                     tk.Label(frame, text="Restliche Funtkion: " + uebrige_funktion.funktion_user_kurz).grid(row=row+1, column=1)
-                    weitere_punkte, row2 = nullstellen_berechnen(uebrige_funktion,row+2,frame,num_nullstellen_bisher+1)
+                    weitere_punkte, row2 = nullstellen_berechnen(parameter, uebrige_funktion, row + 2, frame, num_nullstellen_bisher + 1)
                     row=row2
                     for punkt in weitere_punkte:
                         punkte.append(punkt)
@@ -313,7 +319,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
             tk.Label(frame, text=str(links)+" = x").grid(row=row+1, column=1)
             row = row+1
         teiler = funktion.trigonometrisch_b/2
-        punkte.append(Wiederholender_Punkt(Funktion(str(links)+"+(x*pi)/"+str(teiler)),0,"Nst1"))
+        punkte.append(Wiederholender_Punkt(Funktion(parameter, str(links) + "+(x*pi)/" + str(teiler)), 0, "Nst1"))
         tk.Label(frame, text="Nst1 = " + str(punkte[0])).grid(row=row + 1, column=0, sticky=tk.W)
         if funktion.trigonometrische_funktion == "cos":
             tk.Label(frame, text=str(-links_merken2) + " = " + "x" + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row + 2, column=1)
@@ -322,7 +328,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                 tk.Label(frame, text="| " + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row, column=2)
                 tk.Label(frame, text=str(-links_merken2+funktion.trigonometrisch_c) + " = x").grid(row=row + 1, column=1)
                 row = row + 1
-            punkte.append(Wiederholender_Punkt(Funktion(str(-links_merken2+funktion.trigonometrisch_c)+"+pi/"+str(teiler)+"+(x*pi)/"+str(teiler)),0,"Nst2"))
+            punkte.append(Wiederholender_Punkt(Funktion(parameter, str(-links_merken2 + funktion.trigonometrisch_c) + "+pi/" + str(teiler) + "+(x*pi)/" + str(teiler)), 0, "Nst2"))
         else:
             tk.Label(frame, text=str(links_merken1) + " + pi = " + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c)).grid(row=row + 2, column=1)
             links_merken1 = links_merken1 + math.pi
@@ -337,7 +343,7 @@ def nullstellen_berechnen(funktion, row, frame, num_nullstellen_bisher=0):
                 tk.Label(frame, text="| " + vorzeichen_str(funktion.trigonometrisch_c)).grid(row=row, column=2)
                 tk.Label(frame, text=str(links_merken1) + " = x").grid(row=row + 1, column=1)
                 row = row + 1
-            punkte.append(Wiederholender_Punkt(Funktion(str(links_merken1) + "+(x*pi)/" + str(teiler)), 0, "Nst2"))
+            punkte.append(Wiederholender_Punkt(Funktion(parameter, str(links_merken1) + "+(x*pi)/" + str(teiler)), 0, "Nst2"))
         tk.Label(frame, text="Nst2 = " + str(punkte[1])).grid(row=row + 1, column=0, sticky=tk.W)
         row = row + 1
     else:
@@ -382,9 +388,12 @@ class Nullstellen_Frame(tk.Frame):
     __funktion = None
     punkte = []
 
-    def __init__(self, master=None):
+    parameter = None
+
+    def __init__(self, master=None,parameter=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
+        self.parameter = parameter
         self.update()
 
     def update(self, neu_funktion = None):
@@ -398,7 +407,7 @@ class Nullstellen_Frame(tk.Frame):
 
         if self.__funktion != None:
             tk.Label(self, text="Nullstellen ermittlen durch f(x) = 0:").grid(row=0, column=0, columnspan=2,sticky=tk.W)
-            punkte,row = nullstellen_berechnen(self.__funktion,1,self)
+            punkte,row = nullstellen_berechnen(self.parameter,self.__funktion,1,self)
             unterschiedliche_x_werte = []
             for count,punkt in enumerate(punkte):
                 if isinstance(punkt,Punkt):
@@ -409,8 +418,3 @@ class Nullstellen_Frame(tk.Frame):
             self.punkte = sorted(punkte)
         else:
             tk.Label(self, text="Fuer Nullstellenberechnung Funktion oben eingeben").grid(row=0, column=0)
-
-
-if __name__ == '__main__':
-    funk = "+ 1*x**2 - 2*x**1 + 8*x**0 + 40*x**(-1)"
-    print(eval(funk.replace("x", "(-2)")))

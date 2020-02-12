@@ -22,7 +22,7 @@ class GlobalesVerhalten_Frame(tk.Frame):
         if self.__funktion != None:
             tk.Label(self, text="Globales Verhalten: " + self.__funktion.funktion_polynom_x_ersetzbar).grid(row=0, column=0,sticky=tk.W)
             if not "x" in self.__funktion.funktion_user_x_ersetztbar:
-                wert = eval(self.__funktion.funktion_computer_readable)
+                wert = self.__funktion.x_einsetzen(0)
                 tk.Label(self, text="lim x->∞ = " + str(wert)).grid(row=1, column=1)
                 tk.Label(self, text="lim x->-∞ = " + str(wert)).grid(row=2, column=1)
             elif self.__funktion.is_polynomfunktion:
@@ -100,6 +100,6 @@ class GlobalesVerhalten_Frame(tk.Frame):
                     max_wert = max([wert1,wert2])
                     tk.Label(self, text="W = {"+str(min_wert)+";"+str(max_wert)+"}").grid(row=4, column=1)
             else:
-                tk.Label(self, text="Globales Verhalten konnte nicht ermittelt werden" + self.__funktion.funktion_user_kurz).grid(row=1, column=0,sticky=tk.W)
+                tk.Label(self, text="Globales Verhalten konnte nicht ermittelt werden").grid(row=1, column=0,sticky=tk.W)
         else:
             tk.Label(self, text="Für Berechnung des globalen Verhaltens Funktion oben eingeben").grid(row=0, column=0)

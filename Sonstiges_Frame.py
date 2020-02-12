@@ -56,6 +56,8 @@ class Sonstiges_Frame(tk.Frame):
                 tk.Label(self, text="      3. Logarithmusfunktion: a * log(b*(x-c), d) + e").grid(row=4, column=0,sticky=tk.W)
                 tk.Label(self, text="      4. Trigonometrische Funktion: a * sin(b*(x-c)) + d").grid(row=5, column=0,sticky=tk.W)
                 tk.Label(self, text="      5. Exponentialfunktion: a'x + b'x + c'x").grid(row=6, column=0,sticky=tk.W)
+            if self.__funktion.has_parameter:
+                tk.Label(self, text="Funktion mit Paramter").grid(row=9, column=0)
             if self.debug:
                 tk.Label(self, text="Debug:").grid(row=10, column=0, sticky=tk.W)
                 tk.Label(self, text="   kurz: " + self.__funktion.funktion_user_kurz).grid(row=11, column=0, sticky=tk.W)
