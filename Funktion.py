@@ -329,6 +329,7 @@ class Funktion():
     def funktion_to_computer_readable(self,funktion):
         funktion = funktion.replace("e","math.e")
         funktion = funktion.replace("pi", "math.pi")
+        funktion = funktion.replace("sqrt", "math.sqrt")
         funktion_array = []
         funktion_array.extend(funktion)
         for count,letter in enumerate(funktion_array):

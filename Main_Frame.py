@@ -6,6 +6,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import font
 
 import SchnittpunktYAchse_Frame
 import Ableitung_Frame
@@ -27,6 +28,7 @@ root = None
 
 DEBUG = True
 
+
 class MainWindow(tk.Frame):
 
     parameter = Grundklassen.Parameter()
@@ -39,6 +41,7 @@ class MainWindow(tk.Frame):
     def __init__(self,master=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
+        self.Graph_Frame = Graph_Frame.Graph_Frame(parameter=self.parameter)
         self.createWidgets()
         self.funktion_random_erstellen_button_pressed()
 
@@ -122,7 +125,6 @@ class MainWindow(tk.Frame):
         self.pane = ttk.Notebook(self)
         self.pane.grid(row=3,column=0,columnspan=5,sticky=tk.NSEW)
 
-        self.Graph_Frame = Graph_Frame.Graph_Frame(parameter=self.parameter)
         self.pane.add(self.Graph_Frame, text="Graph", padding=0)
 
         self.schnittpunktYAchse_head_frame = ScrollableFrame(self,SchnittpunktYAchse_Frame.SchnittpunktYAchse_Frame)
@@ -221,7 +223,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.2.0")
+    root.title("Kurvendiskussion - v2.2.1")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

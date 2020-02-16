@@ -98,9 +98,9 @@ class Random_Funktionen:
         if a != 1:
             funktion += str(a)+"*"
         if b != 0:
-            funktion += "(x"+vorzeichen_str(b)+")'(1/2)"
+            funktion += "sqrt(x"+vorzeichen_str(b)+")"
         else:
-            funktion += "x'(1/2)"
+            funktion += "sqrt(x)"
         if c != 0:
             funktion += vorzeichen_str(c)
         return Funktion(self.parameter,funktion)

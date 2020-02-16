@@ -2,6 +2,8 @@ from Grundklassen import Graph
 from Funktion import Funktion, n_mal_x_plus_m_to_string, polynom_array_to_str, vorzeichen_str
 
 import tkinter as tk
+from tkinter import font
+from tkinter import ttk
 import math
 try:
     import sympy
@@ -115,14 +117,18 @@ class Ableitung_Frame(tk.Frame):
                     tk.Label(self, text=str(num_ableitung) + ". Ableitung: " + funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 2, column=0, sticky=tk.W)
                     row = row+2
                 else:
+                    my_font = font.Font(family="Courier New")
+                    style = ttk.Style()
+                    style.configure("Fixed.TLabel", font=my_font)
                     could_be_solved = False
-                    tk.Label(self, text="Vielleicht hilft das: " + sympy.sstr(loesung).replace("**", "'")).grid(row=row+2, column=0, columnspan=2, sticky=tk.W)
+                    tk.Label(self, text="Vielleicht hilft das: " + sympy.sstr(loesung).replace("**", "'")).grid(row=2, column=0, columnspan=2, sticky=tk.W)
+                    [ttk.Label(self, text=line, style="Fixed.TLabel").grid(row=count + 3, column=0, columnspan=2, sticky=tk.W) for count, line in enumerate(sympy.pretty(loesung).split("\n"))]
             except Exception:
                 could_be_solved = False
             if not could_be_solved:
                 ableitungsfunktion = None
                 tk.Label(self, text="Ableitung konnte nicht erstellt werden").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
-                row = row + 2
+                row = row + 3
         if ableitungsfunktion != None:
             return ableitungsfunktion,row
         else:

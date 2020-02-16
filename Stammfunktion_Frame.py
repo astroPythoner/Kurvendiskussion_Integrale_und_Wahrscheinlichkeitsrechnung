@@ -2,6 +2,8 @@ from Grundklassen import Graph
 from Funktion import Funktion, vorzeichen_str, bruch_kuerzen, n_mal_x_plus_m_to_string, polynom_to_str
 
 import tkinter as tk
+from tkinter import font
+from tkinter import ttk
 import math
 try:
     import sympy
@@ -77,8 +79,12 @@ class Stammfunktion_Frame(tk.Frame):
                 if funktion_erkannt:
                     tk.Label(self, text="F(x) = " + stammfunk.funktion_user_kurz).grid(row=1, column=1)
                 else:
+                    my_font = font.Font(family="Courier New")
+                    style = ttk.Style()
+                    style.configure("Fixed.TLabel", font=my_font)
                     could_be_solved = False
                     tk.Label(self, text="Vielleicht hilft das: "+sympy.sstr(loesung).replace("**", "'")).grid(row=2, column=0, columnspan=2, sticky=tk.W)
+                    [ttk.Label(self, text=line, style="Fixed.TLabel").grid(row=count+3, column=0, columnspan=2, sticky=tk.W) for count,line in enumerate(sympy.pretty(loesung).split("\n"))]
             except Exception:
                 could_be_solved = False
             if not could_be_solved:
