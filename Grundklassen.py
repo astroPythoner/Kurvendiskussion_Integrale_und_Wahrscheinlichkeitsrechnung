@@ -1,4 +1,7 @@
 import math
+import threading
+from time import sleep
+import tkinter as tk
 
 class Punkt:
     __slots__ = ('x','y','name')
@@ -162,8 +165,109 @@ class Flaeche:
         self.color_name = color_name
         self.name = name
 
-class Parameter:
+class Parameter(threading.Thread):
     wert = 0
+    min_wert = -10
+    max_wert = 10
+    schrittweite = 0.5
+    speed = 1.5
+
+    __rising = True
+    __moving = False
+    __main_frame = None
+
+    def __init__(self,main_frame):
+        threading.Thread.__init__(self)
+        self.__main_frame = main_frame
 
     def set_wert(self,wert):
-        self.wert = wert
+        if self.min_wert <= wert <= self.max_wert:
+            self.wert = round(wert,2)
+
+    def run(self):
+        self.__moving = True
+        while self.__moving:
+            if self.__rising:
+                self.wert += self.schrittweite
+            else:
+                self.wert -= self.schrittweite
+            self.wert = round(self.wert,2)
+            if self.max_wert <= self.wert:
+                self.wert = self.max_wert
+                self.__rising = False
+            elif self.min_wert >= self.wert:
+                self.wert = self.min_wert
+                self.__rising = True
+            self.__main_frame.parameter_scale.set(self.wert)
+            sleep(self.speed)
+        threading.Thread.__init__(self)
+
+    def stop(self):
+        self.__moving = False
+
+class Parameter_Settings(tk.Toplevel):
+
+    schrittweiten = [0.05,0.1,0.2,0.25,0.5,0.75,1,1.5,2,2.5,5,7.5,10,15,20,25]
+    speeds = [0.5,0.6,0.75,0.8,1,1.25,1.5,2,2.5,3,4,5,7.5,10]
+
+    def __init__(self, parent, parameter):
+        tk.Toplevel.__init__(self, parent)
+        self.transient(parent)
+
+        self.parameter = parameter
+
+        self.title("Parameter einstellen")
+        self.parent = parent
+        self.result = None
+        body = tk.Frame(self)
+        self.body(body)
+        body.pack(padx=7, pady=7)
+        self.initial_focus = body
+        self.buttonbox()
+        self.grab_set()
+        self.initial_focus = self
+        self.initial_focus.focus_set()
+        self.wait_window(self)
+
+    def body(self, master):
+        tk.Label(master,text="Parameter Mindest- und Maximalwert").grid(row=0,column=0, columnspan=len(self.schrittweiten),sticky = tk.W)
+        self.scale_1 = tk.Scale(master,from_=-50, to=50, orient=tk.HORIZONTAL)
+        self.scale_1.grid(row=1,column=0, columnspan=len(self.schrittweiten),sticky = tk.EW)
+        self.scale_1.set(self.parameter.min_wert)
+        self.scale_2 = tk.Scale(master,from_=-50, to=50, orient=tk.HORIZONTAL)
+        self.scale_2.grid(row=2, column=0, columnspan=len(self.schrittweiten),sticky = tk.EW)
+        self.scale_2.set(self.parameter.max_wert)
+        tk.Label(master,text="Schrittweite").grid(row=3,column=0, columnspan=len(self.schrittweiten),sticky = tk.W)
+        self.schrittweite = tk.IntVar()
+        if self.parameter.schrittweite in self.schrittweiten:
+            self.schrittweite.set(self.schrittweiten.index(self.parameter.schrittweite))
+        for count,schrittweite in enumerate(self.schrittweiten):
+            tk.Radiobutton(master,text=str(schrittweite),variable=self.schrittweite,value=count).grid(row=4,column=count)
+        tk.Label(master, text="Geschwindigkeit (Wartezeit nach Fertigstellung der Rechnung in Sekunden)").grid(row=5, column=0, columnspan=len(self.schrittweiten), sticky=tk.W)
+        self.speed = tk.IntVar()
+        if self.parameter.speed in self.speeds:
+            self.speed.set(self.speeds.index(self.parameter.speed))
+        for count, speed in enumerate(self.speeds):
+            tk.Radiobutton(master, text=str(speed), variable=self.speed, value=count).grid(row=6,column=count)
+
+    def buttonbox(self):
+        box = tk.Frame(self)
+        fertig = tk.Button(box, text="fertig", command=self.react)
+        fertig.pack(side=tk.LEFT, padx=7, pady=7)
+        box.pack()
+
+    def react(self, event=None):
+        self.withdraw()
+        self.update_idletasks()
+        self.apply()
+        self.cancel()
+
+    def cancel(self, event=None):
+        self.parent.focus_set()
+        self.destroy()
+
+    def apply(self):
+        self.parameter.min_wert = min([self.scale_1.get(),self.scale_2.get()])
+        self.parameter.max_wert = max([self.scale_1.get(),self.scale_2.get()])
+        self.parameter.schrittweite = self.schrittweiten[self.schrittweite.get()]
+        self.parameter.speed = self.speeds[self.speed.get()]

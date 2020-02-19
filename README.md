@@ -13,6 +13,7 @@ python3 Main_Frame.py
 
 ![image not found](https://raw.githubusercontent.com/astroPythoner/Kurvendiskussion/master/screenshot1.png)
 ![](https://raw.githubusercontent.com/astroPythoner/Kurvendiskussion/master/screenshot2.png)
+![](https://raw.githubusercontent.com/astroPythoner/Kurvendiskussion/master/screenshot3.png)
 
 Erklärung, Verwendung und Hilfe im Wiki
 

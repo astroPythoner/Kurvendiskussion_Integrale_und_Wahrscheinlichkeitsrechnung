@@ -222,8 +222,9 @@ class Remote_Settings(tk.Toplevel):
         self.parent = parent
         self.result = None
         body = tk.Frame(self)
-        self.initial_focus = self.body(body)
+        self.body(body)
         body.pack(padx=7, pady=7)
+        self.initial_focus = body
         self.buttonbox()
         self.grab_set()
 

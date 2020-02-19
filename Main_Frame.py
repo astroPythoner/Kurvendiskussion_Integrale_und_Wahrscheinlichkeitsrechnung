@@ -24,6 +24,7 @@ import Grundklassen
 import RandomFunktion
 import Funktion
 
+
 root = None
 
 DEBUG = False
@@ -31,8 +32,8 @@ DEBUG = False
 
 class MainWindow(tk.Frame):
 
-    parameter = Grundklassen.Parameter()
-    funktion = Funktion.Funktion(parameter,"0")
+    parameter = None
+    funktion = None
     frames = []
     head_frames = []
 
@@ -41,6 +42,8 @@ class MainWindow(tk.Frame):
     def __init__(self,master=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
+        self.parameter = Grundklassen.Parameter(self)
+        self.funktion = Funktion.Funktion(self.parameter, "0")
         self.Graph_Frame = Graph_Frame.Graph_Frame(parameter=self.parameter)
         self.createWidgets()
         self.funktion_random_erstellen_button_pressed()
@@ -49,11 +52,14 @@ class MainWindow(tk.Frame):
         passt = self.funktion.set_funktion(self.eingabe.get())
 
         if passt==True:
-            self.parameter.set_wert(0)
             if self.funktion.has_parameter:
                 self.parameter_scale.configure(state=tk.NORMAL)
+                self.parameter_move.configure(state=tk.NORMAL)
+                self.parameter_stop.configure(state=tk.NORMAL)
             else:
                 self.parameter_scale.configure(state=tk.DISABLED)
+                self.parameter_move.configure(state=tk.DISABLED)
+                self.parameter_stop.configure(state=tk.DISABLED)
 
             for frame in self.frames:
                 frame.update(self.funktion)
@@ -75,9 +81,9 @@ class MainWindow(tk.Frame):
             elif self.funktion.is_exponential:
                 text = "Exponentialfunktion: " + self.funktion.funktion_exponential_x_ersetzbar
             elif self.funktion.has_parameter:
-                text = "Paramterfunktion"
+                text = "Paramterfunktion: "+self.funktion.funktion_user_kurz
             else:
-                text = "Funktionstyp nicht bekannt"
+                text = "Funktionstyp nicht bekannt: "+self.funktion.funktion_user_kurz
             self.funktion_info_text.config(text=text)
 
         elif passt == "unverändert":
@@ -95,13 +101,19 @@ class MainWindow(tk.Frame):
     def change_parameter_value(self,cause):
         self.parameter.set_wert(self.parameter_scale.get())
         self.funktion_uebernehmen_button_pressed()
+    def start_parameter_moving(self):
+        self.parameter.start()
+    def stop_parameter_moving(self):
+        self.parameter.stop()
+    def make_parameter_settings(self):
+        Grundklassen.Parameter_Settings(self, self.parameter)
+        self.parameter_scale.config(from_=self.parameter.min_wert, to=self.parameter.max_wert)
 
     def createWidgets(self):
-
         #Eingabefeld
-        self.formlezeichen_info = tk.Label(self,text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\nKommazahlen: 1.5\nkonstanten: pi,e\nsin(), cos(), tan(), arcsin(),...\nlog(wert,basis), log10(), ln()")
+        self.formlezeichen_info = tk.Label(self,text="plus: +\nminus: -\nmal: *\ngeteilt: /\nhochzahlen: '\nKommazahlen: 1.5\nkonstanten: pi,e\nsin(), cos(), tan(), arcsin(),...\nlog(wert,basis), log10(), ln()\n√: sqrt() oder wurzel()")
         self.formlezeichen_info.grid(row=0, column=0, sticky=tk.W, rowspan=2)
-        self.eingabe_info = tk.Label(self,text="Hier Funktion eingeben: f(x)=")
+        self.eingabe_info = tk.Label(self,text="Hier Funktion eingeben: ƒ(x)=")
         self.eingabe_info.grid(row=0, column=1, sticky=tk.E)
         self.eingabe = tk.Entry(self)
         self.eingabe.grid(row=0,column=2, sticky=tk.EW)
@@ -110,20 +122,25 @@ class MainWindow(tk.Frame):
         self.random_funktion_button = tk.Button(self, text="zufällige Funktion", command=self.funktion_random_erstellen_button_pressed)
         self.random_funktion_button.grid(row=1, column=3, sticky=tk.NW)
         self.random_einstellungen = tk.Button(self, text="Zufallsfunktion Einstellungen", command=lambda *args: RandomFunktion.Remote_Settings(self, self.funktionsrandom))
-        self.random_einstellungen.grid(row=1, column=4, sticky=tk.NW)
+        self.random_einstellungen.grid(row=1, column=4, columnspan=3, sticky=tk.NW)
         self.eingabe_passt = tk.Label(self, text="")
-        self.eingabe_passt.grid(row=0, column=4, sticky=tk.W)
+        self.eingabe_passt.grid(row=0, column=4, columnspan=3, sticky=tk.W)
         self.funktion_info_text = tk.Label(self, text="")
         self.funktion_info_text.grid(row=1, column=1, columnspan=2)
         self.parameter_text = tk.Label(self, text="Parameter k:")
         self.parameter_text.grid(row=2, column=0, sticky=tk.E)
-        self.parameter_scale = tk.Scale(self, from_=-10, to=10, orient=tk.HORIZONTAL, resolution=0.1, command=self.change_parameter_value)
+        self.parameter_scale = tk.Scale(self, from_=self.parameter.min_wert, to=self.parameter.max_wert, orient=tk.HORIZONTAL, resolution=0.1, command=self.change_parameter_value)
         self.parameter_scale.grid(row=2, column=1, columnspan=3,sticky=tk.EW)
-
+        self.parameter_move = tk.Button(self, text="►", command=self.start_parameter_moving)
+        self.parameter_move.grid(row=2, column=4, sticky=tk.E)
+        self.parameter_stop = tk.Button(self, text="█", command=self.stop_parameter_moving)
+        self.parameter_stop.grid(row=2, column=5, sticky=tk.W)
+        self.parameter_settings = tk.Button(self, text="Einstellungen Parameter", command=self.make_parameter_settings)
+        self.parameter_settings.grid(row=2, column=6, sticky=tk.W)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
-        self.pane.grid(row=3,column=0,columnspan=5,sticky=tk.NSEW)
+        self.pane.grid(row=3,column=0,columnspan=7,sticky=tk.NSEW)
 
         self.pane.add(self.Graph_Frame, text="Graph", padding=0)
 
@@ -223,7 +240,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.2.2")
+    root.title("Kurvendiskussion - v2.3.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

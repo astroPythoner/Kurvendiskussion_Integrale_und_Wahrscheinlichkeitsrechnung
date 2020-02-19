@@ -53,6 +53,7 @@ class Graph_Frame(tk.Frame):
     funktion_frames_aktiv = []
     flaechen_frames = [integr]
     flaechen_frames_aktiv = []
+    aktiv = {"f(x)":True,"f'(x)":False,"f''(x)":False,"f'''(x)":False,"t(x)":False,"n(x)":False,"F(x)":False,"Integral":False}
 
     graph = None
     parameter = None
@@ -107,7 +108,11 @@ class Graph_Frame(tk.Frame):
         for frame in self.funktion_frames:
             try:
                 for funktion in frame.funktionen:
-                    self.funktion_frames_aktiv.append(tk.BooleanVar())
+                    var = tk.BooleanVar()
+                    for ding in self.aktiv:
+                        if funktion.name == ding:
+                            var.set(self.aktiv[ding])
+                    self.funktion_frames_aktiv.append(var)
             except:
                 pass
         self.flaechen_frames = [self.integr]
@@ -115,7 +120,11 @@ class Graph_Frame(tk.Frame):
         for frame in self.flaechen_frames:
             try:
                 for flaeche in frame.flaechen:
-                    self.flaechen_frames_aktiv.append(tk.BooleanVar())
+                    var = tk.BooleanVar()
+                    for ding in self.aktiv:
+                        if flaeche.name == ding:
+                            var.set(self.aktiv[ding])
+                    self.flaechen_frames_aktiv.append(var)
             except:
                 pass
         self.createWidgets()
@@ -129,7 +138,9 @@ class Graph_Frame(tk.Frame):
             self.last_end_value = value
             self.createWidgets()
 
-    def funktion_ausgewaehlt(self):
+    def funktion_ausgewaehlt(self,funktion):
+        if funktion in self.aktiv:
+            self.aktiv[funktion] = not self.aktiv[funktion]
         self.createWidgets()
 
     def createWidgets(self):
@@ -142,14 +153,14 @@ class Graph_Frame(tk.Frame):
             self.start_x_regler.grid(row=0,column=0, sticky=tk.NSEW)
             self.end_x_regler = tk.Scale(self, from_=1, to=self.graph.max_x, orient=tk.HORIZONTAL, variable = self.end_x, command=self.bereich_update)
             self.end_x_regler.grid(row=0, column=1, sticky=tk.NSEW)
-            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=self.funktion_ausgewaehlt).grid(row=1, column=2, sticky=tk.NW)
+            self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=lambda: self.funktion_ausgewaehlt("f(x)")).grid(row=1, column=2, sticky=tk.NW)
 
             num_funktion = 0
             for frame in self.funktion_frames:
                 try:
                     for funktion in frame.funktionen:
                         num_funktion += 1
-                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=self.funktion_ausgewaehlt).grid(row=num_funktion+1,column=2,sticky=tk.NW)
+                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+1,column=2,sticky=tk.NW)
                 except:
                     pass
             num_flaeche = 0
@@ -157,7 +168,7 @@ class Graph_Frame(tk.Frame):
                 try:
                     for flaeche in frame.flaechen:
                         num_flaeche += 1
-                        self.checkbox_flaeche_auswahl = tk.Checkbutton(self, text=flaeche.name + " (" + flaeche.color_name + ")", variable=self.flaechen_frames_aktiv[num_flaeche - 1],command=self.funktion_ausgewaehlt).grid(row=num_funktion + 1 + num_flaeche + 1, column=2, sticky=tk.NW)
+                        self.checkbox_flaeche_auswahl = tk.Checkbutton(self, text=flaeche.name + " (" + flaeche.color_name + ")", variable=self.flaechen_frames_aktiv[num_flaeche - 1],command=lambda a = flaeche.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion + 1 + num_flaeche + 1, column=2, sticky=tk.NW)
                 except:
                     pass
             self.punkt_text = tk.Label(self, text="Punkte:").grid(row=1, column=3, sticky=tk.N)

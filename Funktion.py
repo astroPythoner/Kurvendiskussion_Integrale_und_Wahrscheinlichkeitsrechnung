@@ -181,7 +181,7 @@ def get_n_m_from_n_mal_x_plus_m(funktion,parameter=None):
             n = "+1"
         if n.endswith("*"):
             n = n[:-1]
-        if not geklammert:
+        if not geklammert and eval(n)!=0:
             m = "("+m+")/("+n+")"
         # check if n and m are correct
         if "x" in n or "x" in m:
@@ -292,6 +292,7 @@ class Funktion():
         funktion = funktion.replace("asin", "arcsin")
         funktion = funktion.replace("acos", "arccos")
         funktion = funktion.replace("atan", "arctan")
+        funktion = funktion.replace("wurzel", "sqrt")
         funktion_array = []
         funktion_array.extend(funktion)
         count = 0
