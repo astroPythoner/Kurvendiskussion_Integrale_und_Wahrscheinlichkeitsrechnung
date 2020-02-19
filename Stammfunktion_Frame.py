@@ -70,6 +70,21 @@ class Stammfunktion_Frame(tk.Frame):
                 tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * sin(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c) + ") / "+str(self.__funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+1, column=1)
                 stammfunk = Funktion(self.parameter,str(self.__funktion.trigonometrisch_a/self.__funktion.trigonometrisch_b)+" * sin("+n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b, -self.__funktion.trigonometrisch_c)+") "+stammfunktion_ende)
             tk.Label(self, text="F(x) = "+stammfunk.funktion_user_kurz).grid(row=row+2, column=1)
+        elif self.__funktion.is_wurzel:
+            stammfunktion_ende = ""
+            row = 0
+            if self.__funktion.wurzel_d != 0:
+                tk.Label(self, text=" konstante Zahl mit x erweitern").grid(row=0, column=2,sticky = tk.W)
+                tk.Label(self, text="F(x) = " +self.__funktion.funktion_wurzel_x_ersetzbar+"x").grid(row=1, column=1)
+                stammfunktion_ende = vorzeichen_str(self.__funktion.wurzel_d,mitleerzeichen=True)+"*x"
+                row = 1
+            tk.Label(self, text=" Kettenregel sqrt(v(x)) -> (2/3)*v(x)'(3/2) / v'(x)").grid(row=row, column=2, sticky=tk.W)
+            tk.Label(self, text="F(x) = "+str(self.__funktion.wurzel_a)+"* (2/3)*("+n_mal_x_plus_m_to_string(self.__funktion.wurzel_b,-self.__funktion.wurzel_c)+")'(3/2) / "+str(self.__funktion.wurzel_b)+" "+stammfunktion_ende).grid(row=row+1, column=1,sticky=tk.W)
+            bruch = bruch_kuerzen(2*self.__funktion.wurzel_a,3*self.__funktion.wurzel_b)
+            if bruch[1] != 1:
+                stammfunk = Funktion(self.parameter,"("+str(bruch[0])+"*("+n_mal_x_plus_m_to_string(self.__funktion.wurzel_b,-self.__funktion.wurzel_c)+")'(3/2) ) /"+str(bruch[1])+stammfunktion_ende)
+            else:
+                stammfunk = Funktion(self.parameter,str(bruch[0])+"*(" + n_mal_x_plus_m_to_string(self.__funktion.wurzel_b,-self.__funktion.wurzel_c) + ")'(3/2)" + stammfunktion_ende)
         else:
             could_be_solved = True
             try:

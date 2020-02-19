@@ -99,6 +99,22 @@ class GlobalesVerhalten_Frame(tk.Frame):
                     min_wert = min([wert1,wert2])
                     max_wert = max([wert1,wert2])
                     tk.Label(self, text="W = {"+str(min_wert)+";"+str(max_wert)+"}").grid(row=4, column=1)
+            elif self.__funktion.is_wurzel:
+                if self.__funktion.wurzel_b == 0 or self.__funktion.wurzel_a == 0:
+                    tk.Label(self, text="lim x->∞ = 0").grid(row=1, column=0)
+                    tk.Label(self, text="lim x->-∞ = 0").grid(row=2, column=0)
+                elif self.__funktion.wurzel_b < 0:
+                    tk.Label(self, text="lim x->∞ = in Wurzelfunktionen lassen sich keine negativen Werte einsetzen (durch negativen Vorfakter in der Wurzel wird aus positiv negativ)").grid(row=1, column=0)
+                    if self.__funktion.wurzel_a < 0:
+                        tk.Label(self, text="lim x->-∞ = -∞").grid(row=2, column=0)
+                    elif self.__funktion.wurzel_a > 0:
+                        tk.Label(self, text="lim x->-∞ = ∞").grid(row=2, column=0)
+                elif self.__funktion.wurzel_b > 0:
+                    tk.Label(self, text="lim x->-∞ = in Wurzelfunktionen lassen sich keine negativen Werte einsetzen").grid(row=2, column=0)
+                    if self.__funktion.wurzel_a < 0:
+                        tk.Label(self, text="lim x->-∞ = -∞").grid(row=1, column=0)
+                    elif self.__funktion.wurzel_a > 0:
+                        tk.Label(self, text="lim x->-∞ = ∞").grid(row=1, column=0)
             else:
                 tk.Label(self, text="Globales Verhalten konnte nicht ermittelt werden").grid(row=1, column=0,sticky=tk.W)
         else:

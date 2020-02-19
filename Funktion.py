@@ -90,10 +90,15 @@ def groesster_teiler(a,b):
     return a
 
 def bruch_kuerzen(zaehler,teiler):
-    if teiler == 0:
-        return zaehler,teiler
-    ggt = groesster_teiler(zaehler,teiler)
-    return int(zaehler/ggt), int(teiler/ggt)
+    if isinstance(zaehler,int) and isinstance(teiler,int):
+        # größten gemeinsamen Teiler finden und durch diesen teilen
+        if teiler == 0:
+            return zaehler,teiler
+        ggt = groesster_teiler(zaehler,teiler)
+        return int(zaehler/ggt), int(teiler/ggt)
+    if isinstance(zaehler,float) or isinstance(teiler,float):
+        # bei komma zahlen bruch erweitern
+        return bruch_kuerzen(int(round(zaehler,10)*1000000000000),int(round(teiler,10)*1000000000000))
 
 def check_funktionen_gleich(funktion1,funktion2):
     if isinstance(funktion1,Funktion):
@@ -110,14 +115,16 @@ def check_funktionen_gleich(funktion1,funktion2):
         try:
             if eval(funktion1.replace("x","("+str(x)+")")) != eval(funktion2.replace("x","("+str(x)+")")):
                 return False
-        except Exception:
-            return False
+        except Exception as e:
+            if e.__str__() != "math domain error":
+                return False
     for x in [math.pi, math.pi / 2, math.pi / 3, math.e, math.e/2]:
         try:
             if eval(funktion1.replace("x",str(x))) != eval(funktion2.replace("x",str(x))):
                 return False
-        except Exception:
-            return False
+        except Exception as e:
+            if e.__str__() != "math domain error":
+                return False
     return True
 
 def get_n_m_from_n_mal_x_plus_m(funktion,parameter=None):
@@ -230,6 +237,7 @@ class Funktion():
     wurzel_a = 0
     wurzel_b = 0
     wurzel_c = 0
+    wurzel_d = 0
 
     is_logarithmus = False                 # Typ: a * log(b(x-c), d) + e
     funktion_logarithmus_x_ersetzbar = ""
@@ -653,18 +661,88 @@ class Funktion():
             return False,"kein x in Funktion"
 
     def __set_values_after_set_funktion_wurzel(self, funktion):
-        self.__check_funktion_wurzel_funktion_and_convert(funktion)
-        if self.debug_sonstiges != False:
-            self.debug_sonstiges.add_funktion_not_erkannt_reason("Wurzelfunktion", "comming soon")
         self.is_wurzel = False
         self.funktion_wurzel_x_ersetzbar = ""
         self.funktion_wurzel_computer_readable = ""
         self.wurzel_a = 0
         self.wurzel_b = 0
         self.wurzel_c = 0
+        a,b,c,d = self.__check_funktion_wurzel_funktion_and_convert(funktion)
+        if not False in [a,b,c,d]:
+            a,b,c,d = eval(a),eval(b),eval(c),eval(d)
+            self.is_wurzel = True
+            self.funktion_wurzel_x_ersetzbar = ""
+            if a != 1:
+                self.funktion_wurzel_x_ersetzbar += str(a) + " * "
+            self.funktion_wurzel_x_ersetzbar +=  "sqrt(" + n_mal_x_plus_m_to_string(b,c) + ")"
+            if d != 0:
+                self.funktion_wurzel_x_ersetzbar += vorzeichen_str(d)
+            self.funktion_wurzel_computer_readable = self.funktion_to_computer_readable(self.funktion_wurzel_x_ersetzbar)
+            self.wurzel_a = a
+            self.wurzel_b = b
+            self.wurzel_c = -c
+            self.wurzel_d = d
+        else:
+            if self.debug_sonstiges != False:
+                self.debug_sonstiges.add_funktion_not_erkannt_reason("Wurzelfunktion", d)
 
     def __check_funktion_wurzel_funktion_and_convert(self,funktion):
-        return False,"comming soon"
+        funktion_array = []
+        funktion_array.extend(funktion)
+        a = ""
+        b = ""
+        c = ""
+        d = ""
+        if "sqrt" in funktion:
+            pos = funktion.index("sqrt")
+            if pos > 0:
+                for index in range(pos):
+                    a += funktion[index]
+                if a[-1] != "*":
+                    return False, False, False, "Vorfaktor nicht mal genommen"
+                else:
+                    a = a[:-1]
+            else:
+                a = "1"
+            if funktion_array[pos + 4] == "(":
+                offenen_klammern = 0
+                klammer_ende = 0
+                index = pos + 4
+                while index < len(funktion_array):
+                    if funktion_array[index] == "(":
+                        offenen_klammern += 1
+                    elif funktion_array[index] == ")":
+                        offenen_klammern -= 1
+                        if offenen_klammern == 0:
+                            klammer_ende = index
+                            index = len(funktion_array)
+                    index += 1
+                b, c = get_n_m_from_n_mal_x_plus_m(Funktion(self.parameter, funktion[pos + 5:klammer_ende]))
+                if b == False or c == False:
+                    return False, False, False, "innerer Term nicht erkannt"
+                else:
+                    if klammer_ende + 1 < len(funktion) - 1:
+                        for index in range(klammer_ende + 1, len(funktion)):
+                            d += funktion_array[index]
+                    else:
+                        d = "0"
+            else:
+                return False, False, False, "Keine Klammer nach sqrt"
+            if "x" in a or "x" in b or "x" in c or "x" in d:
+                return False, False, False, "x in a,b,c or d"
+            for value in [a, b, c, d]:
+                try:
+                    wert = eval(value)
+                    if not (isinstance(wert, int) or isinstance(wert, float)):
+                        return False, False, False, "nicht definierter Wert in a,b,c or d"
+                except Exception:
+                    return False, False, False, "unsolvable value in a,b,c or d"
+            result_funktion = str(eval(a)) + "* sqrt(" + str(eval(b)) + "*(x" + vorzeichen_str(eval(c)) + "))" + vorzeichen_str(eval(d))
+            if not check_funktionen_gleich(funktion, result_funktion):
+                return False, False, False, "Funktion am Ende passt nicht"
+            return a, b, c, d
+        else:
+            return False, False, False, "Kein 'sqrt' in Funktion"
 
     def __set_values_after_set_funktion_exponential(self, funktion):
         self.__check_funktion_exponential_funktion_and_convert(funktion)
@@ -832,7 +910,7 @@ class Funktion():
         computer_funktion = self.funktion_to_computer_readable(funktion)
         #print("Funktion",funktion,computer_funktion)
         if funktion != self.funktion_user_x_ersetztbar or computer_funktion != self.funktion_computer_readable:
-            versuchs_x = [-10,-5,-2,-1-0.5,0,1,2,5,10,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
+            versuchs_x = [-100,-80,-60,-40,-20,-10,-8,-5,-2,-1-0.5,0,1,2,5,10,20,40,60,80,100,math.pi,math.pi/2,math.pi/3,math.e,math.e/2]
             working = False
             for x in versuchs_x:
                 test = True

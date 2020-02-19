@@ -1,5 +1,5 @@
 from Grundklassen import Graph
-from Funktion import Funktion, n_mal_x_plus_m_to_string, polynom_array_to_str, vorzeichen_str
+from Funktion import Funktion, n_mal_x_plus_m_to_string, polynom_array_to_str, vorzeichen_str, bruch_kuerzen
 
 import tkinter as tk
 from tkinter import font
@@ -105,6 +105,21 @@ class Ableitung_Frame(tk.Frame):
                 tk.Label(self, text="F(x) = " + str(self.__funktion.trigonometrisch_a) + " * " + str(self.__funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(self.__funktion.trigonometrisch_b,-self.__funktion.trigonometrisch_c) + ")'2").grid(row=row + 1, column=1)
                 ableitungsfunktion = Funktion(self.parameter,str(davor_abgeleitete_funktion.trigonometrisch_a * davor_abgeleitete_funktion.trigonometrisch_b) + " / cos(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.trigonometrisch_b, -davor_abgeleitete_funktion.trigonometrisch_c) + ")'2")
             tk.Label(self, text=funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=1)
+            tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 4, column=0,sticky=tk.W)
+            row = row+4
+        elif davor_abgeleitete_funktion.is_wurzel:
+            if davor_abgeleitete_funktion.wurzel_d != 0:
+                tk.Label(self, text=" konstante Zahl fällt weg, da kein x enthalten").grid(row=row, column=2,sticky = tk.W)
+                tk.Label(self, text=funktionsname+" = " + str(davor_abgeleitete_funktion.wurzel_a) + " * sqrt(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.wurzel_b, -davor_abgeleitete_funktion.wurzel_c) + ")").grid(row=row+1, column=1)
+                row = row+1
+            tk.Label(self, text=" Wurzel lösen nach √x -> 1/(2√x)").grid(row=row, column=2, sticky=tk.W)
+            tk.Label(self, text=funktionsname + " = " + str(davor_abgeleitete_funktion.wurzel_a) + " * 1/(2*sqrt(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.wurzel_b,-davor_abgeleitete_funktion.wurzel_c) + "))").grid(row=row, column=1)
+            tk.Label(self, text=" Nach Kettenregel auch innere Funktion ableiten und multiplizieren").grid(row=row+1, column=2, sticky=tk.W)
+            tk.Label(self, text=funktionsname + " = " + str(davor_abgeleitete_funktion.wurzel_a) + " * 1/(2*sqrt(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.wurzel_b,-davor_abgeleitete_funktion.wurzel_c) + ")) * "+str(davor_abgeleitete_funktion.wurzel_b)).grid(row=row+1, column=1)
+            bruch = bruch_kuerzen(davor_abgeleitete_funktion.wurzel_a*davor_abgeleitete_funktion.wurzel_b,2)
+            ableitungsfunktion = Funktion(self.parameter,str(bruch[0]) + "/(" + str(bruch[1]) + "*sqrt(" + n_mal_x_plus_m_to_string(davor_abgeleitete_funktion.wurzel_b,-davor_abgeleitete_funktion.wurzel_c) + "))")
+            tk.Label(self, text=funktionsname + " = " + ableitungsfunktion.funktion_user_kurz).grid(row=row+2, column=1)
+            tk.Label(self, text=str(num_ableitung)+". Ableitung: "+funktionsname+" = " + ableitungsfunktion.funktion_user_kurz).grid(row=row + 3, column=0,sticky=tk.W)
             row = row+3
         else:
             could_be_solved = True

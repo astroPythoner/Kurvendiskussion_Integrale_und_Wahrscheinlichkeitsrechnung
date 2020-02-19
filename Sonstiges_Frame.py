@@ -41,7 +41,9 @@ class Sonstiges_Frame(tk.Frame):
             elif self.__funktion.is_logarithmus:
                 tk.Label(self, text="Logarithmusfunktion").grid(row=0, column=0)
             elif self.__funktion.is_wurzel:
-                tk.Label(self, text="Wurzelfunktion").grid(row=0, column=0)
+                tk.Label(self, text="Wurzelfunktion ("+self.__funktion.funktion_wurzel_x_ersetzbar+")").grid(row=0, column=0)
+                tk.Label(self, text="f(x) = " + self.__funktion.funktion_wurzel_x_ersetzbar).grid(row=1,column=0)
+                tk.Label(self, text="a * sqrt(b(x-c)) + d:   a = " + str(self.__funktion.wurzel_a) + ", b = " + str(self.__funktion.wurzel_b) + ", c = " + str(self.__funktion.wurzel_c) + ", d = " + str(self.__funktion.wurzel_d)).grid(row=2,column=0)
             elif self.__funktion.is_trigonometrisch:
                 tk.Label(self, text="trigonometrische Funktion ("+self.__funktion.trigonometrische_funktion+")").grid(row=0, column=0)
                 tk.Label(self, text="f(x) = " + self.__funktion.funktion_trigonometrisch_x_ersetzbar).grid(row=1, column=0)

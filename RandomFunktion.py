@@ -81,28 +81,28 @@ class Random_Funktionen:
         return Funktion(self.parameter,return_funktion)
 
     def get_random_wurzelfunktion(self):
-        ### Funtion vom Typ a(x−b)'(1/2)+c ###
+        ### Funtion vom Typ a(b(x−c))'(1/2)+d ###
         if self.wurzel_with_streck:
             a = round(uniform(-10, 10),1)
         else:
             a = 1
         if self.wurzel_with_x_versch:
-            b = round(uniform(-10,10),1)
-        else:
-            b = 0
-        if self.wurzel_with_y_versch:
             c = round(uniform(-10,10),1)
         else:
             c = 0
+        if self.wurzel_with_y_versch:
+            d = round(uniform(-10,10),1)
+        else:
+            d = 0
         funktion = ""
         if a != 1:
             funktion += str(a)+"*"
-        if b != 0:
-            funktion += "sqrt(x"+vorzeichen_str(b)+")"
+        if c != 0:
+            funktion += "sqrt(x"+vorzeichen_str(c)+")"
         else:
             funktion += "sqrt(x)"
-        if c != 0:
-            funktion += vorzeichen_str(c)
+        if d != 0:
+            funktion += vorzeichen_str(d)
         return Funktion(self.parameter,funktion)
 
     def get_random_exponentialfunktion(self):
