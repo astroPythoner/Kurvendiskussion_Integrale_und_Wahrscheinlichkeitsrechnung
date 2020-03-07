@@ -1,4 +1,4 @@
-from Grundklassen import Flaeche
+from Grundklassen import Flaeche, Punkt, Wiederholender_Punkt
 from Funktion import vorzeichen_str
 
 import tkinter as tk
@@ -66,8 +66,13 @@ class Integral_Frame(tk.Frame):
             # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
             for punkt in self.nullstellen.punkte:
-                if self.x_start.get() < punkt.x < self.x_ende.get():
-                    nullstellen_dazwischen.append(punkt)
+                if isinstance(punkt,Wiederholender_Punkt):
+                    wieder_punkte = punkt.get_koordinaten_from_to(self.x_start.get(),self.x_ende.get())
+                    for wieder_punkt in wieder_punkte:
+                        nullstellen_dazwischen.append(Punkt(wieder_punkt[0],wieder_punkt[1],"nst"))
+                else:
+                    if self.x_start.get() < punkt.x < self.x_ende.get():
+                        nullstellen_dazwischen.append(punkt)
             if len(nullstellen_dazwischen) >= 1 and self.achte_auf_nullstellen:
                 tk.Label(self, text="!! ACHTUNG Wenn nicht gefundene Nullstellen zwischen den Punkten liegen werden die Flächen unter dem Graph negativ gesehen und im Ergebnis abgezogen").grid(row=6,column=0,sticky=tk.W,columnspan=2)
                 tk.Label(self, text="2. Nullstellen zwischen Werten finden").grid(row=7,column=0,sticky=tk.W,columnspan=2)
@@ -96,7 +101,7 @@ class Integral_Frame(tk.Frame):
                         ergbnis_teile.append(erg)
                         tk.Label(self, text="| " + str(werte_nullstellen[punkt_num]) + " "+vorzeichen_str(werte_nullstellen[punkt_num+1]) + " | = " + str(erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
                     row = row+2+punkt_num
-                    tk.Label(self,text="4. Ergebnisse zusammenzhlen:").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
+                    tk.Label(self,text="4. Ergebnisse zusammenzählen:").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
                     tk.Label(self, text="Fläche = "+str(math.fsum(ergbnis_teile))).grid(row=row+2, column=1, sticky=tk.W)
             else:
                 # Differenz berechnen
