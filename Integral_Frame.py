@@ -15,7 +15,7 @@ class Integral_Frame(tk.Frame):
     def __init__(self, master=None, stammfunktion=None, nullstellen=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
-        self.flaechen = [Flaeche(0.9,0.6,"blaugrau","Integral")]
+        self.flaechen = [Flaeche(0.9,0.6,"hellgrau","Integral")]
         self.x_start = tk.IntVar()
         self.x_start.set(-1)
         self.last_x_start_wert = -1
@@ -27,7 +27,7 @@ class Integral_Frame(tk.Frame):
         self.nullstellen = nullstellen
         self.achte_auf_nullstellen = False
 
-    def update(self, neu_funktion = None):
+    def update(self, neu_funktion = None, second_funktion=None):
         if neu_funktion is not None:
             self.__funktion = neu_funktion
         self.createWidgets()
@@ -97,17 +97,17 @@ class Integral_Frame(tk.Frame):
                     tk.Label(self, text="3. Differenz zwischen den errechneten Werten finden:").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
                     ergbnis_teile = []
                     for punkt_num in range(len(werte_nullstellen)-1):
-                        erg = abs(werte_nullstellen[punkt_num] - werte_nullstellen[punkt_num+1])
+                        erg = abs(werte_nullstellen[punkt_num+1] - werte_nullstellen[punkt_num])
                         ergbnis_teile.append(erg)
-                        tk.Label(self, text="| " + str(werte_nullstellen[punkt_num]) + " "+vorzeichen_str(werte_nullstellen[punkt_num+1]) + " | = " + str(erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
+                        tk.Label(self, text="| " + " "+ str(werte_nullstellen[punkt_num+1]) + " " + vorzeichen_str(-werte_nullstellen[punkt_num])  + " | = " + str(erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
                     row = row+2+punkt_num
                     tk.Label(self,text="4. Ergebnisse zusammenzählen:").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
                     tk.Label(self, text="Fläche = "+str(math.fsum(ergbnis_teile))).grid(row=row+2, column=1, sticky=tk.W)
             else:
                 # Differenz berechnen
                 tk.Label(self, text="2. Differenz der beiden Werte finden:").grid(row=7, column=0, sticky=tk.W, columnspan=2)
-                erg = abs(erster_wert - zweiter_wert)
-                tk.Label(self, text="| " + str(erster_wert) + " " + vorzeichen_str(zweiter_wert) + " | = " + str(erg)).grid(row=7, column=1, sticky=tk.W)
+                erg = abs(zweiter_wert - erster_wert)
+                tk.Label(self, text="| " + str(zweiter_wert) + " " + vorzeichen_str(-erster_wert) + " | = " + str(erg)).grid(row=7, column=1, sticky=tk.W)
 
     def createWidgets(self):
         for widget in self.winfo_children():

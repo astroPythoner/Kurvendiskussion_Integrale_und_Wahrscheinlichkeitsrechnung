@@ -44,6 +44,7 @@ class MainWindow(tk.Frame):
         self.grid(sticky=tk.NSEW)
         self.parameter = Grundklassen.Parameter(self)
         self.funktion = Funktion.Funktion(self.parameter, "0")
+        self.second_funktion = Funktion.Funktion(self.parameter, "0")
         self.Graph_Frame = Graph_Frame.Graph_Frame(parameter=self.parameter)
         self.createWidgets()
         self.funktion_random_erstellen_button_pressed()
@@ -52,7 +53,7 @@ class MainWindow(tk.Frame):
         passt = self.funktion.set_funktion(self.eingabe.get())
 
         if passt==True:
-            if self.funktion.has_parameter:
+            if self.funktion.has_parameter or self.second_funktion.has_parameter:
                 self.parameter_scale.configure(state=tk.NORMAL)
                 self.parameter_move.configure(state=tk.NORMAL)
                 self.parameter_stop.configure(state=tk.NORMAL)
@@ -62,13 +63,13 @@ class MainWindow(tk.Frame):
                 self.parameter_stop.configure(state=tk.DISABLED)
 
             for frame in self.frames:
-                frame.update(self.funktion)
+                frame.update(self.funktion,self.second_funktion)
             for head_frame in self.head_frames:
                 head_frame.canvas.delete(tk.ALL)
                 head_frame.canvas.create_window((0, 0), window=head_frame.frame, anchor="nw")
                 head_frame.canvas.configure(yscrollcommand=head_frame.y_scrollbar.set, xscrollcommand=head_frame.x_scrollbar.set)
 
-            self.Graph_Frame.update(self.funktion)
+            self.Graph_Frame.update(self.funktion, self.second_funktion)
             self.eingabe_passt.config(text="Funktion passt")
             if self.funktion.is_polynomfunktion:
                 text = "Polynomfunktion: " + self.funktion.funktion_polynom_x_ersetzbar
@@ -90,6 +91,41 @@ class MainWindow(tk.Frame):
             self.eingabe_passt.config(text="Funktion nicht verändert")
         else:
             self.eingabe_passt.config(text="Funktion fehlerhaft")
+
+    def second_funktion_uebernehmen_button_pressed(self):
+        if self.second_funktion_eingabe.get() == "":
+            self.second_funktion.set_funktion("0")
+            passt = True
+        else:
+            passt = self.second_funktion.set_funktion(self.second_funktion_eingabe.get())
+
+        if passt == True:
+            if self.funktion.has_parameter or self.second_funktion.has_parameter:
+                self.parameter_scale.configure(state=tk.NORMAL)
+                self.parameter_move.configure(state=tk.NORMAL)
+                self.parameter_stop.configure(state=tk.NORMAL)
+            else:
+                self.parameter_scale.configure(state=tk.DISABLED)
+                self.parameter_move.configure(state=tk.DISABLED)
+                self.parameter_stop.configure(state=tk.DISABLED)
+
+            for frame in self.frames:
+                frame.update(self.funktion,self.second_funktion)
+            for head_frame in self.head_frames:
+                head_frame.canvas.delete(tk.ALL)
+                head_frame.canvas.create_window((0, 0), window=head_frame.frame, anchor="nw")
+                head_frame.canvas.configure(yscrollcommand=head_frame.y_scrollbar.set, xscrollcommand=head_frame.x_scrollbar.set)
+
+            self.Graph_Frame.update(self.funktion,self.second_funktion)
+            if self.second_funktion.funktion_user_kurz == "0":
+                self.second_funktion_eingabe_passt.config(text="keine zweite Funktion")
+            else:
+                self.second_funktion_eingabe_passt.config(text="Funktion passt")
+
+        elif passt == "unverändert":
+            self.second_funktion_eingabe_passt.config(text="Funktion nicht verändert")
+        else:
+            self.second_funktion_eingabe_passt.config(text="Funktion fehlerhaft")
 
     def funktion_random_erstellen_button_pressed(self):
         self.eingabe.delete(0,tk.END)
@@ -137,10 +173,18 @@ class MainWindow(tk.Frame):
         self.parameter_stop.grid(row=2, column=5, sticky=tk.W)
         self.parameter_settings = tk.Button(self, text="Einstellungen Parameter", command=self.make_parameter_settings)
         self.parameter_settings.grid(row=2, column=6, sticky=tk.W)
+        self.second_funktion_text = tk.Label(self, text="Zweite Funktion: g(x)=")
+        self.second_funktion_text.grid(row=3, column=1, sticky=tk.E)
+        self.second_funktion_eingabe = tk.Entry(self)
+        self.second_funktion_eingabe.grid(row=3, column=2, sticky=tk.EW)
+        self.second_funktion_ubernehmen = tk.Button(self, text="übernehmen", command=self.second_funktion_uebernehmen_button_pressed)
+        self.second_funktion_ubernehmen.grid(row=3, column=3, sticky=tk.W)
+        self.second_funktion_eingabe_passt = tk.Label(self, text="")
+        self.second_funktion_eingabe_passt.grid(row=3, column=4, columnspan=3, sticky=tk.W)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.pane = ttk.Notebook(self)
-        self.pane.grid(row=3,column=0,columnspan=7,sticky=tk.NSEW)
+        self.pane.grid(row=4,column=0,columnspan=7,sticky=tk.NSEW)
 
         self.pane.add(self.Graph_Frame, text="Graph", padding=0)
 
@@ -205,7 +249,7 @@ class MainWindow(tk.Frame):
         self.pane.add(self.sonstiges_head_frame.head_frame, text="Sonstiges", padding=0)
 
         self.funktion.add_debug_sonstiges_frame(self.Sonstige_Frame)
-        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame, self.Nullstellen_Frame, self.Ableitung_Frame, self.TangenteNormale_Frame, self.Steigung_Frame, self.Kruemmung_Frame, self.Stammfunktion_Frame, self.Integrale_Frame)
+        self.Graph_Frame.add_frames(self.schnittpunktYAchse_Frame, self.Nullstellen_Frame, self.Ableitung_Frame, self.TangenteNormale_Frame, self.Steigung_Frame, self.Kruemmung_Frame, self.Stammfunktion_Frame, self.Integrale_Frame, self.Sonstige_Frame)
 
 
 class ScrollableFrame():
@@ -240,7 +284,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.3.1")
+    root.title("Kurvendiskussion - v2.4.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

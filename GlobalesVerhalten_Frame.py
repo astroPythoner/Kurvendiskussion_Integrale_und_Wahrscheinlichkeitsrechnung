@@ -10,7 +10,7 @@ class GlobalesVerhalten_Frame(tk.Frame):
         self.grid(sticky=tk.NSEW)
         self.update()
 
-    def update(self, neu_funktion = None):
+    def update(self, neu_funktion = None, second_funktion=None):
         if neu_funktion is not None:
             self.__funktion = neu_funktion
         self.createWidgets()

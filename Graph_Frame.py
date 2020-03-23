@@ -40,6 +40,7 @@ def biggest_in_array(array):
 class Graph_Frame(tk.Frame):
 
     __funktion = None
+    __second_funktion = None
     sy = None
     nst = None
     abl = None
@@ -48,8 +49,9 @@ class Graph_Frame(tk.Frame):
     tanNor = None
     stamfunk = None
     integr = None
-    punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo"}
-    funktion_frames = [abl,tanNor,stamfunk]
+    sonst = None
+    punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo",sonst:"#000033o"}
+    funktion_frames = [abl,tanNor,stamfunk,sonst]
     funktion_frames_aktiv = []
     flaechen_frames = [integr]
     flaechen_frames_aktiv = []
@@ -69,11 +71,13 @@ class Graph_Frame(tk.Frame):
         self.last_end_value = 10
         self.graph_aktiv = tk.BooleanVar()
         self.graph_aktiv.set(True)
+        self.second_graph_aktiv = tk.BooleanVar()
+        self.second_graph_aktiv.set(True)
         self.parameter = parameter
         self.graph = Graph(Funktion.Funktion(self.parameter,"0"),"blue","blau","f(x)")
         self.update()
 
-    def add_frames(self,sy,nst,abl,tanNor,steig,kruem,stamfunk,integr):
+    def add_frames(self,sy,nst,abl,tanNor,steig,kruem,stamfunk,integr,sonst):
         self.sy = sy
         self.nst = nst
         self.abl = abl
@@ -82,8 +86,9 @@ class Graph_Frame(tk.Frame):
         self.tanNor = tanNor
         self.stamfunk = stamfunk
         self.integr = integr
-        self.punkt_frames = {self.sy:"#008800o",self.nst:"#00CC00o",self.steig:"#CC2222o",self.kruem:"#FF22FFo"}
-        self.funktion_frames = [self.abl,self.tanNor,self.stamfunk]
+        self.sonst = sonst
+        self.punkt_frames = {self.sy:"#008800o",self.nst:"#00CC00o",self.steig:"#CC2222o",self.kruem:"#FF22FFo",self.sonst:"#000033o"}
+        self.funktion_frames = [self.abl,self.tanNor,self.stamfunk,self.sonst]
         self.funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             try:
@@ -100,10 +105,18 @@ class Graph_Frame(tk.Frame):
             except:
                 pass
 
-    def update(self, neu_funktion = None):
+    def update(self, neu_funktion = None, second_funktion=None):
         if neu_funktion is not None:
             self.__funktion = neu_funktion
-            self.graph = Graph(self.__funktion,"blue","blau","f(x)")
+            self.graph = Graph(self.__funktion, "blue", "blau", "f(x)")
+
+            self.__second_funktion = None
+            self.second_graph = None
+            if second_funktion is not None:
+                if second_funktion.funktion_user_kurz != "0" and second_funktion.funktion_user_kurz != "":
+                    self.__second_funktion = second_funktion
+                    self.second_graph = Graph(self.__second_funktion, "#008888", "blaugrau", "g(x)")
+
         self.funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             try:
@@ -154,13 +167,18 @@ class Graph_Frame(tk.Frame):
             self.end_x_regler = tk.Scale(self, from_=1, to=self.graph.max_x, orient=tk.HORIZONTAL, variable = self.end_x, command=self.bereich_update)
             self.end_x_regler.grid(row=0, column=1, sticky=tk.NSEW)
             self.checkbox_fx = tk.Checkbutton(self, text=self.graph.name+" ("+self.graph.color_name+")",variable=self.graph_aktiv,command=lambda: self.funktion_ausgewaehlt("f(x)")).grid(row=1, column=2, sticky=tk.NW)
+            if self.__second_funktion is not None and self.second_graph is not None:
+                self.checkbox_fx2 = tk.Checkbutton(self, text=self.second_graph.name + " (" + self.second_graph.color_name + ")", variable=self.second_graph_aktiv, command=lambda: self.funktion_ausgewaehlt("g(x)")).grid(row=2, column=2, sticky=tk.NW)
+                add = 2
+            else:
+                add = 1
 
             num_funktion = 0
             for frame in self.funktion_frames:
                 try:
                     for funktion in frame.funktionen:
                         num_funktion += 1
-                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+1,column=2,sticky=tk.NW)
+                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+add,column=2,sticky=tk.NW)
                 except:
                     pass
             num_flaeche = 0
@@ -168,7 +186,7 @@ class Graph_Frame(tk.Frame):
                 try:
                     for flaeche in frame.flaechen:
                         num_flaeche += 1
-                        self.checkbox_flaeche_auswahl = tk.Checkbutton(self, text=flaeche.name + " (" + flaeche.color_name + ")", variable=self.flaechen_frames_aktiv[num_flaeche - 1],command=lambda a = flaeche.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion + 1 + num_flaeche + 1, column=2, sticky=tk.NW)
+                        self.checkbox_flaeche_auswahl = tk.Checkbutton(self, text=flaeche.name + " (" + flaeche.color_name + ")", variable=self.flaechen_frames_aktiv[num_flaeche - 1],command=lambda a = flaeche.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion + add + num_flaeche + 1, column=2, sticky=tk.NW)
                 except:
                     pass
             self.punkt_text = tk.Label(self, text="Punkte:").grid(row=1, column=3, sticky=tk.N)
@@ -210,10 +228,31 @@ class Graph_Frame(tk.Frame):
                     y_werte = []
             if x_werte != [] and y_werte != []:
                 plt.plot(x_werte, y_werte, lineWidth=2, color=self.graph.color)
+        if self.second_graph_aktiv.get() and self.second_graph is not None:
+            x_werte = []
+            y_werte = []
+            for count in range(x_end-x_start):
+                wert = self.second_graph.y_werte[count+x_start]
+                if wert is not None:
+                    y_werte.append(wert)
+                    x_werte.append(self.second_graph.x_werte[count+x_start])
+                elif x_werte != [] and y_werte != []:
+                    plt.plot(x_werte, y_werte,lineWidth=2,color=self.second_graph.color)
+                    x_werte = []
+                    y_werte = []
+            if x_werte != [] and y_werte != []:
+                plt.plot(x_werte, y_werte, lineWidth=2, color=self.second_graph.color)
 
         # Achsen zeichnen
         hoechster_y_wert = biggest_in_array(self.graph.y_werte[x_start:x_end])
         tiefster_y_wert = smallest_in_array(self.graph.y_werte[x_start:x_end])
+        if self.second_graph_aktiv.get() and self.second_graph is not None:
+            high = biggest_in_array(self.second_graph.y_werte[x_start:x_end])
+            if high > hoechster_y_wert:
+                hoechster_y_wert = high
+            low = smallest_in_array(self.second_graph.y_werte[x_start:x_end])
+            if low < tiefster_y_wert:
+                tiefster_y_wert = low
         num_funktion = 0
         for frame in self.funktion_frames:
             try:
@@ -247,12 +286,13 @@ class Graph_Frame(tk.Frame):
             for frame in list(self.punkt_frames.keys()):
                 try:
                     for punkt in frame.punkte:
-                        plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
                         if isinstance(punkt,Punkt):
                             if punkt.x>=self.start_x.get() and punkt.x<=self.end_x.get():
+                                plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
                                 plt.scatter(punkt.x,punkt.y, c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
                         else:
                             for p in punkt.get_koordinaten_from_to(self.start_x.get(),self.end_x.get()):
+                                plt.text(punkt.x, punkt.y, punkt.name, ha='center', va='bottom')
                                 plt.scatter(p[0], p[1], c=self.punkt_frames[frame][:-1], marker=self.punkt_frames[frame][-1:])
                 except:
                     pass
