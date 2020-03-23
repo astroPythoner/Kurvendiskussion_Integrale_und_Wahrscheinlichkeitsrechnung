@@ -329,9 +329,12 @@ class Graph_Frame(tk.Frame):
                     if self.flaechen_frames_aktiv[num_flaeche-1].get():
                         von_x = flaeche.von_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit
                         bis_x = flaeche.bis_x * self.graph.genauigkeit + self.graph.max_x * self.graph.genauigkeit + 1
-                        verts = [(flaeche.von_x, 0), *zip(self.graph.x_werte[von_x:bis_x], self.graph.y_werte[von_x:bis_x]), (flaeche.bis_x, 0)]
-                        poly = Polygon(verts, facecolor='0.9', edgecolor='0.6')
-                        plt.axes().add_patch(poly)
+                        if frame.zwischen_graphen:
+                            matplotlib.pyplot.fill_between(self.graph.x_werte[von_x:bis_x],self.graph.y_werte[von_x:bis_x],self.second_graph.y_werte[von_x:bis_x], facecolor='0.9', edgecolor='0.6')
+                        else:
+                            verts = [(flaeche.von_x, 0), *zip(self.graph.x_werte[von_x:bis_x], self.graph.y_werte[von_x:bis_x]), (flaeche.bis_x, 0)]
+                            poly = Polygon(verts, facecolor='0.9', edgecolor='0.6')
+                            plt.axes().add_patch(poly)
             except:
                 pass
 

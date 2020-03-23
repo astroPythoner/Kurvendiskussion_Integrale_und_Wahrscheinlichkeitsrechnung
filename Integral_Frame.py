@@ -61,10 +61,13 @@ class Integral_Frame(tk.Frame):
         self.createWidgets()
 
     def integral_berechnen(self):
-        if self.zwischen_graphen:
+        if self.zwischen_graphen and len(self.differential_stammfunktion.funktionen) >= 1:
             stammfunktion = self.differential_stammfunktion.funktionen[1].funktion
-        else:
+        elif self.zwischen_graphen == False and len(self.stammfunktion.funktionen) >= 1:
             stammfunktion = self.stammfunktion.funktionen[0].funktion
+        else:
+            tk.Label(self, text="Keine Stammfunktion gefunden").grid(row=2, column=1)
+            return
         tk.Label(self, text="Stammfunktion: "+stammfunktion.funktion_user_kurz).grid(row=2, column=1)
         tk.Label(self, text="1. Beide Werte in Stammfunktion einsetzen:").grid(row=3, column=0,sticky=tk.W,columnspan=2)
         erster_wert = stammfunktion.x_einsetzen(self.x_start.get())
