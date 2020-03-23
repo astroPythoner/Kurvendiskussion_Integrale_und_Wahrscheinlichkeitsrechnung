@@ -93,7 +93,7 @@ class Sonstiges_Frame(tk.Frame):
                     could_be_simplified = differentialfunktion.set_funktion("("+self.__funktion.funktion_user_kurz+") - ("+self.__second_funktion.funktion_user_kurz+")")
                 if could_be_simplified:
                     tk.Label(self, text="d(x) = "+differentialfunktion.funktion_user_kurz).grid(row=11, column=1, sticky=tk.W)
-                self.funktionen.append(Graph(differentialfunktion, "#00CCCC", "hellblau", "d(x)"))
+                self.funktionen.append(Graph(differentialfunktion, "#00C9C9", "hellblau", "d(x)"))
                 # Schnittpunkte
                 tk.Label(self, text="Schnittpunkte:").grid(row=12, column=0, sticky=tk.E)
                 tk.Label(self, text="d(x) = 0").grid(row=12, column=1)
@@ -109,10 +109,10 @@ class Sonstiges_Frame(tk.Frame):
                 # Stammfunktion der Differentialfunktion
                 row = row+len(punkte)+1
                 tk.Label(self, text="Stammfunktion der Differentialfunktion:").grid(row=row, column=0, sticky=tk.E)
-                stammfunk,row = make_stammfunktion(self.parameter, differentialfunktion, row, self, print_stammfunktion=False)
+                stammfunk,row = make_stammfunktion(self.parameter, differentialfunktion, row, self, "D(x)",print_stammfunktion=False)
                 if stammfunk is not None:
-                    tk.Label(self, text="D(x) = "+stammfunk.funktion_user_kurz).grid(row=row+1, column=0, sticky=tk.E)
-                    self.funktionen.append(Graph(stammfunk, "#008888", "hellblau", "D(x)"))
+                    tk.Label(self, text="Stammfunktion: D(x) = " + stammfunk.funktion_user_kurz).grid(row=row + 5, column=1)
+                    self.funktionen.append(Graph(stammfunk, "#00FFFF", "hellblau", "D(x)"))
 
             ## Debug
             if self.debug:

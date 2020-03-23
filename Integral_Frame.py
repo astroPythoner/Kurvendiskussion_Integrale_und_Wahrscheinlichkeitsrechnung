@@ -8,11 +8,13 @@ class Integral_Frame(tk.Frame):
 
     __funktion = None
     stammfunktion = None
+    differential_stammfunktion = None
     nullstellen = None
     einstellungsframe = None
     achte_auf_nullstellen = None
+    zwischen_graphen = None
 
-    def __init__(self, master=None, stammfunktion=None, nullstellen=None):
+    def __init__(self, master=None, stammfunktion=None, differential_stammfunktion=None, nullstellen=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.flaechen = [Flaeche(0.9,0.6,"hellgrau","Integral")]
@@ -24,8 +26,10 @@ class Integral_Frame(tk.Frame):
         self.last_x_ende_wert = 1
         self.update()
         self.stammfunktion = stammfunktion
+        self.differential_stammfunktion = differential_stammfunktion
         self.nullstellen = nullstellen
         self.achte_auf_nullstellen = False
+        self.zwischen_graphen = False
 
     def update(self, neu_funktion = None, second_funktion=None):
         if neu_funktion is not None:
@@ -52,8 +56,15 @@ class Integral_Frame(tk.Frame):
         self.achte_auf_nullstellen = not self.achte_auf_nullstellen
         self.createWidgets()
 
+    def zwischen_graphen_changed(self):
+        self.zwischen_graphen = not self.zwischen_graphen
+        self.createWidgets()
+
     def integral_berechnen(self):
-        stammfunktion = self.stammfunktion.funktionen[0].funktion
+        if self.zwischen_graphen:
+            stammfunktion = self.differential_stammfunktion.funktionen[1].funktion
+        else:
+            stammfunktion = self.stammfunktion.funktionen[0].funktion
         tk.Label(self, text="Stammfunktion: "+stammfunktion.funktion_user_kurz).grid(row=2, column=1)
         tk.Label(self, text="1. Beide Werte in Stammfunktion einsetzen:").grid(row=3, column=0,sticky=tk.W,columnspan=2)
         erster_wert = stammfunktion.x_einsetzen(self.x_start.get())
@@ -62,10 +73,14 @@ class Integral_Frame(tk.Frame):
         tk.Label(self, text="F("+str(self.x_ende.get())+") = "+str(zweiter_wert)).grid(row=5, column=1, sticky=tk.W)
         if erster_wert == "nicht definiert" or zweiter_wert == "nicht definiert":
             tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen").grid(row=6, column=0, sticky=tk.W, columnspan=2)
-        elif self.nullstellen != None:
+        elif (self.nullstellen != None and self.zwischen_graphen == False) or (self.differential_stammfunktion != None and self.zwischen_graphen):
             # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
-            for punkt in self.nullstellen.punkte:
+            if self.zwischen_graphen:
+                nst = self.differential_stammfunktion.punkte
+            else:
+                nst = self.nullstellen.punkte
+            for punkt in nst:
                 if isinstance(punkt,Wiederholender_Punkt):
                     wieder_punkte = punkt.get_koordinaten_from_to(self.x_start.get(),self.x_ende.get())
                     for wieder_punkt in wieder_punkte:
@@ -130,6 +145,8 @@ class Integral_Frame(tk.Frame):
             self.x_ende_spinbox.grid(row=1, column=1, sticky=tk.S+tk.W)
             self.achte_nst_button = tk.Checkbutton(self.einstellungsframe, text="Nullstellen beachten und Fläche unter x-Achse positiv sehen", command=self.achte_nst_changed)
             self.achte_nst_button.grid(row=2, column=0)
+            self.zwichen_grpahen_button = tk.Checkbutton(self.einstellungsframe, text="Fläche zwischen Funktionen berechnen", command=self.zwischen_graphen_changed)
+            self.zwichen_grpahen_button.grid(row=3, column=0)
             self.einstellungsframe.columnconfigure(0,minsize=400)
             self.einstellungsframe.grid(row=0, column=0, sticky=tk.W)
 
