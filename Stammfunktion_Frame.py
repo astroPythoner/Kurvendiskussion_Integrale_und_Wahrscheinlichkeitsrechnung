@@ -87,7 +87,7 @@ def make_stammfunktion(parameter,funktion,row,frame,name,print_stammfunktion=Tru
             could_be_solved = False
         if not could_be_solved:
             tk.Label(frame, text="Stammfunktion konnte nicht erstellt werden").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
-            return
+            return None,None
     if print_stammfunktion:
         tk.Label(frame, text="Stammfunktion: "+name+" = " + stammfunk.funktion_user_kurz).grid(row=row+4, column=0, sticky=tk.W, columnspan=2)
     return stammfunk,row+5
