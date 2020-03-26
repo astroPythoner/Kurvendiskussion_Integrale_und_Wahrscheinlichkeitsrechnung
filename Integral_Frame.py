@@ -8,13 +8,13 @@ class Integral_Frame(tk.Frame):
 
     __funktion = None
     stammfunktion = None
-    differential_stammfunktion = None
+    differenz_stammfunktion = None
     nullstellen = None
     einstellungsframe = None
     achte_auf_nullstellen = None
     zwischen_graphen = None
 
-    def __init__(self, master=None, stammfunktion=None, differential_stammfunktion=None, nullstellen=None):
+    def __init__(self, master=None, stammfunktion=None, differenz_stammfunktion=None, nullstellen=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.flaechen = [Flaeche(0.9,0.6,"hellgrau","Integral")]
@@ -26,7 +26,7 @@ class Integral_Frame(tk.Frame):
         self.last_x_ende_wert = 1
         self.update()
         self.stammfunktion = stammfunktion
-        self.differential_stammfunktion = differential_stammfunktion
+        self.differenz_stammfunktion = differenz_stammfunktion
         self.nullstellen = nullstellen
         self.achte_auf_nullstellen = False
         self.zwischen_graphen = False
@@ -61,8 +61,8 @@ class Integral_Frame(tk.Frame):
         self.createWidgets()
 
     def integral_berechnen(self):
-        if self.zwischen_graphen and len(self.differential_stammfunktion.funktionen) >= 1:
-            stammfunktion = self.differential_stammfunktion.funktionen[1].funktion
+        if self.zwischen_graphen and len(self.differenz_stammfunktion.funktionen) >= 1:
+            stammfunktion = self.differenz_stammfunktion.funktionen[1].funktion
         elif self.zwischen_graphen == False and len(self.stammfunktion.funktionen) >= 1:
             stammfunktion = self.stammfunktion.funktionen[0].funktion
         else:
@@ -76,11 +76,11 @@ class Integral_Frame(tk.Frame):
         tk.Label(self, text="F("+str(self.x_ende.get())+") = "+str(zweiter_wert)).grid(row=5, column=1, sticky=tk.W)
         if erster_wert == "nicht definiert" or zweiter_wert == "nicht definiert":
             tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen").grid(row=6, column=0, sticky=tk.W, columnspan=2)
-        elif (self.nullstellen != None and self.zwischen_graphen == False) or (self.differential_stammfunktion != None and self.zwischen_graphen):
+        elif (self.nullstellen != None and self.zwischen_graphen == False) or (self.differenz_stammfunktion != None and self.zwischen_graphen):
             # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
             if self.zwischen_graphen:
-                nst = self.differential_stammfunktion.punkte
+                nst = self.differenz_stammfunktion.punkte
             else:
                 nst = self.nullstellen.punkte
             for punkt in nst:

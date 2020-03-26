@@ -75,29 +75,29 @@ class Sonstiges_Frame(tk.Frame):
             if self.__funktion.has_parameter:
                 tk.Label(self, text="Funktion mit Paramter").grid(row=9, column=0)
 
-            ## zweite Funktion -> Differentialfunktion u. Schnittpunkte
+            ## zweite Funktion -> Differenzfunktion u. Schnittpunkte
             if self.__second_funktion.funktion_user_kurz != "0" and self.__second_funktion.funktion_user_kurz != "":
                 tk.Label(self, text="").grid(row=7, column=0,sticky=tk.W)
                 tk.Label(self, text="Zweite Funktion: g(x) = "+self.__second_funktion.funktion_user_kurz).grid(row=8, column=0, sticky=tk.W)
-                # Differentialfunktion
-                tk.Label(self, text="Differentialfunktion:").grid(row=9, column=0, sticky=tk.E)
+                # Differenzfunktion
+                tk.Label(self, text="Differenzfunktion:").grid(row=9, column=0, sticky=tk.E)
                 tk.Label(self, text="d(x) = f(x) - g(x)").grid(row=9, column=1, sticky=tk.W)
                 tk.Label(self, text="d(x) = ("+self.__funktion.funktion_user_kurz+") - ("+self.__second_funktion.funktion_user_kurz+")").grid(row=10, column=1, sticky=tk.W)
                 try:
                     simplified = sympy.simplify("("+self.__funktion.funktion_sympy_readable+") - ("+self.__second_funktion.funktion_sympy_readable+")")
-                    differentialfunktion = Funktion(self.parameter)
-                    could_be_simplified = differentialfunktion.set_funktion(sympy.printing.sstr(simplified).replace("**", "'"))
+                    differenzfunktion = Funktion(self.parameter)
+                    could_be_simplified = differenzfunktion.set_funktion(sympy.printing.sstr(simplified).replace("**", "'"))
                 except Exception:
                     could_be_simplified = False
-                    differentialfunktion = Funktion(self.parameter)
-                    could_be_simplified = differentialfunktion.set_funktion("("+self.__funktion.funktion_user_kurz+") - ("+self.__second_funktion.funktion_user_kurz+")")
+                    differenzfunktion = Funktion(self.parameter)
+                    could_be_simplified = differenzfunktion.set_funktion("("+self.__funktion.funktion_user_kurz+") - ("+self.__second_funktion.funktion_user_kurz+")")
                 if could_be_simplified:
-                    tk.Label(self, text="d(x) = "+differentialfunktion.funktion_user_kurz).grid(row=11, column=1, sticky=tk.W)
-                self.funktionen.append(Graph(differentialfunktion, "#00C9C9", "hellblau", "d(x)"))
+                    tk.Label(self, text="d(x) = "+differenzfunktion.funktion_user_kurz).grid(row=11, column=1, sticky=tk.W)
+                self.funktionen.append(Graph(differenzfunktion, "#00C9C9", "hellblau", "d(x)"))
                 # Schnittpunkte
                 tk.Label(self, text="Schnittpunkte:").grid(row=12, column=0, sticky=tk.E)
                 tk.Label(self, text="d(x) = 0").grid(row=12, column=1)
-                punkte,row = nullstellen_berechnen(self.parameter,differentialfunktion,13,self,print_nullstellen=False)
+                punkte,row = nullstellen_berechnen(self.parameter,differenzfunktion,13,self,print_nullstellen=False)
                 for count,punkt in enumerate(punkte):
                     y_wert = self.__funktion.x_einsetzen(punkt.x)
                     if isinstance(punkt,Punkt):
@@ -106,10 +106,10 @@ class Sonstiges_Frame(tk.Frame):
                         p = Wiederholender_Punkt(punkt.funktion,y_wert,"Sp"+str(count+1))
                     self.punkte.append(p)
                     tk.Label(self, text="Sp"+str(count+1)+" = ("+str(punkt.x)+" | f("+str(punkt.x)+")) = "+str(p)).grid(row=row+count+1, column=1)
-                # Stammfunktion der Differentialfunktion
+                # Stammfunktion der Differenzfunktion
                 row = row+len(punkte)+1
-                tk.Label(self, text="Stammfunktion der Differentialfunktion:").grid(row=row, column=0, sticky=tk.E)
-                stammfunk,row = make_stammfunktion(self.parameter, differentialfunktion, row, self, "D(x)",print_stammfunktion=False)
+                tk.Label(self, text="Stammfunktion der Differenzfunktion:").grid(row=row, column=0, sticky=tk.E)
+                stammfunk,row = make_stammfunktion(self.parameter, differenzfunktion, row, self, "D(x)",print_stammfunktion=False)
                 if stammfunk is not None:
                     tk.Label(self, text="Stammfunktion: D(x) = " + stammfunk.funktion_user_kurz).grid(row=row + 5, column=1)
                     self.funktionen.append(Graph(stammfunk, "#00FFFF", "hellblau", "D(x)"))
