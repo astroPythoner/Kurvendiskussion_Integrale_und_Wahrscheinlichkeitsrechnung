@@ -239,7 +239,7 @@ class MainWindow(tk.Frame):
         self.sonstiges_head_frame = ScrollableFrame(self, Sonstiges_Frame.Sonstiges_Frame, DEBUG)
         self.Sonstige_Frame = self.sonstiges_head_frame.frame
 
-        self.integrale_head_frame = ScrollableFrame(self,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame)
+        self.integrale_head_frame = ScrollableFrame(self,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame,self.Graph_Frame,self.parameter)
         self.Integrale_Frame = self.integrale_head_frame.frame
         self.frames.append(self.Integrale_Frame)
         self.head_frames.append(self.integrale_head_frame)
@@ -285,7 +285,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - v2.4.6")
+    root.title("Kurvendiskussion - v2.5.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

@@ -51,7 +51,7 @@ class Graph_Frame(tk.Frame):
     integr = None
     sonst = None
     punkt_frames = {sy:"#008800o",nst:"#00CC00o",steig:"#CC2222o",kruem:"#FF22FFo",sonst:"#000033o"}
-    funktion_frames = [abl,tanNor,stamfunk,sonst]
+    funktion_frames = [abl,tanNor,stamfunk,sonst,integr]
     funktion_frames_aktiv = []
     flaechen_frames = [integr]
     flaechen_frames_aktiv = []
@@ -88,7 +88,7 @@ class Graph_Frame(tk.Frame):
         self.integr = integr
         self.sonst = sonst
         self.punkt_frames = {self.sy:"#008800o",self.nst:"#00CC00o",self.steig:"#CC2222o",self.kruem:"#FF22FFo",self.sonst:"#000033o"}
-        self.funktion_frames = [self.abl,self.tanNor,self.stamfunk,self.sonst]
+        self.funktion_frames = [self.abl,self.tanNor,self.stamfunk,self.sonst,self.integr]
         self.funktion_frames_aktiv = []
         for frame in self.funktion_frames:
             try:
@@ -178,7 +178,10 @@ class Graph_Frame(tk.Frame):
                 try:
                     for funktion in frame.funktionen:
                         num_funktion += 1
-                        self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+add,column=2,sticky=tk.NW)
+                        if funktion.name == "Mittelwert":
+                            self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+add+1,column=2,sticky=tk.NW)
+                        else:
+                            self.checkbox_graph_auswahl = tk.Checkbutton(self, text=funktion.name+" ("+funktion.color_name+")",variable=self.funktion_frames_aktiv[num_funktion-1],command=lambda a = funktion.name: self.funktion_ausgewaehlt(a)).grid(row=num_funktion+add,column=2,sticky=tk.NW)
                 except:
                     pass
             num_flaeche = 0
@@ -297,7 +300,7 @@ class Graph_Frame(tk.Frame):
                 except:
                     pass
 
-        # weitere Funktionen zeichnen (Ableitung,Kruemung)
+        # weitere Funktionen zeichnen (Ableitung,Kruemung,...)
         num_funktion = 0
         for frame in self.funktion_frames:
             try:
