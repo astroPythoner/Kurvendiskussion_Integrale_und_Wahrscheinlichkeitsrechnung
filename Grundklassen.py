@@ -165,6 +165,7 @@ class Flaeche:
         self.color_name = color_name
         self.name = name
 
+
 class Parameter(threading.Thread):
     wert = 0
     min_wert = -10
@@ -271,3 +272,49 @@ class Parameter_Settings(tk.Toplevel):
         self.parameter.max_wert = max([self.scale_1.get(),self.scale_2.get()])
         self.parameter.schrittweite = self.schrittweiten[self.schrittweite.get()]
         self.parameter.speed = self.speeds[self.speed.get()]
+
+
+class Wahrscheinlichkeitsrechnung_werte():
+    anz_durchgaenge = 1
+    anz_moeglichkeiten = 1
+    zuruecklegen = True
+    namen = ["1"]
+    chancen = ["1"]
+
+    moeglich = True
+    chancen_gleich = False
+
+    def set_werte(self,anz_durchgaenge=None,anz_moeglichkeiten=None,zuruecklegen=None,namen=None,chancen=None):
+        if anz_durchgaenge != None:
+            self.anz_durchgaenge = anz_durchgaenge
+        if anz_moeglichkeiten != None:
+            self.anz_moeglichkeiten = anz_moeglichkeiten
+        if zuruecklegen != None:
+            self.zuruecklegen = zuruecklegen
+        if namen != None:
+            self.namen = namen
+        if chancen != None:
+            self.chancen=chancen
+            self.chancen_gleich = True
+            for chance in self.chancen:
+                if chance != self.chancen[0]:
+                    self.chancen_gleich = False
+        self.moeglich = self.check_moeglich()
+
+    def check_moeglich(self):
+        summe = 0
+        for chance in self.chancen:
+            summe += eval(chance)
+        if round(summe,6) != 1:
+            return False
+        if len(self.namen) != self.anz_moeglichkeiten:
+            return False
+        if len(self.chancen) != self.anz_moeglichkeiten:
+            return False
+        if not self.zuruecklegen and self.anz_moeglichkeiten<self.anz_durchgaenge:
+            return False
+
+    def append_name(self,name):
+        self.namen.append(name)
+    def append_chance(self, chance):
+        self.chancen.append(chance)

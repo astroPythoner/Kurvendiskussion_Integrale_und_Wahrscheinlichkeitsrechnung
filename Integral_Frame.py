@@ -71,9 +71,6 @@ class Integral_Frame(tk.Frame):
 
     def achte_nst_changed(self):
         self.achte_auf_nullstellen = not self.achte_auf_nullstellen
-        if self.achte_auf_nullstellen:
-            self.rotationskoerper = False
-            self.rotationskoerper_button.deselect()
         self.createWidgets()
         self.graph.update()
 
@@ -90,8 +87,6 @@ class Integral_Frame(tk.Frame):
         if self.rotationskoerper:
             self.zwischen_graphen = False
             self.zwichen_graphen_button.deselect()
-            self.achte_auf_nullstellen = False
-            self.achte_nst_button.deselect()
         self.createWidgets()
 
     def integral_berechnen(self):

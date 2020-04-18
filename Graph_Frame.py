@@ -201,6 +201,7 @@ class Graph_Frame(tk.Frame):
                         self.punkt_label = tk.Label(self, text=punkt.name+": "+str(punkt)).grid(row=num_punkt+1, column=3, sticky=tk.N)
                 except:
                     pass
+
             self.draw_graph(rows=num_funktion+1+num_flaeche+1)
         else:
             self.funktion_text = tk.Label(self, text="Für Graph zeichnen Funktion oben eingeben")
