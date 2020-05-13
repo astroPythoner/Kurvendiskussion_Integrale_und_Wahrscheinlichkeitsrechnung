@@ -42,7 +42,7 @@ class TangenteNormale_Frame(tk.Frame):
             self.spinbox = tk.Spinbox(self, from_=-100, to=100, textvariable=self.x_wert)
             self.spinbox.config(command=self.scrollbar_bewegt)
             self.spinbox.grid(row=0, column=1,sticky=tk.W)
-            tk.Label(self, text=str(self.x_wert.get())+" in Gleichungen einsetzten").grid(row=1, column=0,sticky=tk.W)
+            tk.Label(self, text=str(self.x_wert.get())+" in Gleichungen einsetzten",fg="blue2").grid(row=1, column=0,sticky=tk.W)
             tk.Label(self, text="f("+str(self.x_wert.get())+") = "+self.__funktion.funktion_x_eingesetzt(self.x_wert.get())).grid(row=2, column=1)
             erg_normale_funktion = self.__funktion.x_einsetzen(self.x_wert.get())
             tk.Label(self, text="f("+str(self.x_wert.get())+") = "+str(erg_normale_funktion)).grid(row=3, column=1)
@@ -52,10 +52,10 @@ class TangenteNormale_Frame(tk.Frame):
                 tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + ableitung.funktion_x_eingesetzt(self.x_wert.get())).grid(row=4, column=1)
                 tk.Label(self, text="f'(" + str(self.x_wert.get()) + ") = " + str(erg_ableitung)).grid(row=5, column=1)
             else:
-                tk.Label(self, text="f'(x) nicht bekannt").grid(row=4,column=1)
+                tk.Label(self, text="f'(x) nicht bekannt",fg="red").grid(row=4,column=1)
                 erg_ableitung = "nicht definiert"
-            tk.Label(self, text="Tangente nach Formel t(x) = f'(x0)*(x-x0)+f(x0):").grid(row=6, column=0,sticky=tk.W)
-            tk.Label(self, text="Normale nach Formel n(x) = (-1/f'(x0))*(x-x0)+f(x0):").grid(row=8, column=0, sticky=tk.W)
+            tk.Label(self, text="Tangente nach Formel t(x) = f'(x0)*(x-x0)+f(x0):",fg="blue2").grid(row=6, column=0,sticky=tk.W)
+            tk.Label(self, text="Normale nach Formel n(x) = (-1/f'(x0))*(x-x0)+f(x0):",fg="blue2").grid(row=8, column=0, sticky=tk.W)
             if erg_ableitung != "nicht definiert" and erg_normale_funktion != "nicht definiert":
                 # normalengleichung zusammenbasteln
                 funktionsterm = ""
@@ -72,7 +72,7 @@ class TangenteNormale_Frame(tk.Frame):
                 t = Funktion(self.parameter,funktionsterm)
                 graph_t = Graph(t,"#FFBB00","dunkelgelb","t(x)")
                 self.funktionen.append(graph_t)
-                tk.Label(self, text="t(x) = "+t.funktion_user_kurz).grid(row=7, column=1)
+                tk.Label(self, text="t(x) = "+t.funktion_user_kurz,fg="green4").grid(row=7, column=1)
                 # tangentengleichung zusammenbasteln
                 if erg_ableitung != 0:
                     funktionsterm = ""
@@ -93,11 +93,11 @@ class TangenteNormale_Frame(tk.Frame):
                     n = Funktion(self.parameter,funktionsterm)
                     graph_n = Graph(n,"#FFCC33","hellgelb","n(x)")
                     self.funktionen.append(graph_n)
-                    tk.Label(self, text="n(x) = " + n.funktion_user_kurz).grid(row=9, column=1)
+                    tk.Label(self, text="n(x) = " + n.funktion_user_kurz,fg="green4").grid(row=9, column=1)
                 else:
-                    tk.Label(self, text="Fehler durch Null teilen -> keine Normalengleichung").grid(row=9, column=1)
+                    tk.Label(self, text="Fehler durch Null teilen -> keine Normalengleichung",fg="green4").grid(row=9, column=1)
             else:
-                tk.Label(self, text="Tangentengleichung kann nicht bestimmt werden").grid(row=7, column=1)
-                tk.Label(self, text="Normalengleichung kann nicht bestimmt werden").grid(row=9, column=1)
+                tk.Label(self, text="Tangentengleichung kann nicht bestimmt werden",fg="red").grid(row=7, column=1)
+                tk.Label(self, text="Normalengleichung kann nicht bestimmt werden",fg="red").grid(row=9, column=1)
         else:
             tk.Label(self, text="Für Tangente und Normale Funktion oben eingeben").grid(row=0, column=0)

@@ -16,10 +16,10 @@ def make_stammfunktion(parameter,funktion,row,frame,name,print_stammfunktion=Tru
     stammfunk = Funktion(parameter)
     if not "x" in funktion.funktion_user_kurz:
         stammfunk.set_funktion(str(funktion.x_einsetzen(0))+"*x")
-        tk.Label(frame, text="Kein x enthalten: f(x) = a -> F(x) = a*x").grid(row=row+1, column=1)
+        tk.Label(frame, text="Kein x enthalten: f(x) = a -> F(x) = a*x",fg="blue4").grid(row=row+1, column=1)
         tk.Label(frame, text=name+" = "+stammfunk.funktion_user_kurz).grid(row=row+2, column=1)
     elif funktion.is_polynomfunktion:
-        tk.Label(frame, text="Polynomfunktion aufleiten nach Formel a*x'b -> (a/(b+1))*x'(b+1)").grid(row=row+1, column=1,sticky=tk.W,columnspan=2)
+        tk.Label(frame, text="Polynomfunktion aufleiten nach Formel a*x'b -> (a/(b+1))*x'(b+1)",fg="blue4").grid(row=row+1, column=1,sticky=tk.W,columnspan=2)
         stammfunktion_kurz = ""
         stammfunktion_lang = ""
         for polynom in funktion.exponenten_array:
@@ -40,16 +40,16 @@ def make_stammfunktion(parameter,funktion,row,frame,name,print_stammfunktion=Tru
         stammfunktion_ende = ""
         row_add = 0
         if funktion.trigonometrisch_d != 0:
-            tk.Label(frame, text=" konstante Zahl mit x erweitern").grid(row=row+0, column=2,sticky = tk.W)
+            tk.Label(frame, text=" konstante Zahl mit x erweitern",fg="blue4").grid(row=row+0, column=2,sticky = tk.W)
             tk.Label(frame, text=name+" = " + funktion.funktion_trigonometrisch_x_ersetzbar+"x").grid(row=row+1, column=1)
             stammfunktion_ende = vorzeichen_str(funktion.trigonometrisch_d,mitleerzeichen=True)+"x"
             row_add = 1
         if funktion.trigonometrische_funktion == "sin":
-            tk.Label(frame, text=" Kettenregel sin(v(x)) -> -cos(v(x)) / v'(x)").grid(row=row+row_add, column=2, sticky=tk.W)
+            tk.Label(frame, text=" Kettenregel sin(v(x)) -> -cos(v(x)) / v'(x)",fg="blue4").grid(row=row+row_add, column=2, sticky=tk.W)
             tk.Label(frame, text=name+" = " + str(funktion.trigonometrisch_a) + " * -cos(" + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c) + ") / "+str(funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+row_add+1, column=1)
             stammfunk = Funktion(frame.parameter,str(-funktion.trigonometrisch_a/funktion.trigonometrisch_b)+" * cos("+n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c)+") "+stammfunktion_ende)
         elif funktion.trigonometrische_funktion == "cos":
-            tk.Label(frame, text=" Kettenregel cos(v(x)) -> sin(v(x)) / v'(x)").grid(row=row+row_add, column=2, sticky=tk.W)
+            tk.Label(frame, text=" Kettenregel cos(v(x)) -> sin(v(x)) / v'(x)",fg="blue4").grid(row=row+row_add, column=2, sticky=tk.W)
             tk.Label(frame, text=name+" = " + str(funktion.trigonometrisch_a) + " * sin(" + n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c) + ") / "+str(funktion.trigonometrisch_b)+" "+stammfunktion_ende).grid(row=row+row_add+1, column=1)
             stammfunk = Funktion(parameter,str(funktion.trigonometrisch_a/funktion.trigonometrisch_b)+" * sin("+n_mal_x_plus_m_to_string(funktion.trigonometrisch_b, -funktion.trigonometrisch_c)+") "+stammfunktion_ende)
         tk.Label(frame, text=name+" = "+stammfunk.funktion_user_kurz).grid(row=row+row_add+2, column=1)
@@ -57,11 +57,11 @@ def make_stammfunktion(parameter,funktion,row,frame,name,print_stammfunktion=Tru
         stammfunktion_ende = ""
         row_add = 0
         if funktion.wurzel_d != 0:
-            tk.Label(frame, text=" konstante Zahl mit x erweitern").grid(row=row+0, column=2,sticky = tk.W)
+            tk.Label(frame, text=" konstante Zahl mit x erweitern",fg="blue4").grid(row=row+0, column=2,sticky = tk.W)
             tk.Label(frame, text=name+" = " +funktion.funktion_wurzel_x_ersetzbar+"x").grid(row=row+1, column=1)
             stammfunktion_ende = vorzeichen_str(funktion.wurzel_d,mitleerzeichen=True)+"*x"
             row_add = 1
-        tk.Label(frame, text=" Kettenregel sqrt(v(x)) -> (2/3)*v(x)'(3/2) / v'(x)").grid(row=row+row_add, column=2, sticky=tk.W)
+        tk.Label(frame, text=" Kettenregel sqrt(v(x)) -> (2/3)*v(x)'(3/2) / v'(x)",fg="blue4").grid(row=row+row_add, column=2, sticky=tk.W)
         tk.Label(frame, text=name+" = "+str(funktion.wurzel_a)+"* (2/3)*("+n_mal_x_plus_m_to_string(funktion.wurzel_b,-funktion.wurzel_c)+")'(3/2) / "+str(funktion.wurzel_b)+" "+stammfunktion_ende).grid(row=row+row+1, column=1,sticky=tk.W)
         bruch = bruch_kuerzen(2*funktion.wurzel_a,3*funktion.wurzel_b)
         if bruch[1] != 1:
@@ -86,10 +86,10 @@ def make_stammfunktion(parameter,funktion,row,frame,name,print_stammfunktion=Tru
         except Exception:
             could_be_solved = False
         if not could_be_solved:
-            tk.Label(frame, text="Stammfunktion konnte nicht erstellt werden").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
+            tk.Label(frame, text="Stammfunktion konnte nicht erstellt werden",fg="red").grid(row=row+1, column=0, columnspan=2, sticky=tk.W)
             return None,None
     if print_stammfunktion:
-        tk.Label(frame, text="Stammfunktion: "+name+" = " + stammfunk.funktion_user_kurz).grid(row=row+4, column=0, sticky=tk.W, columnspan=2)
+        tk.Label(frame, text="Stammfunktion: "+name+" = " + stammfunk.funktion_user_kurz,fg="green4").grid(row=row+4, column=0, sticky=tk.W, columnspan=2)
     return stammfunk,row+5
 
 class Stammfunktion_Frame(tk.Frame):

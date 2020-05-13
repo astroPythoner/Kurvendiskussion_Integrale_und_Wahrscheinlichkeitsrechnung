@@ -44,6 +44,9 @@ class Baumdiagramm_Frame(tk.Frame):
 
             plot_widget.grid(row=0, column=0, sticky=tk.NSEW)
 
+        else:
+            tk.Label(self,text="Baumdiagramm zu groß um berechnet zu werden",fg="red").grid(row=0,column=0)
+
     def draw_baum_ebene(self,durchgaenge,moeglichkeiten,durchgang,pos,namen, plt):
         breite = moeglichkeiten ** durchgaenge
         for moeglich in range(moeglichkeiten):

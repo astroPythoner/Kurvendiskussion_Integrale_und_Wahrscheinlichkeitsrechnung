@@ -178,11 +178,11 @@ class MainWindow(tk.Frame):
         self.head_pane = ttk.Notebook(self)
         self.head_pane.grid(row=4, column=0, columnspan=7, sticky=tk.NSEW)
 
-        self.kurvendiskussionFrame = tk.Frame()
+        self.kurvendiskussionFrame = tk.Frame(width=1300)
         self.createKurvendiskussionWidgets(self.kurvendiskussionFrame)
         self.head_pane.add(self.kurvendiskussionFrame, text="Kurvendiskussion", padding=0)
 
-        self.wahrscheinlichkeitsrechnungFrame = tk.Frame()
+        self.wahrscheinlichkeitsrechnungFrame = tk.Frame(width=1300)
         self.createWahrscheinlichkeitsrechnungWidgets(self.wahrscheinlichkeitsrechnungFrame)
         self.head_pane.add(self.wahrscheinlichkeitsrechnungFrame, text="Wahrscheinlichkeitsrechnung", padding=0)
 
@@ -224,7 +224,7 @@ class MainWindow(tk.Frame):
         self.second_funktion_eingabe_passt.grid(row=3, column=4, columnspan=3, sticky=tk.W)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
-        self.kurvendiskussion_pane = ttk.Notebook(frame,width=1300,height=550)
+        self.kurvendiskussion_pane = ttk.Notebook(frame,width=1300,height=570)
         self.kurvendiskussion_pane.grid(row=4, column=0, columnspan=7, sticky=tk.NSEW)
 
         self.Graph_Frame = ScrollableFrame(frame,Graph_Frame.Graph_Frame,self.parameter)
@@ -281,7 +281,7 @@ class MainWindow(tk.Frame):
         self.sonstiges_head_frame = ScrollableFrame(frame, Sonstiges_Frame.Sonstiges_Frame, DEBUG)
         self.Sonstige_Frame = self.sonstiges_head_frame.frame
 
-        self.integrale_head_frame = ScrollableFrame(frame,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame,self.Graph_Frame,self.parameter)
+        self.integrale_head_frame = ScrollableFrame(frame,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame,self.Graph_Frame.frame,self.parameter)
         self.Integrale_Frame = self.integrale_head_frame.frame
         self.kurven_diskussion_frames.append(self.Integrale_Frame)
         self.kurven_diskussion_head_frames.append(self.integrale_head_frame)
@@ -306,13 +306,13 @@ class MainWindow(tk.Frame):
         self.durchgaenge_info = tk.Label(frame, text="Durchgänge:")
         self.durchgaenge_info.grid(row=0, column=0, sticky=tk.E, columnspan=mitte)
         self.durchgaenge_spinbox = tk.Spinbox(frame, from_=1, to=50, textvariable=self.durchgaenge)
-        self.durchgaenge_spinbox.grid(row=0, column=mitte + 1, sticky=tk.W, columnspan=mitte)
+        self.durchgaenge_spinbox.grid(row=0, column=mitte, sticky=tk.W, columnspan=mitte)
         self.moeglichkeiten = tk.IntVar()
         self.moeglichkeiten.set(self.wahrscheinlichkeit_werte.anz_moeglichkeiten)
         self.moeglichkeiten_info = tk.Label(frame, text="Anzahl Möglichkeiten:")
         self.moeglichkeiten_info.grid(row=1, column=0, sticky=tk.E, columnspan=mitte)
         self.moeglichkeiten_spinbox = tk.Spinbox(frame, from_=1, to=20, textvariable=self.moeglichkeiten, command=self.anz_moeglichkeiten_changed)
-        self.moeglichkeiten_spinbox.grid(row=1, column=mitte + 1, sticky=tk.W, columnspan=mitte)
+        self.moeglichkeiten_spinbox.grid(row=1, column=mitte, sticky=tk.W, columnspan=mitte)
         self.zuruecklegen = tk.BooleanVar()
         self.zuruecklegen.set(self.wahrscheinlichkeit_werte.zuruecklegen)
         self.mit_zuruecklegen_radiobutton = tk.Radiobutton(frame, text="Mit zurücklegen", variable=self.zuruecklegen, value=True)
@@ -351,20 +351,24 @@ class MainWindow(tk.Frame):
         self.uebernehmen_button = tk.Button(frame, text="übernehmen", command=self.wahrscheinlichkeitswerte_uebernehmen_button_pressed)
         self.uebernehmen_button.grid(row=6, column=0, columnspan=rechts+1)
 
-        # Notebook
-        self.wahrscheinlichkeit_pane.add(self.baumdiagramm_head_frame.head_frame, text="Baumdiagramm", padding=0)
-        self.wahrscheinlichkeit_pane.add(self.wahrscheinlichkeiten_head_frame.head_frame, text="Wahrscheinlichkeiten", padding=0)
+        self.wahrscheinlichkeit_pane.grid(row=7, column=0, columnspan=self.wahrscheinlichkeit_werte.anz_moeglichkeiten + 3, sticky=tk.NSEW)
+
+        tk.Label(frame,text="Die Wahrscheinlichkeitsrechnung befindet sich noch in der Entwicklung, einige Features funktionieren noch nicht und es können Stabilitätsprobleme auftreten",fg="red").grid(row=8,column=0,columnspan=self.wahrscheinlichkeit_werte.anz_moeglichkeiten + 3, sticky=tk.W)
 
     def createWahrscheinlichkeitsrechnungWidgets(self,frame):
         # Notebook
         self.wahrscheinlichkeit_pane = ttk.Notebook(frame,width=1300,height=550)
-        self.wahrscheinlichkeit_pane.grid(row=7, column=0, columnspan=23, sticky=tk.NSEW)
+        self.wahrscheinlichkeit_pane.grid(row=7, column=0, sticky=tk.NSEW)
 
         self.baumdiagramm_head_frame = ScrollableFrame(frame, Baumdiagramm_Frame.Baumdiagramm_Frame,self.wahrscheinlichkeit_werte)
 
         self.wahrscheinlichkeiten_head_frame = ScrollableFrame(frame, Wahrscheinlichkeiten_Frame.Wahrscheinlichkeiten_Frame, self.wahrscheinlichkeit_werte)
 
         self.updateWahrscheinlichkeitsrechnungWidgets(frame)
+
+        # Notebook
+        self.wahrscheinlichkeit_pane.add(self.wahrscheinlichkeiten_head_frame.head_frame, text="Wahrscheinlichkeiten", padding=0)
+        self.wahrscheinlichkeit_pane.add(self.baumdiagramm_head_frame.head_frame, text="Baumdiagramm", padding=0)
 
 class ScrollableFrame():
     def __init__(self,master,frame,*args):
@@ -398,7 +402,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - version: 2.5.0 - dev0.0.1")
+    root.title("Kurvendiskussion - version: 2.6.0 - dev0.1.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

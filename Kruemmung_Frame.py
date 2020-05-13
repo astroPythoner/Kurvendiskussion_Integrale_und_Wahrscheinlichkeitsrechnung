@@ -28,16 +28,16 @@ class Kruemmung_Frame(tk.Frame):
 
         self.punkte = []
         if self.__funktion != None:
-            tk.Label(self, text="Krümmung: aus zweiter Ableitung").grid(row=0, column=0, sticky=tk.W)
+            tk.Label(self, text="Krümmung: aus zweiter Ableitung",fg="blue4").grid(row=0, column=0, sticky=tk.W)
             if len(self.ableitung.funktionen) < 2 or self.ableitung.funktionen[1].funktion == None:
-                tk.Label(self, text="Zweite Ableitung f''(x) nicht bekannt").grid(row=1, column=0, sticky=tk.W)
+                tk.Label(self, text="Zweite Ableitung f''(x) nicht bekannt",fg="red").grid(row=1, column=0, sticky=tk.W)
             else:
                 zweite_ableitung = self.ableitung.funktionen[1].funktion
                 num_wendepunkt = 0
                 tk.Label(self, text="f''(x) = " + zweite_ableitung.funktion_user_kurz).grid(row=1, column=1)
-                tk.Label(self, text="Eventuelle Wendepunkte durch f''(x) = 0:").grid(row=2, column=0, sticky=tk.W)
+                tk.Label(self, text="Eventuelle Wendepunkte durch f''(x) = 0:",fg="blue2").grid(row=2, column=0, sticky=tk.W)
                 nullstellen, row = nullstellen_berechnen(self.parameter,zweite_ableitung, 3, self)
-                tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f'''(nst) ≠ 0:").grid(row=row + 1, column=0, sticky=tk.W)
+                tk.Label(self, text="Überprüfen ob Nst Extrempunkte sind durch f'''(nst) ≠ 0:",fg="blue2").grid(row=row + 1, column=0, sticky=tk.W)
                 for nst in nullstellen:
                     if len(self.ableitung.funktionen) > 2 and self.ableitung.funktionen[2].funktion != None:
                         dritte_ableitung = self.ableitung.funktionen[2].funktion
@@ -56,13 +56,13 @@ class Kruemmung_Frame(tk.Frame):
                                     wp = Wiederholender_Punkt(nst.funktion, self.__funktion.x_einsetzen(nst.x), "WP" + str(num_wendepunkt))
                                 else:
                                     wp = Punkt(nst.x, self.__funktion.x_einsetzen(nst.x), "WP" + str(num_wendepunkt))
-                                tk.Label(self, text="WP" + str(num_wendepunkt) + " = (" + str(round(nst.x, 5)) + "|f(" + str(round(nst.x, 5)) + ")) = " + str(wp)).grid(row=row + 6, column=0,sticky=tk.W)
+                                tk.Label(self, text="WP" + str(num_wendepunkt) + " = (" + str(round(nst.x, 5)) + "|f(" + str(round(nst.x, 5)) + ")) = " + str(wp),fg="green4").grid(row=row + 6, column=0,sticky=tk.W)
                                 self.punkte.append(wp)
                         else:
                             tk.Label(self, text="f(0) = "+self.erg).grid(row=row + 4, column=1)
-                            tk.Label(self, text="Kein Extrempunkt").grid(row=row + 5, column=0, sticky=tk.W)
+                            tk.Label(self, text="Kein Extrempunkt",fg="green4").grid(row=row + 5, column=0, sticky=tk.W)
                         row = row + 6
                     else:
-                        tk.Label(self, text="Dritte Ableitung f'''(x) nicht bekannt").grid(row=1, column=0, sticky=tk.W)
+                        tk.Label(self, text="Dritte Ableitung f'''(x) nicht bekannt",fg="red").grid(row=1, column=0, sticky=tk.W)
         else:
             tk.Label(self, text="Für Krümmung Funktion oben eingeben").grid(row=0, column=0)

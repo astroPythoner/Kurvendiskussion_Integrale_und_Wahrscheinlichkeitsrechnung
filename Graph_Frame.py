@@ -2,6 +2,7 @@ from Grundklassen import Graph, Punkt, Wiederholender_Punkt
 import Funktion
 
 import tkinter as tk
+from tkinter import filedialog,messagebox
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -10,6 +11,8 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import math
+
+import os
 
 def smallest_in_array(array):
     smallest = None
@@ -203,11 +206,14 @@ class Graph_Frame(tk.Frame):
                     pass
 
             self.draw_graph(rows=num_funktion+1+num_flaeche+1)
+
+            self.export_button = tk.Button(self,text="Bild exportieren",command=self.export_image)
+            self.export_button.grid(row=1+num_funktion+1+1+num_flaeche+1,column=0,sticky=tk.W)
         else:
             self.funktion_text = tk.Label(self, text="Für Graph zeichnen Funktion oben eingeben")
             self.funktion_text.grid(row=0, column=0, sticky=tk.W)
 
-    def draw_graph(self,rows=10):
+    def draw_graph(self,rows=10,save_as=""):
         plt.clf()
         fig = plt.figure(1)
 
@@ -342,4 +348,16 @@ class Graph_Frame(tk.Frame):
             except:
                 pass
 
-        plot_widget.grid(row=1, column=0, columnspan=2, rowspan=rows)
+        if save_as == "":
+            plot_widget.grid(row=1, column=0, columnspan=2, rowspan=rows)
+        else:
+            fig.savefig(save_as,dpi=300)
+
+    def export_image(self):
+        self.filename = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Speicherort auswählen", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+        if not self.filename: return
+        try:
+            self.draw_graph(save_as=self.filename)
+        except Exception as e:
+            print(e)
+            messagebox.showerror('Speicherfehler','Datei '+self.filename+' konnte nicht gespeichert werden')
