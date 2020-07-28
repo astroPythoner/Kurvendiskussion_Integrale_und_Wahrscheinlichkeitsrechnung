@@ -353,9 +353,11 @@ class Graph_Frame(tk.Frame):
         else:
             fig.savefig(save_as,dpi=300)
 
-    def export_image(self):
-        self.filename = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Speicherort auswählen", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+    def export_image(self,filename=None):
+        if filename is None: self.filename = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Speicherort auswählen", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+        else: self.filename = filename
         if not self.filename: return
+
         try:
             self.draw_graph(save_as=self.filename)
         except Exception as e:

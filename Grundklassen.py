@@ -2,6 +2,7 @@ import math
 import threading
 from time import sleep
 import tkinter as tk
+from PDF_writer import create_pdf
 
 class Punkt:
     __slots__ = ('x','y','name')
@@ -274,6 +275,161 @@ class Parameter_Settings(tk.Toplevel):
         self.parameter.speed = self.speeds[self.speed.get()]
 
 
+class PDF_Creator():
+    funktion = ""
+    second_funktion = ""
+
+    draw_image = True
+    draw_schnittpunkt_y_achse = True
+    schnittpunkt_y_achse_texte = []
+    draw_nullstellen = True
+    nullstellen_texte = []
+    draw_globales_verhalten = True
+    globales_verhalten_texte = []
+    draw_differenz_funktion = True
+    differenz_funktion_texte = []
+    draw_nullstellen_differenz_funktion = True
+    nullstellen_differenz_funktion_texte = []
+    draw_stammfunktion_differenzfunktion = True
+    stammfunktion_differenzfunktion_texte = []
+    draw_ableitung = True
+    ableitung_texte = []
+    draw_normale = True
+    normale_texte = []
+    draw_tangente = True
+    tangente_texte = []
+    draw_steigung = True
+    steigung_texte = []
+    draw_kruemmung = True
+    kruemmung_texte = []
+    draw_stammfunktion = True
+    stammfunktion_texte = []
+    draw_integral = True
+    integral_texte = []
+
+    def create_pdf(self,file_name,master,graph_frame):
+        pdf = self
+        class Loading_screen(tk.Toplevel):
+            def __init__(self):
+                tk.Toplevel.__init__(self, master)
+                self.transient(master)
+                self.title("Rechnung exportieren")
+                tk.Label(self,text="Die Rechnung wird exporiert, dies kann einen Moment dauern").grid(row=0,column=0)
+                self.update()
+                self.initial_focus = self
+                self.initial_focus.focus_set()
+                graph_frame.export_image("image.png")
+                create_pdf(file_name, pdf)
+                self.withdraw()
+                self.update_idletasks()
+                master.focus_set()
+                self.destroy()
+        Loading_screen()
+
+    def reset(self):
+        self.schnittpunkt_y_achse_texte = []
+        self.nullstellen_texte = []
+        self.globales_verhalten_texte = []
+        self.differenz_funktion_texte = []
+        self.nullstellen_differenz_funktion_texte = []
+        self.stammfunktion_differenzfunktion_texte = []
+        self.ableitung_texte = []
+        self.normale_texte = []
+        self.tangente_texte = []
+        self.steigung_texte = []
+        self.kruemmung_texte = []
+        self.stammfunktion_texte = []
+        self.integral_texte = []
+
+    def __getitem__(self, item):
+        if item == 0: return self.draw_image
+        if item == 1: return self.draw_schnittpunkt_y_achse
+        if item == 2: return self.draw_nullstellen
+        if item == 3: return self.draw_globales_verhalten
+        if item == 4: return self.draw_differenz_funktion
+        if item == 5: return self.draw_nullstellen_differenz_funktion
+        if item == 6: return self.draw_stammfunktion_differenzfunktion
+        if item == 7: return self.draw_ableitung
+        if item == 8: return self.draw_normale
+        if item == 9: return self.draw_tangente
+        if item ==10: return self.draw_steigung
+        if item ==11: return self.draw_kruemmung
+        if item ==12: return self.draw_stammfunktion
+        if item ==13: return self.draw_integral
+
+class PDF_Settings(tk.Toplevel):
+
+    def __init__(self, parent, creator:PDF_Creator):
+        tk.Toplevel.__init__(self, parent)
+        self.transient(parent)
+
+        self.creator = creator
+        self.vars = [tk.BooleanVar(value=creator[x]) for x in range(14)]
+
+        self.title("PDF erstellen")
+        self.parent = parent
+        self.result = None
+        body = tk.Frame(self)
+        self.body(body)
+        body.pack(padx=7, pady=7)
+        self.initial_focus = body
+        self.buttonbox()
+        self.grab_set()
+        self.initial_focus = self
+        self.initial_focus.focus_set()
+        self.wait_window(self)
+
+    def body(self, master):
+        tk.Label(master,text="Inhalt des PDFs").grid(row=0,column=0, columnspan=2,sticky = tk.W)
+        tk.Checkbutton(master, text="Graph",                                                            variable=self.vars[0]).grid(row=1,column=1,sticky = tk.W)
+        tk.Checkbutton(master, text="Schnittpunkt mit der Y-Achse",                                     variable=self.vars[1]).grid(row=2, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Nullstellen",                                                      variable=self.vars[2]).grid(row=3, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Globales Verhalten",                                               variable=self.vars[3]).grid(row=4, column=1, sticky=tk.W)
+        if self.creator.second_funktion != "":
+            tk.Checkbutton(master, text="Differenzfunktion",                                                variable=self.vars[4]).grid(row=5, column=1, sticky=tk.W)
+            tk.Checkbutton(master, text="Nullstellen der Differenzfunktion (Schnittpunkte der Funktionen)", variable=self.vars[5]).grid(row=6, column=1, sticky=tk.W)
+            tk.Checkbutton(master, text="Stammfunktion der Differenzfunktion",                              variable=self.vars[6]).grid(row=7, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Ableitungen",                                                      variable=self.vars[7]).grid(row=8, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Normale",                                                          variable=self.vars[8]).grid(row=9, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Tangente",                                                         variable=self.vars[9]).grid(row=10, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Steigung (Extrempunkte)",                                          variable=self.vars[10]).grid(row=11, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Krümmung (Wendepunkte)",                                           variable=self.vars[11]).grid(row=12, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Stammfunktion",                                                    variable=self.vars[12]).grid(row=13, column=1, sticky=tk.W)
+        tk.Checkbutton(master, text="Integral",                                                         variable=self.vars[13]).grid(row=14, column=1, sticky=tk.W)
+
+    def buttonbox(self):
+        box = tk.Frame(self)
+        fertig = tk.Button(box, text="erstellen", command=self.react)
+        fertig.pack(side=tk.LEFT, padx=7, pady=7)
+        box.pack()
+
+    def react(self, event=None):
+        self.withdraw()
+        self.update_idletasks()
+        self.apply()
+        self.cancel()
+
+    def cancel(self, event=None):
+        self.parent.focus_set()
+        self.destroy()
+
+    def apply(self):
+        self.creator.draw_image = self.vars[0].get()
+        self.creator.draw_schnittpunkt_y_achse = self.vars[1].get()
+        self.creator.draw_nullstellen = self.vars[2].get()
+        self.creator.draw_globales_verhalten = self.vars[3].get()
+        self.creator.draw_differenz_funktion = self.vars[4].get()
+        self.creator.draw_nullstellen_differenz_funktion = self.vars[5].get()
+        self.creator.draw_stammfunktion_differenzfunktion = self.vars[6].get()
+        self.creator.draw_ableitung = self.vars[7].get()
+        self.creator.draw_normale = self.vars[8].get()
+        self.creator.draw_tangente = self.vars[9].get()
+        self.creator.draw_steigung = self.vars[10].get()
+        self.creator.draw_kruemmung = self.vars[11].get()
+        self.creator.draw_stammfunktion = self.vars[12].get()
+        self.creator.draw_integral = self.vars[13].get()
+
+
 class Wahrscheinlichkeitsrechnung_werte():
     anz_durchgaenge = 1
     anz_moeglichkeiten = 1
@@ -313,6 +469,7 @@ class Wahrscheinlichkeitsrechnung_werte():
             return False
         if not self.zuruecklegen and self.anz_moeglichkeiten<self.anz_durchgaenge:
             return False
+        return True
 
     def append_name(self,name):
         self.namen.append(name)

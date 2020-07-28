@@ -155,7 +155,7 @@ def get_n_m_from_n_mal_x_plus_m(funktion,parameter=None):
         if m == "":
             m = "0"
         else:
-            m = Funktion(m).funktion_computer_readable
+            m = Funktion(parameter,m).funktion_computer_readable
         offene_klammern = 0
         index = funktion_array.index("x") - 1
         geklammert = False
@@ -183,13 +183,15 @@ def get_n_m_from_n_mal_x_plus_m(funktion,parameter=None):
             n = "+1"
         if n.endswith("*"):
             n = n[:-1]
-        n = Funktion(n).funktion_computer_readable
-        if not geklammert and eval(n)!=0:
+        n = Funktion(parameter,n).funktion_computer_readable
+        if n == "":
+            n = "1"
+        if not geklammert and eval(n) != 0:
             m = "("+m+")/("+n+")"
         # check if n and m are correct
         if "x" in n or "x" in m:
             return False,False
-        # wenn möglich ganzzahl (int) daraus machen
+        # wenn möglich Ganzzahl (int) daraus machen
         if eval(n) == int(eval(n)):
             n = str(int(eval(n)))
         if eval(m) == int(eval(m)):

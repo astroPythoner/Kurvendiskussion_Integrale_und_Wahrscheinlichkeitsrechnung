@@ -4,8 +4,12 @@
 
 # Copyright 2019-2020
 
+import os
+import math
+
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog,messagebox
 from tkinter import font
 
 import SchnittpunktYAchse_Frame
@@ -36,6 +40,7 @@ class MainWindow(tk.Frame):
 
     parameter = None
     funktion = None
+    pdf_settings = Grundklassen.PDF_Creator()
     kurven_diskussion_frames = []
     kurven_diskussion_head_frames = []
     wahrscheinlichkeit_werte = None
@@ -55,6 +60,7 @@ class MainWindow(tk.Frame):
         self.funktion_random_erstellen_button_pressed()
 
     def funktion_uebernehmen_button_pressed(self):
+        self.pdf_settings.reset()
         passt = self.funktion.set_funktion(self.eingabe.get())
 
         if passt==True:
@@ -91,18 +97,23 @@ class MainWindow(tk.Frame):
                 text = "Funktionstyp nicht bekannt: "+self.funktion.funktion_user_kurz
             self.funktion_info_text.config(text=text)
 
+            self.pdf_settings.funktion = self.funktion.funktion_user_kurz
+
         elif passt == "unverändert":
             self.eingabe_passt.config(text="Funktion nicht verändert")
         else:
             self.eingabe_passt.config(text="Funktion fehlerhaft")
     def second_funktion_uebernehmen_button_pressed(self):
         if self.second_funktion_eingabe.get() == "":
+            self.pdf_settings.second_funktion = ""
             self.second_funktion.set_funktion("0")
             passt = True
         else:
             passt = self.second_funktion.set_funktion(self.second_funktion_eingabe.get())
 
         if passt == True:
+            self.pdf_settings.reset()
+
             if self.funktion.has_parameter or self.second_funktion.has_parameter:
                 self.parameter_scale.configure(state=tk.NORMAL)
                 self.parameter_move.configure(state=tk.NORMAL)
@@ -123,6 +134,8 @@ class MainWindow(tk.Frame):
                 self.second_funktion_eingabe_passt.config(text="keine zweite Funktion")
             else:
                 self.second_funktion_eingabe_passt.config(text="Funktion passt")
+
+            self.pdf_settings.second_funktion = self.second_funktion.funktion_user_kurz
 
         elif passt == "unverändert":
             self.second_funktion_eingabe_passt.config(text="Funktion nicht verändert")
@@ -173,6 +186,14 @@ class MainWindow(tk.Frame):
     def get_chances(self):
         return [x.get() for x in self.moeglichk_chance_entrys]
 
+    def export_as_pdf_button_pressed(self):
+        if self.funktion.funktion_user_x_ersetztbar != "" and self.funktion.funktion_user_x_ersetztbar is not None and self.funktion.funktion_user_x_ersetztbar != "0":
+            Grundklassen.PDF_Settings(self,self.pdf_settings)
+            filename = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Speicherort auswählen", filetypes=(("pdf files", "*.pdf"), ("all files", "*.*")))
+            if filename != "" and filename != None:
+                self.pdf_settings.create_pdf(filename,self,self.Graph_Frame.frame)
+        else:
+            messagebox.showerror('Speicherfehler','Gebe eine Gleichung ein und übernehme sie, bevor du sie exportierst')
 
     def createWidgets(self):
         self.head_pane = ttk.Notebook(self)
@@ -222,66 +243,68 @@ class MainWindow(tk.Frame):
         self.second_funktion_ubernehmen.grid(row=3, column=3, sticky=tk.W)
         self.second_funktion_eingabe_passt = tk.Label(frame, text="")
         self.second_funktion_eingabe_passt.grid(row=3, column=4, columnspan=3, sticky=tk.W)
+        self.save_pdf_button = tk.Button(frame,text="Rechnung als pdf speichern",command=self.export_as_pdf_button_pressed)
+        self.save_pdf_button.grid(row=4,column=6,sticky=tk.E)
 
         #Notebook zur Auswsahl der Kurvendiskussionsthemen
         self.kurvendiskussion_pane = ttk.Notebook(frame,width=1300,height=570)
-        self.kurvendiskussion_pane.grid(row=4, column=0, columnspan=7, sticky=tk.NSEW)
+        self.kurvendiskussion_pane.grid(row=5, column=0, columnspan=7, sticky=tk.NSEW)
 
         self.Graph_Frame = ScrollableFrame(frame,Graph_Frame.Graph_Frame,self.parameter)
         self.kurvendiskussion_pane.add(self.Graph_Frame.head_frame, text="Graph", padding=0)
 
-        self.schnittpunktYAchse_head_frame = ScrollableFrame(frame,SchnittpunktYAchse_Frame.SchnittpunktYAchse_Frame)
+        self.schnittpunktYAchse_head_frame = ScrollableFrame(frame,SchnittpunktYAchse_Frame.SchnittpunktYAchse_Frame,self.pdf_settings)
         self.schnittpunktYAchse_Frame = self.schnittpunktYAchse_head_frame.frame
         self.kurven_diskussion_frames.append(self.schnittpunktYAchse_Frame)
         self.kurven_diskussion_head_frames.append(self.schnittpunktYAchse_head_frame)
         self.kurvendiskussion_pane.add(self.schnittpunktYAchse_head_frame.head_frame, text="Schnittpunkt Y Achse", padding=0)
 
-        self.nullstellen_head_frame = ScrollableFrame(frame,Nullstellen_Frame.Nullstellen_Frame,self.parameter)
+        self.nullstellen_head_frame = ScrollableFrame(frame,Nullstellen_Frame.Nullstellen_Frame,self.parameter,self.pdf_settings)
         self.Nullstellen_Frame = self.nullstellen_head_frame.frame
         self.kurven_diskussion_frames.append(self.Nullstellen_Frame)
         self.kurven_diskussion_head_frames.append(self.nullstellen_head_frame)
         self.kurvendiskussion_pane.add(self.nullstellen_head_frame.head_frame, text="Nullstellen", padding=0)
 
-        self.globalsverhalten_head_frame = ScrollableFrame(frame,GlobalesVerhalten_Frame.GlobalesVerhalten_Frame)
+        self.globalsverhalten_head_frame = ScrollableFrame(frame,GlobalesVerhalten_Frame.GlobalesVerhalten_Frame,self.pdf_settings)
         self.GlobalesVerhalten_Frame = self.globalsverhalten_head_frame.frame
         self.kurven_diskussion_frames.append(self.GlobalesVerhalten_Frame)
         self.kurven_diskussion_head_frames.append(self.globalsverhalten_head_frame)
         self.kurvendiskussion_pane.add(self.globalsverhalten_head_frame.head_frame, text="Globales Verhalten", padding=0)
 
-        self.ablteitung_head_frame = ScrollableFrame(frame,Ableitung_Frame.Ableitung_Frame,self.parameter)
+        self.ablteitung_head_frame = ScrollableFrame(frame,Ableitung_Frame.Ableitung_Frame,self.parameter,self.pdf_settings)
         self.Ableitung_Frame = self.ablteitung_head_frame.frame
         self.kurven_diskussion_frames.append(self.Ableitung_Frame)
         self.kurven_diskussion_head_frames.append(self.ablteitung_head_frame)
         self.kurvendiskussion_pane.add(self.ablteitung_head_frame.head_frame, text="Ableitung", padding=0)
 
-        self.tangentenormale_head_frame = ScrollableFrame(frame,TangenteNormale_Frame.TangenteNormale_Frame,self.parameter,self.Ableitung_Frame)
+        self.tangentenormale_head_frame = ScrollableFrame(frame,TangenteNormale_Frame.TangenteNormale_Frame,self.parameter,self.Ableitung_Frame,self.pdf_settings)
         self.TangenteNormale_Frame = self.tangentenormale_head_frame.frame
         self.kurven_diskussion_frames.append(self.TangenteNormale_Frame)
         self.kurven_diskussion_head_frames.append(self.tangentenormale_head_frame)
         self.kurvendiskussion_pane.add(self.tangentenormale_head_frame.head_frame, text="Normale/Tangente", padding=0)
 
-        self.steigung_head_frame = ScrollableFrame(frame,Steigung_Frame.Steigung_Frame,self.parameter,self.Ableitung_Frame)
+        self.steigung_head_frame = ScrollableFrame(frame,Steigung_Frame.Steigung_Frame,self.parameter,self.Ableitung_Frame,self.pdf_settings)
         self.Steigung_Frame = self.steigung_head_frame.frame
         self.kurven_diskussion_frames.append(self.Steigung_Frame)
         self.kurven_diskussion_head_frames.append(self.steigung_head_frame)
         self.kurvendiskussion_pane.add(self.steigung_head_frame.head_frame, text="Steigung", padding=0)
 
-        self.kruemmung_head_frame = ScrollableFrame(frame,Kruemmung_Frame.Kruemmung_Frame,self.parameter,self.Ableitung_Frame)
+        self.kruemmung_head_frame = ScrollableFrame(frame,Kruemmung_Frame.Kruemmung_Frame,self.parameter,self.Ableitung_Frame,self.pdf_settings)
         self.Kruemmung_Frame = self.kruemmung_head_frame.frame
         self.kurven_diskussion_frames.append(self.Kruemmung_Frame)
         self.kurven_diskussion_head_frames.append(self.kruemmung_head_frame)
         self.kurvendiskussion_pane.add(self.kruemmung_head_frame.head_frame, text="Krümmung", padding=0)
 
-        self.stammfunktion_head_frame = ScrollableFrame(frame,Stammfunktion_Frame.Stammfunktion_Frame,self.parameter)
+        self.stammfunktion_head_frame = ScrollableFrame(frame,Stammfunktion_Frame.Stammfunktion_Frame,self.parameter,self.pdf_settings)
         self.Stammfunktion_Frame = self.stammfunktion_head_frame.frame
         self.kurven_diskussion_frames.append(self.Stammfunktion_Frame)
         self.kurven_diskussion_head_frames.append(self.stammfunktion_head_frame)
         self.kurvendiskussion_pane.add(self.stammfunktion_head_frame.head_frame, text="Stammfunktion", padding=0)
 
-        self.sonstiges_head_frame = ScrollableFrame(frame, Sonstiges_Frame.Sonstiges_Frame, DEBUG)
+        self.sonstiges_head_frame = ScrollableFrame(frame, Sonstiges_Frame.Sonstiges_Frame, DEBUG,self.parameter,self.pdf_settings)
         self.Sonstige_Frame = self.sonstiges_head_frame.frame
 
-        self.integrale_head_frame = ScrollableFrame(frame,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame,self.Graph_Frame.frame,self.parameter)
+        self.integrale_head_frame = ScrollableFrame(frame,Integral_Frame.Integral_Frame,self.Stammfunktion_Frame,self.Sonstige_Frame,self.Nullstellen_Frame,self.Graph_Frame.frame,self.parameter,self.pdf_settings)
         self.Integrale_Frame = self.integrale_head_frame.frame
         self.kurven_diskussion_frames.append(self.Integrale_Frame)
         self.kurven_diskussion_head_frames.append(self.integrale_head_frame)
@@ -402,7 +425,7 @@ class ScrollableFrame():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Kurvendiskussion - version: 2.6.0 - dev0.1.0")
+    root.title("Kurvendiskussion - version: 2.6.1 - dev0.1.0")
     root.resizable(0,0)
     app = MainWindow(master=root)
     app.mainloop()

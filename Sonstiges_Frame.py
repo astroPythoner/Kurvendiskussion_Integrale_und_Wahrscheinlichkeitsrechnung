@@ -20,11 +20,12 @@ class Sonstiges_Frame(tk.Frame):
 
     funktion_not_erkannt_reasons = {}
 
-    def __init__(self, master=None,debug=False, parameter=None):
+    def __init__(self, master=None,debug=False, parameter=None, pdf_writer=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.debug = debug
         self.parameter = parameter
+        self.pdf_writer = pdf_writer
         self.update()
 
     def update(self, neu_funktion = None, second_funktion = None):
@@ -77,11 +78,13 @@ class Sonstiges_Frame(tk.Frame):
 
             ## zweite Funktion -> Differenzfunktion u. Schnittpunkte
             if self.__second_funktion.funktion_user_kurz != "0" and self.__second_funktion.funktion_user_kurz != "":
+                pdf = lambda txt: self.pdf_writer.differenz_funktion_texte.append(txt) if self.pdf_writer is not None else False
                 tk.Label(self, text="").grid(row=7, column=0,sticky=tk.W)
                 tk.Label(self, text="Zweite Funktion: g(x) = "+self.__second_funktion.funktion_user_kurz).grid(row=8, column=0, sticky=tk.W)
                 # Differenzfunktion
                 tk.Label(self, text="Differenzfunktion:",fg="blue4").grid(row=9, column=0, sticky=tk.E)
                 tk.Label(self, text="d(x) = f(x) - g(x)",fg="blue2").grid(row=9, column=1, sticky=tk.W)
+                pdf(["fkt","d(x) = f(x) - g(x)"])
                 try:
                     simplified = sympy.simplify("("+self.__funktion.funktion_sympy_readable+") - ("+self.__second_funktion.funktion_sympy_readable+")")
                     differenzfunktion = Funktion(self.parameter)
@@ -92,14 +95,19 @@ class Sonstiges_Frame(tk.Frame):
                     could_be_simplified = differenzfunktion.set_funktion("("+self.__funktion.funktion_user_kurz+") - ("+self.__second_funktion.funktion_user_kurz+")")
                 if could_be_simplified:
                     tk.Label(self, text="d(x) = (" + self.__funktion.funktion_user_kurz + ") - (" + self.__second_funktion.funktion_user_kurz + ")").grid(row=10, column=1, sticky=tk.W)
+                    pdf(["fkt", "d(x) = (" + self.__funktion.funktion_user_kurz + ") - (" + self.__second_funktion.funktion_user_kurz + ")"])
                     tk.Label(self, text="d(x) = "+differenzfunktion.funktion_user_kurz,fg="green4").grid(row=11, column=1, sticky=tk.W)
+                    pdf(["fkt", "d(x) = "+differenzfunktion.funktion_user_kurz])
                 else:
                     tk.Label(self, text="d(x) = (" + self.__funktion.funktion_user_kurz + ") - (" + self.__second_funktion.funktion_user_kurz + ")",fg="green4").grid(row=10, column=1, sticky=tk.W)
+                    pdf(["fkt", "d(x) = (" + self.__funktion.funktion_user_kurz + ") - (" + self.__second_funktion.funktion_user_kurz + ")"])
                 self.funktionen.append(Graph(differenzfunktion, "#00C9C9", "hellblau", "d(x)"))
                 # Schnittpunkte
+                pdf = lambda txt: self.pdf_writer.nullstellen_differenz_funktion_texte.append(txt) if self.pdf_writer is not None else False
                 tk.Label(self, text="Schnittpunkte:",fg="blue4").grid(row=12, column=0, sticky=tk.E)
                 tk.Label(self, text="d(x) = 0",fg="blue2").grid(row=12, column=1)
-                punkte,row = nullstellen_berechnen(self.parameter,differenzfunktion,13,self,print_nullstellen=False)
+                pdf(["fkt","d(x) = 0"])
+                punkte,row = nullstellen_berechnen(self.parameter,differenzfunktion,13,self,print_nullstellen=False,pdf_writer=self.pdf_writer.nullstellen_differenz_funktion_texte)
                 for count,punkt in enumerate(punkte):
                     y_wert = self.__funktion.x_einsetzen(punkt.x)
                     if isinstance(punkt,Punkt):
@@ -108,12 +116,15 @@ class Sonstiges_Frame(tk.Frame):
                         p = Wiederholender_Punkt(punkt.funktion,y_wert,"Sp"+str(count+1))
                     self.punkte.append(p)
                     tk.Label(self, text="Sp"+str(count+1)+" = ("+str(punkt.x)+" | f("+str(punkt.x)+")) = "+str(p),fg="green4").grid(row=row+count+1, column=1)
+                    pdf(["erg", "Sp"+str(count+1)+" = ("+str(punkt.x)+" | f("+str(punkt.x)+")) = "+str(p)])
                 # Stammfunktion der Differenzfunktion
+                pdf = lambda txt: self.pdf_writer.stammfunktion_differenzfunktion_texte.append(txt) if self.pdf_writer is not None else False
                 row = row+len(punkte)+1
                 tk.Label(self, text="Stammfunktion der Differenzfunktion:",fg="blue4").grid(row=row, column=0, sticky=tk.E)
-                stammfunk,row = make_stammfunktion(self.parameter, differenzfunktion, row, self, "D(x)",print_stammfunktion=False)
+                stammfunk,row = make_stammfunktion(self.parameter, differenzfunktion, row, self, "D(x)",print_stammfunktion=False,pdf_writer=self.pdf_writer.stammfunktion_differenzfunktion_texte)
                 if stammfunk is not None:
                     tk.Label(self, text="Stammfunktion: D(x) = " + stammfunk.funktion_user_kurz,fg="green4").grid(row=row + 5, column=1)
+                    pdf(["erg","Stammfunktion: D(x) = " + stammfunk.funktion_user_kurz])
                     self.funktionen.append(Graph(stammfunk, "#00FFFF", "hellblau", "D(x)"))
 
             ## Debug

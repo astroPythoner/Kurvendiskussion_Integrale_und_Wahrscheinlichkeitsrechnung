@@ -26,7 +26,7 @@ class Integral_Frame(tk.Frame):
     funktionen = None
     parameter = None
 
-    def __init__(self, master=None, stammfunktion=None, differenz_stammfunktion=None, nullstellen=None, graph=None, parameter=None):
+    def __init__(self, master=None, stammfunktion=None, differenz_stammfunktion=None, nullstellen=None, graph=None, parameter=None, pdf_writer=None):
         tk.Frame.__init__(self, master)
         self.grid(sticky=tk.NSEW)
         self.flaechen = [Flaeche(0.9,0.6,"hellgrau","Integral")]
@@ -36,6 +36,7 @@ class Integral_Frame(tk.Frame):
         self.x_ende = tk.IntVar()
         self.x_ende.set(1)
         self.last_x_ende_wert = 1
+        self.pdf_writer = pdf_writer
         self.update()
         self.stammfunktion = stammfunktion
         self.differenz_stammfunktion = differenz_stammfunktion
@@ -90,35 +91,51 @@ class Integral_Frame(tk.Frame):
         self.createWidgets()
 
     def integral_berechnen(self):
+        self.pdf_writer.integral_texte = []
+        pdf = lambda txt: self.pdf_writer.integral_texte.append(txt) if self.pdf_writer is not None else False
         if self.zwischen_graphen and len(self.differenz_stammfunktion.funktionen) >= 1:
             stammfunktion = self.differenz_stammfunktion.funktionen[1].funktion
+            pdf(["title","Fläche zwischen den Funktionen zwischen Stelle x="+str(self.x_start.get())+" und x="+str(self.x_ende.get())])
         elif self.rotationskoerper and self.__funktion != None:
             try:
+                pdf(["title", "Rotationskörper um X-Achse zwischen Stelle x=" + str(self.x_start.get()) + " und x=" + str(self.x_ende.get())])
+                pdf(["calc", "Funktion quadrieren und dann Stammfunktion bilden"])
                 tk.Label(self, text="Funktion f(x) = " + self.__funktion.funktion_user_kurz).grid(row=2, column=1)
+                pdf(["fkt", "Funktion f(x) = " + self.__funktion.funktion_user_kurz])
                 qudrat_funktion = Funktion(self.parameter,"("+self.__funktion.funktion_sympy_readable+")^2")
                 tk.Label(self, text="(f(x))² = "+qudrat_funktion.funktion_user_kurz).grid(row=3, column=1)
+                pdf(["fkt", "(f(x))² = "+qudrat_funktion.funktion_user_kurz])
                 loesung = sympy.integrate(qudrat_funktion.funktion_sympy_readable, sympy.Symbol('x'))
                 stammfunktion = Funktion(self.parameter)
                 funktion_erkannt = stammfunktion.set_funktion(sympy.printing.sstr(loesung).replace("**", "'"))
                 if not funktion_erkannt:
                     tk.Label(self, text="Stammfunktion konnte nicht erstellt werden",fg="red").grid(row=2, column=1)
+                    pdf(["noerg", "Stammfunktion konnte nicht erstellt werden"])
                     return
             except Exception:
                 tk.Label(self, text="Stammfunktion konnte nicht erstellt werden",fg="red").grid(row=2, column=1)
+                pdf(["noerg", "Stammfunktion konnte nicht erstellt werden"])
                 return
         elif self.zwischen_graphen == False and self.rotationskoerper == False and len(self.stammfunktion.funktionen) >= 1:
+            pdf(["title", "Fläche zwischen Stelle x="+str(self.x_start.get())+" und x="+str(self.x_ende.get())])
             stammfunktion = self.stammfunktion.funktionen[0].funktion
         else:
             tk.Label(self, text="Keine Stammfunktion gefunden",fg="red").grid(row=2, column=1)
+            pdf(["noerg", "Stammfunktion konnte nicht erstellt werden"])
             return
         tk.Label(self, text="Stammfunktion: "+stammfunktion.funktion_user_kurz,fg="blue4").grid(row=4, column=1)
+        pdf(["fkt", "Stammfunktion: "+stammfunktion.funktion_user_kurz])
         tk.Label(self, text="1. Beide Werte in Stammfunktion einsetzen:",fg="blue2").grid(row=5, column=0,sticky=tk.W,columnspan=2)
+        pdf(["calc", "1. Beide Werte in Stammfunktion einsetzen:"])
         erster_wert = stammfunktion.x_einsetzen(self.x_start.get())
         zweiter_wert = stammfunktion.x_einsetzen(self.x_ende.get())
         tk.Label(self, text="F("+str(self.x_start.get())+") = "+str(erster_wert)).grid(row=6, column=1, sticky=tk.W)
+        pdf(["fkt", "F("+str(self.x_start.get())+") = "+str(erster_wert)])
         tk.Label(self, text="F("+str(self.x_ende.get())+") = "+str(zweiter_wert)).grid(row=7, column=1, sticky=tk.W)
+        pdf(["fkt", "F("+str(self.x_ende.get())+") = "+str(zweiter_wert)])
         if erster_wert == "nicht definiert" or zweiter_wert == "nicht definiert":
             tk.Label(self, text="Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen",fg="red").grid(row=8, column=0, sticky=tk.W, columnspan=2)
+            pdf(["noerg", "Kein Ergebnis, da eine nicht definiert Zahl in Ergebnissen"])
         elif (self.nullstellen != None and self.zwischen_graphen == False) or (self.differenz_stammfunktion != None and self.zwischen_graphen):
             # nach Nullstellen der Funktion zwischen den beiden Punkten suchen
             nullstellen_dazwischen = []
@@ -137,56 +154,74 @@ class Integral_Frame(tk.Frame):
             if len(nullstellen_dazwischen) >= 1 and self.achte_auf_nullstellen:
                 tk.Label(self, text="!! ACHTUNG Wenn nicht gefundene Nullstellen zwischen den Punkten liegen werden die Flächen unter dem Graph negativ gesehen und im Ergebnis abgezogen",fg="red").grid(row=8,column=0,sticky=tk.W,columnspan=2)
                 tk.Label(self, text="2. Nullstellen zwischen Werten finden",fg="blue2").grid(row=9,column=0,sticky=tk.W,columnspan=2)
+                pdf(["calc", "2. Nullstellen zwischen Werten finden"])
                 nst_text = "Nulstellen: "
                 for punkt in nullstellen_dazwischen:
                     nst_text += str(punkt)+", "
                 nst_text = nst_text[:-2]
                 tk.Label(self, text=nst_text).grid(row=10, column=1,sticky=tk.W)
+                pdf(["fkt", nst_text])
                 tk.Label(self, text="3. Auch Nullstellen einsetzten",fg="blue2").grid(row=11, column=0, sticky=tk.W,columnspan=2)
+                pdf(["calc", "3. Auch Nullstellen einsetzten"])
                 werte_nullstellen = []
                 for count,punkt in enumerate(nullstellen_dazwischen):
                     wert = stammfunktion.x_einsetzen(punkt.x)
                     werte_nullstellen.append(wert)
                     tk.Label(self, text="F(" + str(punkt.x) + ") = " + str(wert)).grid(row=12+count,column=1,sticky=tk.W)
+                    pdf(["fkt", "F(" + str(punkt.x) + ") = " + str(wert)])
                 row = 12+count
                 werte_nullstellen.insert(0,erster_wert)
                 werte_nullstellen.insert(len(werte_nullstellen),zweiter_wert)
                 if "nicht definiert" in werte_nullstellen:
-                    tk.Label(self, text="Ergebnis kann nicht berechnet werden, da eine nicht definiert Zahl in Ergebnissen",fg="red").grid(row=9, column=0, sticky=tk.W, columnspan=2)
+                    tk.Label(self, text="Ergebnis kann nicht berechnet werden, da eine nicht definiert Zahl in den Ergebnissen ist",fg="red").grid(row=9, column=0, sticky=tk.W, columnspan=2)
+                    pdf(["noerg", "Ergebnis kann nicht berechnet werden, da eine nicht definiert Zahl in den Ergebnissen ist"])
                 else:
                     # Differenzen berechnen
-                    tk.Label(self, text="3. Differenz zwischen den errechneten Werten finden:",fg="blue2").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
+                    tk.Label(self, text="4. Differenz zwischen den errechneten Werten finden:",fg="blue2").grid(row=row+1, column=0, sticky=tk.W,columnspan=2)
+                    pdf(["calc", "4. Differenz zwischen den errechneten Werten finden:"])
                     ergbnis_teile = []
                     for punkt_num in range(len(werte_nullstellen)-1):
                         teil_erg = abs(werte_nullstellen[punkt_num+1] - werte_nullstellen[punkt_num])
                         ergbnis_teile.append(teil_erg)
                         tk.Label(self, text="| " + " "+ str(werte_nullstellen[punkt_num+1]) + " " + vorzeichen_str(-werte_nullstellen[punkt_num])  + " | = " + str(teil_erg)).grid(row=row+2+punkt_num, column=1, sticky=tk.W)
+                        pdf(["fkt", "| " + " "+ str(werte_nullstellen[punkt_num+1]) + " " + vorzeichen_str(-werte_nullstellen[punkt_num])  + " | = " + str(teil_erg)])
                     row = row+2+punkt_num
                     erg = math.fsum(ergbnis_teile)
-                    tk.Label(self,text="4. Ergebnisse zusammenzählen:",fg="blue2").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
+                    tk.Label(self,text="5. Ergebnisse zusammenzählen:",fg="blue2").grid(row=row + 1, column=0, sticky=tk.W, columnspan=2)
+                    pdf(["calc", "5. Ergebnisse zusammenzählen:"])
                     tk.Label(self, text="Fläche = "+str(erg),fg="green4").grid(row=row+2, column=1, sticky=tk.W)
+                    pdf(["erg", "Fläche = "+str(erg)])
                     row += 2
             else:
                 if self.achte_auf_nullstellen:
                     tk.Label(self, text="!! ACHTUNG Keine Nullstellen gefunden. Flächen unter dem Graph werden negativ gesehen und im Ergebnis abgezogen",fg="red").grid(row=8, column=0, sticky=tk.W, columnspan=2)
                 # Differenz berechnen
                 tk.Label(self, text="2. Differenz der beiden Werte finden:",fg="blue2").grid(row=9, column=0, sticky=tk.W, columnspan=2)
+                pdf(["calc", "2. Differenz der beiden Werte finden:"])
                 erg = zweiter_wert - erster_wert
                 tk.Label(self, text="| " + str(zweiter_wert) + " " + vorzeichen_str(-erster_wert) + " | = " + str(erg)).grid(row=10, column=1, sticky=tk.W)
+                pdf(["fkt", "| " + str(zweiter_wert) + " " + vorzeichen_str(-erster_wert) + " | = " + str(erg)])
                 if self.rotationskoerper:
                     tk.Label(self, text="Volumen = pi*" + str(erg),fg="green4").grid(row=11, column=1, sticky=tk.W)
+                    pdf(["fkt","Volumen = pi*" + str(erg)])
                     erg *= math.pi
                     tk.Label(self, text="Volumen = " + str(erg),fg="green4").grid(row=12, column=1, sticky=tk.W)
+                    pdf(["erg", "Volumen = " + str(erg)])
                 else:
                     tk.Label(self, text="Fläche = " + str(erg),fg="green4").grid(row=11, column=1, sticky=tk.W)
+                    pdf(["erg", "Fläche = " + str(erg)])
                 row = 12
             if self.zwischen_graphen == False and self.rotationskoerper == False:
                 try:
                     mittelwert = erg/(self.x_ende.get()-self.x_start.get())
                     tk.Label(self, text="Mittelwert:",fg="blue4").grid(row=row+1, column=0, sticky=tk.W, columnspan=2)
+                    pdf(["title", "Mittelwert:"])
                     tk.Label(self, text="m = Fläche / (ende-start)").grid(row=row + 2, column=1, sticky=tk.W)
+                    pdf(["calc", "m = Fläche / (ende-start)"])
                     tk.Label(self, text="m = "+str(erg)+" / ("+str(self.x_ende.get())+vorzeichen_str(-self.x_start.get())+") = "+str(mittelwert)).grid(row=row + 3, column=1, sticky=tk.W)
+                    pdf(["fkt", "m = "+str(erg)+" / ("+str(self.x_ende.get())+vorzeichen_str(-self.x_start.get())+") = "+str(mittelwert)])
                     tk.Label(self, text="Mittelwert = " + str(mittelwert),fg="green4").grid(row=row+4, column=1, sticky=tk.W)
+                    pdf(["erg", "Mittelwert = " + str(mittelwert)])
                     self.funktionen.append(Graph(Funktion(self.parameter,str(mittelwert)), "#333344", "dunkelgrau", "Mittelwert"))
                 except Exception:
                     pass
